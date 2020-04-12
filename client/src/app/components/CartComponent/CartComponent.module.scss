@@ -1,0 +1,23 @@
+@import '../../Standarts.scss';
+
+
+.cartComponentWrapper {
+  position: relative;
+  flex-grow: 1;
+  min-width: $min-page-width;
+  display: flex;
+}
+.cartWrapper {
+  flex-grow: 1;
+  position: relative;
+  background-color: #e4e5e7;
+  padding: 0 20px;
+
+  .cartComponent {
+    max-width: $page-width;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 15px 0;
+  }
+}

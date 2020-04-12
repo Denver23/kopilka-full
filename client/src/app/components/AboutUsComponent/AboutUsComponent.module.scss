@@ -1,0 +1,41 @@
+@import '../../Standarts.scss';
+
+.aboutUsWrapper {
+  flex-grow: 1;
+  max-width: $page-width;
+  min-width: $min-page-width;
+  padding: 0 20px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  font-family: Montserrat;
+  color: $primary-text-color;
+  .aboutUsBody {
+    padding: 1.5rem 0;
+  }
+  .pageTitle {
+    margin: 0 auto;
+    font-size: 1.6rem;
+    font-weight: 500;
+    padding: 1rem;
+    color: $primary-text-color;
+    border-bottom: 3px solid $primary-text-color;
+    box-sizing: border-box;
+  }
+  .generalImage {
+    float: left;
+    padding: 0 15px 15px 0;
+    box-sizing: border-box;
+
+    img {
+      width: 445px;
+      object-fit: cover;
+    }
+  }
+  .aboutText {
+    font-size: 1.3rem;
+    line-height: 2.4rem;
+  }
+  p {
+    padding: 15px 0;
+  }
+}

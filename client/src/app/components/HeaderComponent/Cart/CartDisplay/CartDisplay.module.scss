@@ -1,0 +1,45 @@
+@import '../../../../Standarts';
+
+.cartDisplay {
+  position: absolute;
+  background-color: #fff;
+  z-index: 11;
+  top: 130%;
+  right: 0;
+  padding: 20px;
+  border: 2px #e3e8f0 solid;
+  border-radius: 17px;
+  min-width: 250px;
+  flex-direction: column;
+
+
+  .message {
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 1.3rem;
+  }
+
+  .checkoutForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3rem;
+    margin-top: 10px;
+
+    .totalPrice {
+      font-family: Montserrat;
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: #000;
+    }
+    .checkoutButton {
+      padding: 7px 15px;
+      background-color: $primary-text-color;
+      color: #fff;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 500;
+      border-radius: 7px;
+    }
+  }
+}

@@ -1,0 +1,27 @@
+@import '../../../Standarts';
+
+.inputContainer {
+  margin-bottom: 6px;
+  .inputLogin {
+    border: 0;
+    border-bottom: 1px solid $primary-text-color;
+    padding: 5px;
+    outline: none;
+    color: $primary-text-color;
+    font-size: 1.4rem;
+    width: 200px;
+    max-width: 100%;
+  }
+
+  .inputLogin.errorInput {
+    border-bottom: 1px solid red;
+  }
+}
+.errorMessage {
+  text-transform: none;
+  color: red;
+  font-size: 1.2rem;
+  line-height: 1.3rem;
+  margin: 0;
+  font-weight: 400;
+}

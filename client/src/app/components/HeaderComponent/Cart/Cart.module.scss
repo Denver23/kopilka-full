@@ -1,0 +1,31 @@
+@import '../../../Standarts.scss';
+
+.cartWrapper {
+  position: relative;
+}
+
+.cartItem {
+  color: $primary-text-color;
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 0 20px;
+
+  .title {
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    user-select: none;
+  }
+
+  .productNumber {
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    font-weight: 600;
+    background-color: #e3e8f0;
+    border-radius: 50%;
+  }
+}

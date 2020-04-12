@@ -1,0 +1,41 @@
+@import '../../../../Standarts.scss';
+
+.customRefine {
+  background-color: #fff;
+  border-radius: $border-radius;
+
+  .refineTitle {
+    font-family: Montserrat;
+    font-size: 1.1rem;
+    color: $primary-text-color;
+    text-transform: uppercase;
+    font-weight: 600;
+    line-height: $refine-line-height;
+    padding-left: $refine-padding-left;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+
+    &:after {
+      display: block;
+      content: '';
+      position: absolute;
+      height: 1px;
+      width: 100%;
+      background-color: #f0f2f7;
+      left: 0;
+    }
+  }
+  .refineBody {
+    overflow: hidden;
+    transition: height 500ms ease;
+  }
+}
+.customRefine.hidden {
+
+  .refineTitle {
+    &:after {
+      display: none;
+    }
+  }
+}

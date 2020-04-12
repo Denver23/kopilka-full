@@ -1,0 +1,93 @@
+@import '../../../Standarts.scss';
+
+.pagesListWrapper {
+  margin: 0 auto;
+  padding: 0 20px 30px 20px;
+  max-width: 1170px;
+  min-width: $min-page-width;
+  box-sizing: border-box;
+  width: 100%;
+
+  .pagesList {
+    height: 9rem;
+    border-radius: $border-radius;
+    background-color: #fff;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    padding: 0 80px;
+
+    .numbers {
+      display: flex;
+      .pageNumber {
+        display: block;
+        text-decoration: none;
+        color: #3a405b;
+        font-family: Montserrat;
+        font-size: 1.4rem;
+        font-weight: 600;
+        width: 4.8rem;
+        line-height: 4.8rem;
+        text-align: center;
+        transition: box-shadow .5s, color .5s;
+        border-radius: 50%;
+        user-select: none;
+
+        &:hover {
+          color: #fce38a;
+        }
+      }
+
+      .pageNumber.pageNumberActive {
+        box-shadow: 0px 10px 20px 0px rgba(185,190,209,0.4);
+        color: #b9bed1;
+        pointer-events: none;
+        cursor: default;
+      }
+      .paginationDots {
+        font-family: Montserrat;
+        font-size: 1.4rem;
+        font-weight: 600;
+        width: 0.8rem;
+        line-height: 4.8rem;
+        text-align: center;
+      }
+    }
+
+    .pagesArrows {
+      position: absolute;
+      font-family: Arial;
+      text-decoration: none;
+      color: #3a405b;
+      font-size: 1.4rem;
+      font-weight: 600;
+      line-height: 4rem;
+      width: 4rem;
+      text-align: center;
+    }
+    .pagesArrows.leftArrow {
+      left: 40px
+    }
+    .pagesArrows.rightArrow {
+      right: 40px
+    }
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .pagesListWrapper {
+    .pagesList {
+      .numbers {
+        .pageNumber {
+          width: 3.8rem;
+          line-height: 3.8rem;
+        }
+        .paginationDots {
+          line-height: 3.8rem;
+        }
+      }
+    }
+  }
+}

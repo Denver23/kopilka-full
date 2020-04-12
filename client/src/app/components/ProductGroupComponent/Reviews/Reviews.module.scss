@@ -1,0 +1,42 @@
+@import '../../../Standarts';
+
+.reviewsBlock {
+  background-color: #fff;
+  margin: 0 auto;
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 72px 20px;
+    max-width: 970px;
+    min-width: $min-page-width;
+    box-sizing: border-box;
+    margin: 0 auto;
+
+    .reviewsTitle {
+      font-family: Montserrat;
+      font-size: 3.2rem;
+      color: #222328;
+      font-weight: 900;
+      line-height: 5rem;
+      text-align: center;
+    }
+
+    .reviewsDescription {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.6rem;
+      color: #b9bed1;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .messages {
+      padding-top: 5rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 9%;
+      justify-content: space-between;
+      width: 100%;
+    }
+  }
+}

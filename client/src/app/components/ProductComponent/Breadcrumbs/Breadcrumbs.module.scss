@@ -1,0 +1,66 @@
+@import '../../../Standarts.scss';
+
+.list {
+  display: flex;
+  list-style: none;
+  width: 100%;
+
+  .item {
+    margin-right: 25px;
+
+     .itemUrl {
+       position: relative;
+       font-size: 1.2rem;
+       font-family: Montserrat;
+       text-decoration: none;
+       color: $primary-text-color;
+
+       &:hover {
+         &:before {
+           width: 100%;
+         }
+       }
+
+       &:before {
+         display: block;
+         content: '';
+         background-color: $primary-text-color;
+         width: 0;
+         height: 1px;
+         position: absolute;
+         left: 0;
+         bottom: 0;
+         transition: width .5s;
+       }
+
+       &:after {
+         display: block;
+         content: '>';
+         right: -15px;
+         top: 50%;
+         transform: translateY(-50%);
+         position: absolute;
+       }
+     }
+
+    &:last-child {
+      .itemUrl {
+        position: relative;
+
+        &:after {
+          display: none;
+          content: '';
+        }
+
+        &:last-child {
+          padding-right: 0;
+
+          &:after {
+            display: none;
+            content: '';
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,92 @@
+@import '../../Standarts.scss';
+
+.productWrapper {
+  flex-grow: 1;
+  position: relative;
+}
+.productContainer {
+  padding: 0 20px;
+
+  .ProductComponent {
+    max-width: $page-width;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+
+    .productTitle {
+      font-family: Montserrat;
+      color: $primary-text-color;
+      font-size: 2.4rem;
+      padding: 10px 0;
+    }
+
+    .mainInfo {
+      display: flex;
+      padding-top: 20px;
+    }
+    .detailedInfo {
+      padding-top: 50px;
+      padding-bottom: 20px;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .priceInfo {
+      width: 35%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      .productActions {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+      }
+      .addToCartButton, .viewSimilar {
+        text-align: center;
+        text-decoration: none;
+        width: 48%;
+        box-sizing: border-box;
+        user-select: none;
+        cursor: pointer;
+        padding: 17px 17px;
+        border-radius: 10px;
+        text-transform: uppercase;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 600;
+        background-color: #343e5c;
+        color: #fff;
+        border: 0;
+        outline: none;
+        transition: opacity .3s;
+
+        &:hover {
+          opacity: .8;
+        }
+      }
+      .addToCartButton.disabled {
+        background-color: #494b4f;
+      }
+
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .productContainer {
+    padding: 0 20px;
+
+    .ProductComponent {
+      .detailedInfo {
+        flex-direction: column;
+      }
+      .mainInfo {
+        flex-direction: column;
+      }
+      .priceInfo {
+        width: 60%;
+        margin: 0 auto;
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+@import '../../../Standarts.scss';
+
+.topMenuList{
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  padding: 0;
+  justify-content: space-around;
+  padding: 0px 30px 0px 30px;
+}
+
+.topMenuUrl {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4rem;
+  color: #343e5c;
+  text-decoration: none;
+  font-weight: 600;
+  position: relative;
+
+  &:hover {
+    &:after {
+      width: 100%;
+    }
+  }
+  &:after {
+    position: absolute;
+    width: 0;
+    height: 1px;
+    background-color: $primary-text-color;
+    content: '';
+    display: block;
+    transition: width .3s;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .topMenuList {
+    display: none;
+  }
+}

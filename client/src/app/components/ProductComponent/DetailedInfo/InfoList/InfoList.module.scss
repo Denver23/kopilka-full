@@ -1,0 +1,35 @@
+@import '../../../../Standarts';
+
+.infoList {
+  padding: 15px 0;
+
+  .title {
+    font-size: 2rem;
+    font-weight: 500;
+    font-family: Montserrat;
+  }
+  .list, .table {
+    font-family: Montserrat;
+    font-size: 1.3rem;
+    padding: 10px 0;
+  }
+  .list {
+    list-style-position: inside;
+
+    li {
+      padding: 5px 0;
+    }
+  }
+  .table {
+    tbody {
+      tr:nth-child(odd) {
+        background-color: #f8f8f8
+      }
+      tr {
+        td {
+          padding: 0.8rem 1rem;
+        }
+      }
+    }
+  }
+}

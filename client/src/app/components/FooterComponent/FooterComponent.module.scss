@@ -1,0 +1,109 @@
+@import '../../Standarts.scss';
+
+.footer {
+  background-color: #222328;
+  flex-grow: 0;
+  min-width: $min-page-width;
+
+  .wrapper {
+    margin: 0 auto;
+    max-width: $page-width;
+    min-width: $min-page-width;
+
+    .firstLine {
+      display: grid;
+      grid-template-columns: max-content 1fr max-content;
+      grid-gap: 15%;
+      padding: 60px 0;
+      position: relative;
+
+      &:after {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 1px;
+        background-color: #2d2e33;
+        bottom: 0;
+      }
+      .logoUrl {
+        font-family: 'Crimson Text', serif;
+        font-size: 2.4rem;
+        color: #fff;
+        text-decoration: none;
+        text-align: center;
+        font-style: italic;
+        padding: 0 20px;
+      }
+      .footerNav {
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, max-content));
+        align-items: center;
+        grid-gap: 20px;
+        justify-content: center;
+
+        .footerNavLink {
+          text-transform: uppercase;
+          color: #fff;
+          text-decoration: none;
+          font-family: Montserrat;
+          font-size: 1.2rem;
+          font-weight: 500;
+        }
+      }
+      .socialNav {
+        list-style: none;
+        display: flex;
+
+        .socialLink {
+          color: #fff;
+          text-decoration: none;
+          padding: 10px;
+        }
+      }
+      .socialLink, .footerNavLink {
+        transition: color .3s;
+
+        &:hover {
+          color: #fce38a;
+        }
+      }
+    }
+    .secondLine {
+      padding: 55px 20px;
+      display: flex;
+      justify-content: space-between;
+
+      .footerDescription {
+        opacity: 30%;
+        color: #fff;
+        font-family: 'Crimson Text', serif;
+        font-style: italic;
+        font-size: 1.4rem;
+        max-width: 500px;
+        padding-right: 30px;
+      }
+      .secondLineTerms {
+        list-style: none;
+        display: flex;
+
+        .policyTerms {
+          padding: 0 10px;
+          text-transform: uppercase;
+          text-decoration: none;
+          color: #fff;
+          opacity: 30%;
+          font-family: Montserrat;
+          font-size: 1.1rem;
+          font-weight: 500;
+          transition: opacity .3s;
+
+          &:hover {
+            opacity: 100%;
+          }
+        }
+      }
+    }
+  }
+}

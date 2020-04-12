@@ -1,0 +1,110 @@
+@import '../../../Standarts.scss';
+
+.wrapper {
+  position: relative;
+  &:after {
+    display: block;
+    content: '';
+    width: 100%;
+    height: 1px;
+    background-color: #f0f2f7;
+    position: absolute;
+    top: 0;
+    min-width: $min-page-width;
+  }
+}
+
+.topLine {
+  max-width: $page-width;
+  min-width: $min-page-width;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+.generalMenuList {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.categoriesList {
+  display: flex;
+  list-style: none;
+
+  .categoryItem {
+    padding-right: 30px;
+
+    &:last-child {
+      padding-right: 0px;
+    }
+  }
+}
+.linkUrl {
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  color: #b9bed1;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 25px 0;
+  display: block;
+}
+
+.linkUrl.active {
+  color: $primary-text-color;
+}
+
+.categoriesButton {
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  color: #b9bed1;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 25px 32px 25px 12px;
+  cursor: pointer;
+  display: none;
+  user-select: none;
+  .categoryArrow {
+    padding: 4px;
+    font-size: 1.4rem;
+    display: inline-block;
+    transition: transform .3s;
+  }
+  .categoryArrow.active {
+    transform: rotate(90deg);
+  }
+}
+
+@media screen and (max-width: 840px) {
+  .categoriesList {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    position: absolute;
+    top: 100%;
+    z-index: 10;
+    background-color: #fff;
+    border: 2px #e3e8f0 solid;
+    border-radius: 17px;
+    left: 10px;
+    transform: scaleY(0) translateY(-100%);
+    transition: transform .3s;
+
+    .categoryItem {
+      padding-right: 0px;
+
+      .linkUrl {
+        padding: 10px 20px;
+      }
+    }
+  }
+  .categoriesButton {
+    display: block;
+  }
+  .categoriesList.active {
+    transform: scaleY(1) translateY(0);
+  }
+}

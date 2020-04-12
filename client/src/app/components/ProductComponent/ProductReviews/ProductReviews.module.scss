@@ -1,0 +1,13 @@
+@import '../../../Standarts.scss';
+
+.reviews {
+  .title {
+    font-size: 1.6rem;
+    font-weight: 500;
+    padding-bottom: 10px;
+    font-family: Montserrat;
+    color: $primary-text-color;
+    border-bottom: 3px solid $primary-text-color;
+    box-sizing: border-box;
+  }
+}

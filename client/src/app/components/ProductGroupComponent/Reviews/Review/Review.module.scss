@@ -1,0 +1,43 @@
+@import '../../../../Standarts';
+
+.review {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  grid-template-areas: "photo name" "message message";
+
+  .photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    grid-area: photo;
+  }
+
+  .nameWork {
+    grid-area: name;
+    display: flex;
+    flex-direction: column;
+    line-height: 2rem;
+    padding-left: 2rem;
+
+    .name {
+      color: #3a405b;
+      font-family: Montserrat;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+    .work {
+      font-family: 'Crimson Text', serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      color: #b9bed1;
+    }
+  }
+  .message {
+    padding-top: 25px;
+    grid-area: message;
+    font-family: 'Crimson Text', serif;
+    color: #3a405b;
+    font-size: 1.6rem;
+  }
+}

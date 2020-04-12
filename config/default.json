@@ -1,0 +1,7 @@
+{
+  "port": 5000,
+  "jwtSecret": "kopilka-mern",
+  "mongoURI": "mongodb://localhost:27017/kopilka-db",
+  "accessTokenExpiresIn": "10m",
+  "refreshTokenExpiresIn": "604800"
+}

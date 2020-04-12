@@ -1,0 +1,123 @@
+@import '../../../../Standarts.scss';
+
+.categoriesList {
+  background-color: #fff;
+  border-radius: $border-radius;
+  list-style: none;
+
+  .categoriesItem {
+    position: relative;
+
+    .categoryButton {
+      cursor: pointer;
+
+      .categoryArrow {
+        position: absolute;
+        right: 18px;
+        top: 13px;
+        color: #b8bfd3;
+        transition: transform 0.5s;
+      }
+
+      .categoryArrow.active {
+        transform: rotate(90deg);
+      }
+    }
+    .categoryTitle {
+      line-height: 1.3rem;
+      font-family: Montserrat;
+      color: $primary-text-color;
+      font-size: 1.3rem;
+      font-weight: 600;
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      padding-left: $refine-padding-left;
+      position: relative;
+      user-select: none;
+      border-bottom: 1px solid #f0f2f7;
+      display: block;
+      text-decoration: none;
+    }
+
+    .ptypesList {
+      height: auto;
+      list-style: none;
+
+      .ptypeItem {
+        background-color: #f0f2f7;
+        height: 0;
+        transition: .4s ease-in-out;
+
+        .ptypeLink {
+          padding: 0 $refine-padding-left;
+          text-transform: uppercase;
+          font-family: Montserrat;
+          font-size: 1.1rem;
+          color: #a1a7bd;
+          text-decoration: none;
+          width: 100%;
+          box-sizing: border-box;
+          height: 0;
+          line-height: 0;
+          font-weight: 600;
+          user-select: none;
+          display: none;
+        }
+        .ptypeLink.active {
+          color: #000;
+        }
+
+        &:after {
+          display: block;
+          content: '';
+          position: absolute;
+          height: 0px;
+          width: 100%;
+          background-color: #dfe4ee;
+          left: 0;
+        }
+
+        &:last-child {
+          &:after {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .ptypesList.active {
+
+      .ptypeItem {
+        height: $refine-line-height;
+
+        .ptypeLink {
+          display: flex;
+          align-items: center;
+          line-height: 1.1rem;
+          height: $refine-line-height;
+        }
+
+        &:after {
+          height: 1px;
+        }
+      }
+    }
+    &:last-child {
+      .ptypesList {
+        .ptypeItem {
+          &:last-child {
+            border-bottom-left-radius: $border-radius;
+            border-bottom-right-radius: $border-radius;
+          }
+        }
+      }
+      .categoryButton {
+        .categoryTitle {
+          &:after {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}

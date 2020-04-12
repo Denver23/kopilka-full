@@ -1,0 +1,7 @@
+@import '../../../Standarts.scss';
+
+.burgerButton {
+  cursor: pointer;
+  color: $primary-text-color;
+  user-select: none;
+}

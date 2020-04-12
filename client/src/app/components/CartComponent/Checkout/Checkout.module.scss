@@ -1,0 +1,105 @@
+@import '../../../Standarts.scss';
+
+.checkout {
+  display: flex;
+  align-items: flex-start;
+
+  .customerInfo {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    font-family: Montserrat;
+    padding-right: 15px;
+
+    .customerForm {
+      display: flex;
+      flex-direction: column;
+      margin-top: 15px;
+
+      input[type="text"] {
+        background-color: #e4e5e7;
+      }
+
+      .checkoutTitle {
+        background-color: #fff;
+        color: $primary-text-color;
+        padding: 7px 15px;
+        font-size: 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+      }
+      .inputTitle {
+        margin-top: 10px;
+        font-size: 1.3rem;
+        color: #000;
+        margin-left: 10px;
+      }
+      .checkoutList {
+        padding-left: 10px;
+        border-radius: 10px;
+        position: relative;
+        background-color: #fff;
+        margin-top: 10px;
+
+        &>label {
+          height: 3rem;
+        }
+      }
+    }
+  }
+  .productsInfo {
+    width: 50%;
+    border: 1px solid $primary-text-color;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+
+    .message {
+      font-family: Montserrat;
+      font-size: 1.4rem;
+      color: $primary-text-color;
+    }
+
+    .priceInfo {
+      display: flex;
+      flex-direction: column;
+      font-family: Montserrat;
+      font-size: 1.3rem;
+      align-items: flex-end;
+      padding-top: 15px;
+
+      .priceItem {
+        line-height: 1.8rem;
+
+        .priceTitle {
+          font-weight: 500;
+          margin-right: 20px;
+        }
+      }
+    }
+    .submitButton {
+      border: 1px solid $primary-text-color;
+      padding: 5px 10px;
+      align-self: center;
+      border-radius: 6px;
+      color: $primary-text-color;
+      font-weight: 600;
+    }
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .checkout {
+    flex-direction: column;
+
+    .customerInfo {
+      width: 100%;
+      padding-bottom: 20px;
+    }
+    .productsInfo {
+      width: 100%;
+    }
+  }
+}

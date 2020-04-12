@@ -1,0 +1,49 @@
+@import '../../../Standarts.scss';
+
+.bestSellersWrapper {
+  margin: 0 auto 50px auto;
+  padding: 0 20px;
+  max-width: $page-width;
+  min-width: $min-page-width;
+  box-sizing: border-box;
+
+  .bestSellersBlock {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: $border-radius;
+
+    .title {
+      text-align: center;
+      height: 5.5rem;
+      line-height: 5.5rem;
+      text-transform: uppercase;
+      font-family: Montserrat;
+      font-size: 1.1rem;
+      color: $primary-text-color;
+      font-weight: 600;
+      border-bottom: 1px solid #f0f2f7;
+    }
+
+    .productList {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(24%, 1fr));
+      grid-auto-rows: 250px;
+      grid-gap: 1px;
+      border-radius: $border-radius;
+      background-color: #e4e5e7;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .bestSellersWrapper {
+
+    .bestSellersBlock {
+
+      .productList {
+        grid-template-columns: repeat(auto-fit, minmax(49%, 1fr));
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+@import '../../Standarts.scss';
+
+.productGroupWrapper {
+  flex-grow: 1;
+  position: relative;
+  min-width: $min-page-width;
+
+  .CategoryComponent {
+    background-color: #e4e5e7;
+  }
+  .productsGrid {
+    padding: 50px 20px 50px 20px;
+    max-width: $page-width;
+    min-width: $min-page-width;
+    box-sizing: border-box;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(200px, 270px) 3fr;
+    grid-column-gap: 30px;
+
+    .refineBlock {
+      display: grid;
+      grid-row-gap: 30px;
+      grid-template-rows: auto;
+      align-content: start;
+    }
+  }
+  .productListWrapper {
+    position: relative;
+  }
+}

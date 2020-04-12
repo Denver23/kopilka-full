@@ -1,0 +1,60 @@
+@import '../../Standarts.scss';
+
+.allBrandsWrapper {
+  flex-grow: 1;
+  position: relative;
+
+  .allBrands {
+    max-width: $page-width;
+    min-width: $min-page-width;
+    box-sizing: border-box;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+
+    .breadcrumbsWrapper {
+      padding: 0 2rem;
+    }
+
+    .pageTitle {
+      padding: 1rem 2rem;
+      font-family: Montserrat;
+      font-size: 2.4rem;
+      font-weight: 500;
+      color: #b9bed1;
+    }
+
+    .brandsList {
+      padding: 0.5rem 2rem;
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(10, 1fr);
+      grid-auto-flow: column;
+
+      .brandUrl {
+        font-family: Montserrat;
+        padding: 10px 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        text-decoration: none;
+        font-size: 1.3rem;
+        color: $primary-text-color;
+
+        .brandFirstChart {
+          font-size: 2rem;
+          font-weight: 600;
+          height: 3rem;
+          width: 3rem;
+          line-height: 3rem;
+          text-align: center;
+          background-color: #b7d1e5;
+          color: #fff;
+          border-radius: 4px;
+          margin-right: 15px;
+        }
+      }
+    }
+  }
+}

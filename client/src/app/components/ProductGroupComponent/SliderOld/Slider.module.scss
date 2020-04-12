@@ -1,0 +1,55 @@
+@import '../../../Standarts.scss';
+
+.slider {
+  position: relative;
+
+  .viewport {
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    position: relative;
+
+    .imagesList {
+      display: flex;
+      position: absolute;
+
+      .sliderItem {
+        .sliderImage {
+          height: 500px;
+          display: block;
+          object-fit: cover;
+        }
+      }
+    }
+    .onMove {
+      transition: left 1s, right 1s;
+    }
+  }
+  .arrow {
+    position: absolute;
+    top: 50%;
+    margin-top: -19px;
+    font-family: 'Concert One', cursive;
+    font-weight: 400;
+    font-size: 20px;
+    color: #fff;
+    line-height: 33px;
+    text-align: center;
+    height: 38px;
+    width: 38px;
+    border: 2px solid #494b4f;
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+  }
+  .arrow.directionLeft {
+    left: 50px;
+  }
+  .arrow.directionRight {
+    right: 50px;
+  }
+}

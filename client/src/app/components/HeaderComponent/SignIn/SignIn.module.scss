@@ -1,0 +1,26 @@
+@import '../../../Standarts.scss';
+
+.signInComponent {
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  color: $primary-text-color;
+  font-weight: 600;
+  line-height: 2.8rem;
+  justify-self: center;
+  position: relative;
+
+  .signInButton {
+    user-select: none;
+    cursor: pointer;
+    padding: 0px 17px 0px 17px;
+    border-radius: 17px;
+    border: 2px #e3e8f0 solid;
+    transition: background-color .5s, border .5s, color .5s;
+  }
+  .signInButton.activeForm {
+    background-color: $primary-text-color;
+    color: #fff;
+    border: 2px $primary-text-color solid;
+  }
+}

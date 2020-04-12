@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css?family=Crimson+Text:400i&display=swap');
+@import '../../Standarts.scss';
+
+.headerDecorator{
+  .headerComponent {
+    display: grid;
+    justify-content: space-between;
+    align-items: center;
+    max-width: $page-width;
+    min-width: $min-page-width;
+    margin: 0 auto;
+    height: 90px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    grid-template-columns: max-content 1fr max-content;
+
+    .burgerLogo {
+      display: grid;
+      grid-template-columns: 30px max-content;
+    }
+
+    .logoUrl {
+      font-style: italic;
+      font-family: 'Crimson Text', serif;
+      font-size: 2.4rem;
+      color: $primary-text-color;
+      text-decoration: none;
+      text-align: center;
+      padding: 0px 20px;
+    }
+    .profileMenu {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .headerDecorator {
+    .headerComponent {
+      grid-template-columns: max-content max-content;
+    }
+  }
+}

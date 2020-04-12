@@ -1,0 +1,36 @@
+@import '../../../Standarts.scss';
+
+.detailedInfo {
+  width: 65%;
+
+  .title {
+    font-size: 1.6rem;
+    font-weight: 500;
+    padding-bottom: 10px;
+    font-family: Montserrat;
+    color: $primary-text-color;
+    border-bottom: 3px solid $primary-text-color;
+    box-sizing: border-box;
+  }
+
+  .productBrandImage {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    padding: 35px 0 20px 0;
+  }
+
+  .shortDescription {
+    font-family: Montserrat;
+    font-size: 1.4rem;
+    line-height: 2.3rem;
+    color: #000;
+    font-weight: 300;
+  }
+}
+
+@media (max-width: 800px) {
+  .detailedInfo {
+    width: 100%;
+  }
+}

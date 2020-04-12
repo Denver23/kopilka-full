@@ -1,0 +1,9 @@
+@import '../../../Standarts.scss';
+
+.refines {
+  display: grid;
+  grid-row-gap: 30px;
+  grid-template-rows: auto;
+  align-content: start;
+}
+

@@ -1,0 +1,78 @@
+@import '../../../../Standarts';
+
+.burgerDisplay {
+  position: fixed;
+  height: 100%;
+  z-index: 12;
+  background-color: #fff;
+  width: 15%;
+  font-family: Montserrat;
+  padding: 10px 20px;
+  transform: translateX(-100%);
+  transition: transform 0.3s;
+
+  .title {
+    font-size: 2.5rem;
+    font-weight: 600;
+  }
+
+  .itemList {
+    list-style: none;
+    padding: 15px 0;
+
+    .item {
+      padding: 10px 0;
+
+      .itemLink {
+        text-decoration: none;
+        color: $primary-text-color;
+        font-size: 1.4rem;
+        font-weight: 500;
+        position: relative;
+
+        &:hover {
+          &:after {
+            width: 100%;
+          }
+        }
+        &:after {
+          position: absolute;
+          width: 0;
+          height: 1px;
+          background-color: $primary-text-color;
+          content: '';
+          display: block;
+          transition: width .3s;
+        }
+      }
+    }
+  }
+  .closeButton {
+    margin-top: 40px;
+    font-size: 1.7rem;
+    color: $primary-text-color;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: color .3s;
+
+    &:hover {
+      color: #fce38a;
+    }
+  }
+}
+
+.burgerDisplay.active {
+  transform: translateX(0);
+}
+
+@media screen and (max-width: 900px) {
+  .burgerDisplay {
+    width: 25%
+  }
+}
+@media screen and (max-width: 700px) {
+  .burgerDisplay {
+    width: 40%
+  }
+}

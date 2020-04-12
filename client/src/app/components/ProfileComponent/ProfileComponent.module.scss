@@ -1,0 +1,73 @@
+@import '../../Standarts.scss';
+
+.profileWrapper {
+  flex-grow: 1;
+  padding: 0 20px;
+
+  .profile {
+    max-width: $page-width;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 15px 0;
+
+    .profileBody {
+      padding-top: 15px;
+      color: $primary-text-color;
+      .title {
+        font-size: 1.6rem;
+        font-weight: 500;
+        padding-bottom: 1rem;
+        font-family: Montserrat;
+        color: $primary-text-color;
+        border-bottom: 3px solid $primary-text-color;
+        box-sizing: border-box;
+      }
+      .profileChangeButton {
+        background-color: #fff;
+        border: 0;
+        cursor: pointer;
+        font-family: Montserrat;
+        font-size: 1.2rem;
+        color: $primary-text-color;
+        padding-left: 1rem;
+      }
+      .profileData {
+        padding-top: 2rem;
+        padding-bottom: 1rem;
+        list-style: none;
+      }
+      .profileItem {
+        padding: 10px 0;
+        font-family: Montserrat;
+        font-size: 1.3rem;
+        color: $primary-text-color;
+      }
+      .errorMessage {
+        color: red;
+        font-family: Montserrat;
+        font-size: 1.3rem;
+      }
+      .profileSaveButton {
+        padding: 5px 40px;
+        border: 2px #e3e8f0 solid;
+        border-radius: 10px;
+        background-color: #fff;
+        font-family: Montserrat;
+        font-size: 1.1rem;
+        outline: none;
+        cursor: pointer;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin: 4px 0;
+        transition: background-color .5s, color .5s, border .5s;
+
+        &:hover {
+          border: 2px $primary-text-color solid;
+          background-color: $primary-text-color;
+          color: #fff;
+        }
+      }
+    }
+  }
+}
