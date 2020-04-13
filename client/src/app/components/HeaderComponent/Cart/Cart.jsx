@@ -12,10 +12,10 @@ const Cart = ({products, ...props}) => {
     let cartProductsQuantity = products.length;
 
     useEffect(() => {
-        let loadProducts = JSON.parse(localStorage.getItem('cartProducts'));
+        let cartProducts = JSON.parse(localStorage.getItem('cartProducts'));
 
-        if (loadProducts !== null) {
-            props.initializeProducts(loadProducts);
+        if (Array.isArray(cartProducts)) {
+            props.initializeProducts(cartProducts);
         }
     }, [])
 
@@ -26,7 +26,6 @@ const Cart = ({products, ...props}) => {
         }
 
         window.addEventListener('storage', updateProducts);
-        updateProducts();
         return () => window.removeEventListener('storage', updateProducts);
     }, []);
 

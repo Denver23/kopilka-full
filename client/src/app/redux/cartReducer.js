@@ -81,10 +81,27 @@ export const setCheckOutMessage = (message) => ({type: SET_CHECKOUT_MESSAGE, mes
 export const setOptions = (options) => ({type: SET_CHECKOUT_OPTIONS, options})
 
 export const addToCart = (brand, id, sku) => async (dispatch) => {
+    let localProducts = JSON.parse(localStorage.getItem('cartProducts'));
+
+    if(localProducts !== null && localProducts.find(item => {
+        return item.sku == sku;
+    })) {
+        return;
+    }
+
     let response = await productAPI.addToCart(brand, id, sku);
 
-    if(response.resultCode == 1) {
-        dispatch(addProduct(response.data))
+
+    if(response.data.resultCode === 0) {
+        if(localProducts !== null) {
+            localProducts.push({id: response.data.product.id,brand: response.data.product.brand,sku: response.data.product.sku, quantity: 1})
+            localStorage.setItem('cartProducts', JSON.stringify(localProducts));
+        } else {
+            localStorage.setItem('cartProducts', JSON.stringify([{id: response.data.product.id,brand: response.data.product.brand,sku: response.data.product.sku, quantity: 1}]));
+        }
+        dispatch(addProduct({...response.data.product, quantity: 1}))
+    } else {
+        return;
     }
 }
 
@@ -100,11 +117,16 @@ export const deleteFromCart = (sku) => (dispatch) => {
 }
 
 export const initializeProducts = (products) => async (dispatch) => {
-    let response = await productAPI.initializeProducts(products);
+    if(products !== null) {
+        let response = await productAPI.initializeProducts(products);
 
-    if(response.data) {
-        dispatch(setProducts(response.data));
+        if(response.data) {
+            dispatch(setProducts(response.data.cartProducts));
+        }
+    } else {
+        dispatch(setProducts([]));
     }
+
 }
 
 export const checkoutProducts = (products, options) => async (dispatch) => {

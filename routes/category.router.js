@@ -193,22 +193,4 @@ router.get('/:category',
         }
     })
 
-/*router.get('/',
-    async (req, res) => {
-        try {
-            let category = await Category.findOne({name: 'Home'});
-            let hiTech = await Category.findOne({name: 'Hi-Tech'});
-            let topSales = await Category.findOne({name: 'Top Sales'});
-            let newChilds = [hiTech._id, topSales._id]
-            console.log(newChilds);
-
-            let newCategory = await Category.findOneAndUpdate({name: 'Home'}, {childCategories: newChilds}, {new: true})
-
-            res.json(category);
-
-        } catch (e) {
-            res.status(500).json({message: 'Server Error'})
-        }
-    })*/
-
 module.exports = router;

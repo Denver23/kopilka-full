@@ -19,6 +19,8 @@ app.use('/api/brand', require('./routes/brand.routes'));
 
 app.use('/api/category', require('./routes/category.router'));
 
+app.use('/api/cart', require('./routes/cart.router'));
+
 const PORT = config.get('port') || 5000;
 
 async function start() {
