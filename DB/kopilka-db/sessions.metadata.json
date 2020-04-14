@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"kopilka-db.sessions"},{"v":{"$numberInt":"2"},"unique":true,"key":{"tokens.refreshToken":{"$numberInt":"1"}},"name":"tokens.refreshToken_1","ns":"kopilka-db.sessions","background":true}],"uuid":"9a0cf3bbd4f64199b3a814f27cef2941"}
