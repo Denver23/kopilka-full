@@ -7,7 +7,7 @@ const Checkboxes = ({ handleSubmit, fields, ...props }) => {
     return (
         <form onSubmit={handleSubmit} className={s.checkboxBody}>
             {fields.map(field => (
-                <Field name={field.replace('.', '{:dot:}').replace(' ', '+')} component={Checkbox} type={'checkbox'} field={field} key={field} />
+                <Field name={field.replace(/\./g, '{:dot:}').replace(/ /g, '+')} component={Checkbox} type={'checkbox'} field={field} key={field} />
             ))}
         </form>
     )

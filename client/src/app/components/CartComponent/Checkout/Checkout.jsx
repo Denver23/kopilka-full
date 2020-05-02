@@ -6,8 +6,7 @@ import {connect} from "react-redux";
 import { submit } from 'redux-form'
 import CartProduct from "../../HeaderComponent/Cart/CartDisplay/CartProduct/CartProduct";
 import {checkoutProducts} from "../../../redux/cartReducer";
-import {Redirect} from "react-router-dom";
-import {requiredField} from "../../../utils/validators/validators";
+import {requiredField, phoneType} from "../../../utils/validators/validators";
 import Input from "../../common/Input/Input";
 import CheckoutStatus from "../CheckoutStatus/CheckoutStatus";
 
@@ -23,7 +22,7 @@ const Checkout = (props) => {
 
     const checkoutSubmit = (options) => {
         let products = props.products.map(product => {
-            return {sku: product.sku, quantity: product.quantity}
+            return {productId: product.id, sku: product.sku, quantity: product.quantity}
         })
 
         props.checkoutProducts(products, options);
@@ -58,13 +57,18 @@ const CutomerForm = ({ handleSubmit, fields, ...props }) => {
             <span className={s.inputTitle}>Name:</span>
             <Field name='customerName' component={Input} type='text' validate={[requiredField]}/>
             <span className={s.inputTitle}>Phone Number:</span>
-            <Field name='customerPhone' component={Input} type='text' validate={[requiredField]}/>
+            <Field name='customerPhone' component={Input} type='text' validate={[requiredField, phoneType]}/>
         </div>
         <div className={s.customerForm}>
             <div className={s.checkoutTitle}>Delivery Method</div>
             <div className={s.checkoutList}>
                 {fields.map(field => (
-                    field.forType === 'deliveryMethod' ? <Field name={'deliveryMethod'} component={RadioButton} field={field} props={{'value': field.name}} key={field.name} validate={[requiredField]} /> : ''
+                    field.forType === 'deliveryMethod' ? <Field name={'deliveryMethod'} component={RadioButton}
+                                                                field={field}
+                                                                props={{'value': field.name.replace('.', '{:dot:}').replace(/ /g, '+')}}
+                                                                key={field.name}
+                                                                validate={[requiredField]}
+                    /> : ''
                 ))}
             </div>
             <span className={s.inputTitle}>Address:</span>
@@ -74,7 +78,11 @@ const CutomerForm = ({ handleSubmit, fields, ...props }) => {
             <div className={s.checkoutTitle}>Payment method</div>
             <div className={s.checkoutList}>
                 {fields.map(field => (
-                    field.forType === 'paymentMethod' ? <Field name={'paymentMethod'} component={RadioButton} field={field} props={{'value': field.name}} key={field.name} validate={[requiredField]} /> : ''
+                    field.forType === 'paymentMethod' ? <Field name={'paymentMethod'} component={RadioButton}
+                                                               field={field}
+                                                               props={{'value': field.name.replace('.', '{:dot:}').replace(/ /g, '+')}}
+                                                               key={field.name}
+                                                               validate={[requiredField]} /> : ''
                 ))}
             </div>
         </div>

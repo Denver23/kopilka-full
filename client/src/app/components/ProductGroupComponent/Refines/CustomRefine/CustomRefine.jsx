@@ -21,9 +21,9 @@ const CustomRefine = ({dispatch, ...props}) => {
         let data = Object.keys(options).filter(title => {
             return options[title] === true;
         }).map(item => {
-            return item.replace('{:dot:}', '.').replace('+', ' ');
+            return item.replace(/\{:dot:\}/g, '.').replace(/\+/g, ' ');
         })
-        props.refinesData.current[props.title.replace('{:dot:}', '.').replace('+', ' ')] = data;
+        props.refinesData.current[props.title.replace(/\{:dot:\}/g, '.').replace(/\+/g, ' ')] = data;
     }
 
     let checkReinitalize = (data) => {

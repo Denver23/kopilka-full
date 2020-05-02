@@ -8,6 +8,12 @@ export const emailType = (value) => {
     return 'E-Mail is uncorrected'
 }
 
+export const phoneType = (value) => {
+    var reg = /^\d[\d\(\)\ -]{4,14}\d$/;
+    if(reg.test(value)) return undefined;
+    return 'Phone is uncorrected'
+}
+
 export const minLength = (value) => {
     if(value.length >= 5) return undefined;
     return `Field must be longer than 5 symbols`

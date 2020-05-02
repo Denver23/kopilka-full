@@ -96,43 +96,10 @@ export const productAPI = {
 
 export const cartApi = {
     loadOptions() {
-        return new Promise((resolve, reject) => {
-            let timer = randomInteger(200, 1000);
-
-            function randomInteger(min, max) {
-                let rand = min + Math.random() * (max + 1 - min);
-                return Math.floor(rand);
-            }
-
-            setTimeout(() => {
-                let deliveries = [{name: 'in-home', placeholder: 'In Home', forType: 'deliveryMethod'}, {name: 'new-mail', placeholder: 'New Mail', forType: 'deliveryMethod'}, {name: 'pickup-from-the-store', placeholder: 'Pickup from the store', forType: 'deliveryMethod'}];
-                let payments = [{name: 'cash-payment-upon-receipt', placeholder: 'Cash payment upon receipt', forType: 'paymentMethod'}, {name: 'bank-transfer', placeholder: 'Bank Transfer', forType: 'paymentMethod'}]
-
-                resolve({resultCode: 1, data: [...deliveries,...payments]})
-            }, timer)
-        })
+        return instance.get('/cart/checkout-options');
     },
     checkout(products, options) {
-        return new Promise((resolve, reject) => {
-            let timer = randomInteger(500, 1000);
-
-            function randomInteger(min, max) {
-                let rand = min + Math.random() * (max + 1 - min);
-                return Math.floor(rand);
-            }
-
-            setTimeout(() => {
-                let random = randomInteger(0,1);
-                let message;
-                if(random === 1) {
-                    message = 'Success, check your e-mail';
-                } else {
-                    message = 'Error: Items not found';
-                }
-
-                resolve({resultCode: random, message: message})
-            }, timer)
-        })
+        return instance.post(`/cart/checkout`, {products, options})
     }
 }
 
