@@ -1,5 +1,4 @@
 import {cartApi, productAPI} from "../api/api";
-import {setProduct, toggleLoading} from "./productReducer";
 
 const SET_PRODUCTS = 'SET_PRODUCTS';
 const ADD_PRODUCT = 'ADD_PRODUCT';
@@ -132,12 +131,12 @@ export const initializeProducts = (products) => async (dispatch) => {
 export const checkoutProducts = (products, options) => async (dispatch) => {
     let response = await cartApi.checkout(products, options);
 
-    if(response.message) {
-        if(response.resultCode === 1) {
+    if(response.data) {
+        if(response.data.resultCode === 0) {
             localStorage.setItem('cartProducts', null);
             dispatch(setProducts([]));
         }
-        dispatch(setCheckOutMessage(response.message));
+        dispatch(setCheckOutMessage(response.data.message));
     }
 }
 
@@ -146,7 +145,7 @@ export const loadOptions = () => async (dispatch) => {
     let response = await cartApi.loadOptions();
 
     if(response.data) {
-        dispatch(setOptions(response.data));
+        dispatch(setOptions(response.data.options));
     }
     dispatch(toggleLoadingCheckout(false));
 }

@@ -1,10 +1,9 @@
 const {Router} = require('express');
-const Category = require('../models/Category');
-const Brand = require('../models/Brand');
 const Product = require('../models/Product');
-const createMDBQueryObject = require('../common/createQueryObject');
-const createCustomFieldsObject = require('../common/createCustomFieldsObject');
-const getCategories = require('../common/createNestedCategoriesList');
+const Order = require('../models/Order');
+const CheckoutOptions = require('../models/checkout-options');
+const jwt = require('jsonwebtoken');
+const config = require("config");
 const router = Router();
 
 router.get('/add-to-cart',
@@ -110,6 +109,56 @@ router.post('/initialize-cart',
             })
 
             res.json({resultCode: 0, cartProducts: resultProducts});
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({message: 'Server Error'})
+        }
+    })
+
+router.get('/checkout-options',
+    async (req, res) => {
+        try {
+            let deliveries = await CheckoutOptions.find({forType: 'deliveryMethod'});
+            let payments = await CheckoutOptions.find({forType: 'paymentMethod'});
+
+            res.json({resultCode: 0, options: [...deliveries,...payments]})
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({message: 'Server Error'})
+        }
+    })
+
+router.post('/checkout',
+    async (req, res) => {
+        try {
+            let authorization = req.headers.authorization;
+            let userId;
+            if(authorization !== undefined) {
+                const decode = await jwt.verify(authorization, config.get('jwtSecret'));
+                userId = decode.userId;
+            } else {
+                userId = null;
+            }
+
+            const {products, options} = req.body;
+            const regPhone = /\d/g;
+            const customerPhone = options.customerPhone.match(regPhone).join('');
+
+            let order = {
+                products,
+                customerName: options.customerName,
+                customerPhone: customerPhone,
+                deliveryMethod: options.deliveryMethod,
+                address: options.address,
+                paymentMethod: options.paymentMethod
+            }
+            if(userId !== null) {
+                order.userId = userId;
+            }
+
+            await new Order(order).save();
+
+            res.json({resultCode: 0, message: 'Success, check your e-mail'})
         } catch (e) {
             console.log(e);
             res.status(500).json({message: 'Server Error'})

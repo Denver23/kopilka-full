@@ -198,6 +198,7 @@ router.post('/refresh-tokens',
             let tokensArray = session.tokens.filter(token => {
                 return token.refreshToken !== refreshToken && token.expiredAt < Date.now();
             }).concat(refreshTokenMap);
+
             await Session.findOneAndUpdate({user: session.user}, {tokens: tokensArray});
 
             res.json({resultCode: 0, accessToken, refreshToken: newRefreshToken})
@@ -213,7 +214,6 @@ router.post('/me',
     async (req, res) => {
         try {
             let authorization = req.headers.authorization;
-            console.log(authorization);
 
             const {userId} = req.body
 
