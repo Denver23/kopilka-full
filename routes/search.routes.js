@@ -19,10 +19,15 @@ router.get('',
                 let searchWordsWithoutBrand = searchQuery.split(' ').filter(item => {
                     return item.toLowerCase() !== resultBrand.name.toLowerCase();
                 })
-                let productTitleQuery = createCustomSearchQuery('productTitle', searchWordsWithoutBrand, '$and');
-                let resultQuery = {$and: [{brand: resultBrand._id}, productTitleQuery]}
+                let resultQuery;
+                if(searchWordsWithoutBrand.length > 0) {
+                    let productTitleQuery = createCustomSearchQuery('productTitle', searchWordsWithoutBrand, '$and');
+                    resultQuery = {$and: [{brand: resultBrand._id}, productTitleQuery]}
+                } else {
+                    resultQuery = {brand: resultBrand._id}
+                }
 
-                resultProducts = await Product.find(productTitleQuery, {brand: true, productTitle: true, images: true}).limit(6).populate('brand');
+                resultProducts = await Product.find(resultQuery, {brand: true, productTitle: true, images: true}).limit(6).populate('brand');
             } else {
                 let productTitleQuery = createCustomSearchQuery('productTitle', searchQuery, '$and');
                 resultProducts = await Product.find(productTitleQuery, {brand: true, productTitle: true, images: true}).limit(6).populate('brand');
