@@ -8,14 +8,22 @@ import {Link} from "react-router-dom";
 
 const Search = (props) => {
 
-    let [showResults, setShowResults] = useState(false)
+    let [showResults, setShowResults] = useState(false);
+    let latestQueryString = useRef(undefined);
+
 
     const SearchResult = (query) => {
-        if(query.search === undefined) {
-            props.setSearchProducts([]);
+        latestQueryString.current = query.search;
+
+        if(query.search !== undefined) {
+            setTimeout(() => {
+                if(query.search === latestQueryString.current) {
+                    props.searchProducts(query.search);
+                    setShowResults(true);
+                }
+            }, 1000)
         } else {
-            props.searchProducts(query.search);
-            setShowResults(true);
+            props.setSearchProducts([]);
         }
     }
 

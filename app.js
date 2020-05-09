@@ -17,9 +17,11 @@ app.use('/api/product', require('./routes/product.routes'));
 
 app.use('/api/brand', require('./routes/brand.routes'));
 
-app.use('/api/category', require('./routes/category.router'));
+app.use('/api/category', require('./routes/category.routes'));
 
-app.use('/api/cart', require('./routes/cart.router'));
+app.use('/api/cart', require('./routes/cart.routes'));
+
+app.use('/api/search', require('./routes/search.routes'));
 
 const PORT = config.get('port') || 5000;
 

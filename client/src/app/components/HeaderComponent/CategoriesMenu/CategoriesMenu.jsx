@@ -30,7 +30,7 @@ const CategoriesMenu = (props) => {
                     <div className={s.categoriesButton} onClick={()=>{setShowCategories(!showCategories)}}>Categories: <div className={showCategories ? `${s.categoryArrow} ${s.active}` : s.categoryArrow}>&gt;</div></div>
                     <ul ref={categoriesRef} className={showCategories ? `${s.categoriesList} ${s.active}` : s.categoriesList}>
                         {props.topMenu.map(menuItem => {
-                            return <li className={s.categoryItem}><NavLink to={`/${menuItem.url}-category/`} className={s.linkUrl} activeClassName={s.active} onClick={()=>{setShowCategories(false)}}>{menuItem.categoryTitle}</NavLink></li>
+                            return <li className={s.categoryItem} key={menuItem.categoryTitle}><NavLink to={`/${menuItem.url}-category/`} className={s.linkUrl} activeClassName={s.active} onClick={()=>{setShowCategories(false)}}>{menuItem.categoryTitle}</NavLink></li>
                         })}
                     </ul>
                     <NavLink to='#' className={s.linkUrl} activeClassName={s.active}>Support</NavLink>

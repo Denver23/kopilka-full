@@ -106,7 +106,7 @@ export const cartApi = {
 export const searchApi = {
     searchProductsApi(query) {
         return new Promise((resolve, reject) => {
-            let timer = randomInteger(200, 7000);
+            let timer = randomInteger(200, 1000);
 
             function randomInteger(min, max) {
                 let rand = min + Math.random() * (max + 1 - min);
@@ -1485,6 +1485,7 @@ export const searchApi = {
                         if(sku.indexOf(queryString) !== -1) {
                             return true;
                         }
+                        return false;
                     })
                     return brandName.indexOf(queryString) !== -1 || productTitle.indexOf(queryString) !== -1 || parentResult !== undefined;
                 })
@@ -1506,6 +1507,9 @@ export const searchApi = {
                 resolve({resultCode: 1, data: result})
             }, timer)
         })
+    },
+    searchProducts(query) {
+        return instance.get(`/search?searchQuery=${query}`);
     }
 }
 

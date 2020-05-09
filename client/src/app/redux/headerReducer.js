@@ -180,10 +180,10 @@ const headerReducer = (state = initialState, action) => {
 export const setSearchProducts = (data) => ({type: SEARCH_PRODUCTS, data});
 
 export const searchProducts = (query) => async(dispatch) => {
-    let result = await searchApi.searchProductsApi(query);
+    let result = await searchApi.searchProducts(query);
 
     if(result.data) {
-        dispatch(setSearchProducts(result.data))
+        dispatch(setSearchProducts(result.data.data))
     }
 }
 
