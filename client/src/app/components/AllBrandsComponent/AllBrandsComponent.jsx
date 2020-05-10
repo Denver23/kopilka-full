@@ -9,17 +9,15 @@ import {Link, withRouter} from "react-router-dom";
 import {uploadAllBrands} from "../../redux/allBrandsReducer";
 
 const AllBrandsComponent = ({loading, ...props}) => {
+    let productOnPageQuantity = 40;
+    let page = new URLSearchParams(props.location.search).get('page') !== null ? new URLSearchParams(props.location.search).get('page') : 1;
 
     useEffect(() => {
-        let productOnPageQuantity = 30;
-        let startItem = (props.match.params.page - 1) * productOnPageQuantity + 1;
-        let endItem = props.match.params.page * productOnPageQuantity;
-
-        props.uploadAllBrands(startItem, endItem)
+        props.uploadAllBrands(page, productOnPageQuantity)
     },[props.match.url])
 
     return <div className={s.allBrandsWrapper}>
-        {!loading ? <AllBrandsList brands={props.brands} activePage={props.match.params.page} categoryURL={props.match.params.category} {...props}/> : (<Preloader background={'true'}/>)}
+        {!loading ? <AllBrandsList productOnPageQuantity={productOnPageQuantity} brands={props.brands} activePage={page} {...props}/> : (<Preloader background={'true'}/>)}
     </div>
 }
 const AllBrandsList = (props) => {
@@ -36,7 +34,7 @@ const AllBrandsList = (props) => {
                     return <li><Link to={`/brands/${brand.url}/`} className={s.brandUrl}><div className={s.brandFirstChart}>{brand.name[0]}</div>{brand.name}</Link></li>
                 })}
             </ul>
-        <PagesButtonList itemsCount={150} activePage={props.match.params.page} activeURL={'all-brands'} type={'custom'}/>
+        <PagesButtonList itemsCount={props.quantity} productsOnPage={props.productOnPageQuantity} activePage={props.activePage} activeURL={'all-brands'} type={'custom'}/>
     </div>
 }
 

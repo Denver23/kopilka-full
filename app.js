@@ -23,6 +23,8 @@ app.use('/api/cart', require('./routes/cart.routes'));
 
 app.use('/api/search', require('./routes/search.routes'));
 
+app.use('/api/all-brands', require('./routes/allBrands.routes'));
+
 const PORT = config.get('port') || 5000;
 
 async function start() {

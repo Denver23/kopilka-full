@@ -42,7 +42,7 @@ const App = (props) => {
                     <Route exact path='/:category(\w[-\w]{0,25}\w)-category' component={ProductGroupContainer}/>
                     <Route exact path='/brands/:brand(\w[-\w]{0,25}\w)' component={ProductGroupContainer}/>
                     <Route exact path='/brands/:brand(\w[-\w]{0,25}\w)/id:id(\w+)' component={ProductComponentWrapper}/>
-                    <Route exact path='/all-brands/page-:page' component={AllBrandsComponent}/>
+                    <Route exact path='/all-brands' component={AllBrandsComponent}/>
                     <Route exact path='/cart' component={CartComponentWrapper}/>
                     <Route exact path='/sign-up' component={SignUpComponentWrapper}/>
                     <Route exact path='/profile' component={ProfileComponent}/>

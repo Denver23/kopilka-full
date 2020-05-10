@@ -29,14 +29,14 @@ const allBrandsReducer = (state = initialState, action) => {
 
 export const setLoading = (value) => ({type: SET_LOADING, value});
 
-export const setBrands = (data) => ({type: SET_BRANDS, data});
+export const setBrands = (brands, quantity) => ({type: SET_BRANDS, data: {brands, quantity}});
 
-export const uploadAllBrands = (startItem, endItem) => async(dispatch) => {
+export const uploadAllBrands = (page, brandsOnPage) => async(dispatch) => {
     dispatch(setLoading(true));
-    let result = await allBrandsApi.loadBrands(startItem, endItem);
+    let result = await allBrandsApi.loadBrandsAxios(page, brandsOnPage);
 
-    if(result.resultCode === 1) {
-        dispatch(setBrands(result.data))
+    if(result.data.resultCode === 0) {
+        dispatch(setBrands(result.data.brands, result.data.quantity))
         dispatch(setLoading(false));
     }
 }

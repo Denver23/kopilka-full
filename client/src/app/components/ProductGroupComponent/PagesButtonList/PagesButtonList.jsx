@@ -16,7 +16,7 @@ const PagesButtonList = ({portionSize = 12,...props}) => {
     query = [...query.keys()].length > 0 ? `&${query.toString()}` : '';
     let url = type === 'category' ?
         (props.activeURL !== undefined ? `/${props.activeURL}-category?page=` : `?page=`) :
-    `/brands/${props.activeURL}?page=`;
+    type === 'brand' ? `/brands/${props.activeURL}?page=` : `/${activeURL}?page=`;
 
     let pagesArray = [];
 

@@ -146,8 +146,8 @@ let initialState = {
             'url': '#'
         },
         {
-            'title': 'Devices',
-            'url': '#'
+            'title': 'All Brands',
+            'url': '/all-brands'
         },
         {
             'title': 'Delivery & Payment',

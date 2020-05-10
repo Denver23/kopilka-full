@@ -14,7 +14,7 @@ const ProductComponent = (props) => {
 
     let brList = [
         {'url': '/', 'title': 'Home'},
-        {'url': '/all-brands/page-1', 'title': 'All Brands'},
+        {'url': '/all-brands', 'title': 'All Brands'},
         {'url': `/brands/${props.match.params.brand}`, 'title': props.brand}
     ];
 
