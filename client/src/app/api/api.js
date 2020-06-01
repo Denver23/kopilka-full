@@ -54,7 +54,7 @@ export const authAPI = {
     },
     me() {
         let userId = localStorage.getItem('userId');
-        return instance.post('/auth/me', {userId});
+        return instance.get(`/auth/me?userId=${userId}`);
     },
     loadProfile(id) {
         return instance.get(`/profile/id${id}`)

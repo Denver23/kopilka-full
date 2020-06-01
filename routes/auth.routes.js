@@ -208,12 +208,17 @@ router.post('/refresh-tokens',
     })
 
 // /api/auth/me
-router.post('/me',
+router.get('/me',
     async (req, res) => {
         try {
             let authorization = req.headers.authorization;
 
-            const {userId} = req.body
+            const userId = req.query.userId;
+
+            if(userId == undefined) {
+                res.status(401).json({errorMessage: 'User is undefined'})
+                return;
+            }
 
             const user = await User.findOne({_id: userId})
 
