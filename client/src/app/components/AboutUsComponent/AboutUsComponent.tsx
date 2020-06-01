@@ -2,7 +2,7 @@ import React from "react";
 import s from './AboutUsComponent.module.scss'
 import Breadcrumbs from "../ProductComponent/Breadcrumbs/Breadcrumbs";
 
-const AboutUsComponent = (props) => {
+const AboutUsComponent: React.FC = () => {
     let brList = [
         {'url': '/', 'title': 'Home'},
         {'url': '/about-us/', 'title': 'About Us'},

@@ -42,10 +42,10 @@ router.get('',
                 }
             })
 
-            res.json({resultCode: 0, data: result})
+            res.json({data: result})
         } catch (e) {
             console.log(e);
-            res.status(500).json({message: 'Server Error'})
+            res.status(500).json({errorMessage: 'Server Error'})
         }
     })
 

@@ -26,13 +26,13 @@ router.get('/:brand/id:id',
                     features: product.features,
                     recommendedProducts: []
                 }
-                res.json({resultCode: 0, product: result})
+                res.json({product: result})
             } else {
-                res.json({resultCode: 1, message: 'Product Not Find'})
+                res.status(406).json({erorMessage: 'Product Not Found!'})
             }
 
         } catch (e) {
-            res.status(500).json({message: 'Server Error'})
+            res.status(500).json({erorMessage: 'Server Error'})
         }
 })
 

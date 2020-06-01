@@ -17,12 +17,12 @@ router.get('/id:userId',
         const decode = await jwt.verify(authorization, config.get('jwtSecret'));
 
         if(decode.userId = user._id) {
-            res.json({resultCode: 0, name: user.name, surname: user.surname, login: user.login, phone: user.phone, email: user.email, numberOfPurchases: user.numberOfPurchases})
+            res.json({name: user.name, surname: user.surname, login: user.login, phone: user.phone, email: user.email, numberOfPurchases: user.numberOfPurchases})
         } else {
-            res.json({resultCode: 1, message: 'Token is invalid'})
+            res.status(403).json({errorMessage: 'Token is invalid'})
         }
     } catch (e) {
-        res.status(500).json({message: 'Server Error'})
+        res.status(500).json({errorMessage: 'Server Error'})
     }
 })
 
@@ -38,10 +38,9 @@ router.put('/id:userId',
             const errors = validationResult(req)
 
             if(!errors.isEmpty()) {
-                return res.json({
-                    resultCode: 10,
+                return res.status(403).json({
                     errors: errors.array(),
-                    message: 'Uncorrecty data'
+                    errorMessage: 'Uncorrecty data'
                 })
             }
 
@@ -55,15 +54,15 @@ router.put('/id:userId',
 
                     if(err) {
                         console.log(err);
-                        res.json({resultCode: 1, message: 'Cant update your profile, DB error'})
+                        res.status(500).json({errorMessage: 'Cant update your profile, DB error'})
                     }
-                    res.json({resultCode: 0, name: user.name, surname: user.surname, login: user.login, phone: user.phone, email: user.email})
+                    res.json({name: user.name, surname: user.surname, login: user.login, phone: user.phone, email: user.email})
                 });
             } else {
-                res.json({resultCode: 1, message: 'Token is invalid'})
+                res.status(403).json({errorMessage: 'Token is invalid'})
             }
         } catch (e) {
-            res.status(500).json({message: 'Server Error'})
+            res.status(500).json({errorMessage: 'Server Error'})
         }
     })
 

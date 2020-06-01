@@ -10,7 +10,7 @@ import cartReducer from "./cartReducer";
 import profileReducer from "./profileReducer";
 import allBrandsReducer from "./allBrandsReducer";
 
-let reducers = combineReducers({
+let rootReducer = combineReducers({
     productGroupReducer,
     headerReducer,
     productReducer,
@@ -20,9 +20,13 @@ let reducers = combineReducers({
     profileReducer,
     allBrandsReducer,
     form: formReducer
-})
+});
 
+type RootReducerType = typeof rootReducer;
+export type AppStateType = ReturnType<RootReducerType>;
+
+// @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(reducers, /* preloadedState, */ composeEnhancers(applyMiddleware(thunkMiddleware)));
+const store = createStore(rootReducer, /* preloadedState, */ composeEnhancers(applyMiddleware(thunkMiddleware)));
 
 export default store;

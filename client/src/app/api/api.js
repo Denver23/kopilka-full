@@ -110,42 +110,7 @@ export const searchApi = {
 }
 
 export const allBrandsApi = {
-    loadBrands(startItem, endItem) {
-        return new Promise((resolve, reject) => {
-            let timer = randomInteger(200, 1000);
-
-            function randomInteger(min, max) {
-                let rand = min + Math.random() * (max + 1 - min);
-                return Math.floor(rand);
-            }
-
-            setTimeout(() => {
-                let brands = [
-                    {
-                        name: 'Apple',
-                        url: 'apple'
-                    },
-                    {
-                        name: 'Google',
-                        url: 'google'
-                    },
-                    {
-                        name: 'LG',
-                        url: 'lg'
-                    },
-                    {
-                        name: 'Samsung',
-                        url: 'samsung'
-                    }
-                ]
-
-                let result = {quantity: 150, brands};
-
-                resolve({resultCode: 1, data: result})
-            }, timer)
-        })
-    },
-    loadBrandsAxios(page, brandsOnPage) {
+    loadBrands(page, brandsOnPage) {
         return instance.get(`/all-brands?page=${page}&quantity=${brandsOnPage}`);
     }
 }

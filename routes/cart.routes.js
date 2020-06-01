@@ -12,7 +12,7 @@ router.get('/add-to-cart',
         const {brand, id, sku} = req.query;
 
         if(brand === undefined || id === undefined || sku === undefined) {
-            res.json({resultCode: 1, message: '0 Products Found.'});
+            res.status(409).json({errorMessage: '0 Products Found.'});
             return;
         }
 
@@ -24,7 +24,7 @@ router.get('/add-to-cart',
                 return item.sku === sku;
             })[0];
         } else {
-            res.json({resultCode: 1, message: '0 Products Found.'});
+            res.status(409).json({errorMessage: '0 Products Found.'});
             return;
         }
 
@@ -39,14 +39,14 @@ router.get('/add-to-cart',
                 thumbnail: product.images[0].thumbnail,
                 options: childProduct.options
             }
-            res.json({resultCode: 0, product: result})
+            res.json({product: result})
         } else {
-            res.json({resultCode: 1, message: 'Product is out of Stock.'});
+            res.status(409).json({errorMessage: 'Product is out of Stock.'});
         }
 
     } catch (e) {
         console.log(e);
-        res.status(500).json({message: 'Server Error'})
+        res.status(500).json({errorMessage: 'Server Error'})
     }
 })
 
@@ -62,7 +62,7 @@ router.post('/initialize-cart',
             let productsDB = await Product.findById(productsIDs);
 
             if(!productsDB) {
-                res.json({resultCode: 0, cartProducts: []})
+                res.status(406).json({errorMessage: 'Products Not Found!'})
                 return;
             }
 
@@ -108,7 +108,7 @@ router.post('/initialize-cart',
                 }
             })
 
-            res.json({resultCode: 0, cartProducts: resultProducts});
+            res.json({cartProducts: resultProducts});
         } catch (e) {
             console.log(e);
             res.status(500).json({message: 'Server Error'})
@@ -121,10 +121,10 @@ router.get('/checkout-options',
             let deliveries = await CheckoutOptions.find({forType: 'deliveryMethod'});
             let payments = await CheckoutOptions.find({forType: 'paymentMethod'});
 
-            res.json({resultCode: 0, options: [...deliveries,...payments]})
+            res.json({options: [...deliveries,...payments]})
         } catch (e) {
             console.log(e);
-            res.status(500).json({message: 'Server Error'})
+            res.status(500).json({errorMessage: 'Server Error'})
         }
     })
 
@@ -148,9 +148,9 @@ router.post('/checkout',
                 products,
                 customerName: options.customerName,
                 customerPhone: customerPhone,
-                deliveryMethod: options.deliveryMethod,
+                deliveryMethod: options.deliveryMethod ? options.deliveryMethod : 'Not Found',
                 address: options.address,
-                paymentMethod: options.paymentMethod
+                paymentMethod: options.paymentMethod ? options.paymentMethod : 'Not Found'
             }
             if(userId !== null) {
                 order.userId = userId;
@@ -158,10 +158,10 @@ router.post('/checkout',
 
             await new Order(order).save();
 
-            res.json({resultCode: 0, message: 'Success, check your e-mail'})
+            res.json({message: 'Success, check your e-mail'})
         } catch (e) {
             console.log(e);
-            res.status(500).json({message: 'Server Error'})
+            res.status(500).json({errorMessage: 'Server Error'})
         }
     })
 

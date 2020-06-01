@@ -51,7 +51,7 @@ router.get('/:brand',
                 }) : [];
 
                 if(productsCount === 0) {
-                    res.json({resultCode: 1, message: '0 Products Found.'})
+                    res.status(406).json({errorMessage: '0 Products Found.'})
                 }
 
                 let resultProducts = await products.map(prod => {
@@ -143,13 +143,13 @@ router.get('/:brand',
                     bestSellers: [],
                     slides: brandDB.slides
                 }
-                res.json({resultCode: 0, productGroup: result})
+                res.json({productGroup: result})
             } else {
-                res.json({resultCode: 10, message: 'Not Found'});
+                res.status(406).json({errorMessage: 'Not Found'});
             }
         } catch (e) {
             console.log(e);
-            res.status(500).json({message: 'Server Error'})
+            res.status(500).json({errorMessage: 'Server Error'})
         }
     })
 

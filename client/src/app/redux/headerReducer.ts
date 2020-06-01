@@ -1,9 +1,27 @@
 import {searchApi} from "../api/api";
+import ResponseMessageError from "../utils/errors/responseErrors";
+import {ThunkAction} from "redux-thunk";
+import {AppStateType} from "./store";
 
 const SEARCH_PRODUCTS = 'SEARCH_PRODUCTS';
 
+type TopMenuObjectType = {
+    categoryTitle: string,
+    url: string,
+    hasPtypes: boolean,
+    ptypesList: Array<{
+        ptypeTitle: string,
+        url: string
+    }>
+}
+type SearchProductType = {
+    id: string,
+    brand: string,
+    productTitle: string,
+    image: string
+}
 let initialState = {
-    "topMenu": [
+    topMenu: [
         {
             'categoryTitle': 'Top Sales',
             'url': 'top-sales',
@@ -139,8 +157,8 @@ let initialState = {
                 }
             ]
         }
-    ],
-    'mainMenu': [
+    ] as Array<TopMenuObjectType>,
+    mainMenu: [
         {
             'title': 'Home',
             'url': '#'
@@ -161,11 +179,16 @@ let initialState = {
             'title': 'About Us',
             'url': '/about-us/'
         }
-    ],
-    "searchProducts": []
+    ] as Array<{
+        title: string,
+        url: string
+    }>,
+    searchProducts: [] as Array<SearchProductType>
 }
 
-const headerReducer = (state = initialState, action) => {
+type InitialStateType = typeof initialState;
+
+const headerReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
         case SEARCH_PRODUCTS:
             return {
@@ -176,14 +199,29 @@ const headerReducer = (state = initialState, action) => {
             return state;
     }
 }
+type ActionsTypes = SetSearchProductsActionType;
 
-export const setSearchProducts = (data) => ({type: SEARCH_PRODUCTS, data});
+type SetSearchProductsActionType = {
+    type: typeof SEARCH_PRODUCTS,
+    data: Array<SearchProductType>
+}
+export const setSearchProducts = (data: Array<SearchProductType>): SetSearchProductsActionType => ({type: SEARCH_PRODUCTS, data});
 
-export const searchProducts = (query) => async(dispatch) => {
-    let result = await searchApi.searchProducts(query);
+export const searchProducts = (query: string): ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes> => async(dispatch) => {
+    try{
+        let response = await searchApi.searchProducts(query);
 
-    if(result.data) {
-        dispatch(setSearchProducts(result.data.data))
+        if(!!response.data.errorMessage) {
+            throw new ResponseMessageError(response);
+        }
+
+        if(response.data) {
+            dispatch(setSearchProducts(response.data.data))
+        }
+    } catch(err) {
+        let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
+        console.log(`${err.name}: ${message}`);
+        dispatch(setSearchProducts([]))
     }
 }
 

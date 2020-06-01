@@ -19,10 +19,9 @@ router.post('/register',
             const errors = validationResult(req)
 
             if (!errors.isEmpty()) {
-                return res.json({
-                    resultCode: 10,
+                return res.status(403).json({
                     errors: errors.array(),
-                    message: 'Uncorrecty data'
+                    errorMessage: 'Uncorrecty data'
                 })
             }
 
@@ -31,7 +30,7 @@ router.post('/register',
             const candidate = await User.findOne({$or: [{email}, {login}]})
 
             if (candidate) {
-                return res.json({resultCode: 1, message: 'This login or email already registered.'})
+                return res.status(403).json({errorMessage: 'This login or email already registered.'})
             }
 
             const accessToken = jwt.sign(
@@ -89,8 +88,7 @@ router.post('/login',
             const errors = validationResult(req)
 
             if (!errors.isEmpty()) {
-                return res.json({
-                    resultCode: 10,
+                return res.status(401).json({
                     errors: errors.array(),
                     message: 'Uncorrecty data'
                 })
@@ -101,13 +99,13 @@ router.post('/login',
             const user = await User.findOne({email})
 
             if (!user) {
-                return res.json({resultCode: 1, message: 'User not found'})
+                return res.status(401).json({errorMessage: 'User not found'})
             }
 
             const isMatch = await bcrypt.compare(password, user.password)
 
             if (!isMatch) {
-                return res.json({resultCode: 1, message: 'Uncorrectly password'})
+                return res.status(401).json({errorMessage: 'Uncorrectly password'})
             }
             let expiresIn = req.body.rememberMe === true ? config.get('refreshTokenExpiresIn') : '3600';
 
@@ -143,7 +141,7 @@ router.post('/login',
 
         } catch (e) {
             console.log(e);
-            res.status(500).json({message: 'Server Error'})
+            res.status(500).json({errorMessage: 'Server Error'})
         }
     })
 
@@ -156,7 +154,7 @@ router.post('/sign-out',
             const session = await Session.findOne({tokens: {$elemMatch: {refreshToken}}});
 
             if (!session) {
-                res.json({resultCode: 0})
+                res.sendStatus(200)
             }
             let tokens = session.tokens ? session.tokens : []
             tokens = tokens.filter(token => {
@@ -164,11 +162,11 @@ router.post('/sign-out',
             })
             await Session.findOneAndUpdate({tokens: {$elemMatch: {refreshToken}}}, {tokens}, {new: true});
 
-            res.json({resultCode: 0});
+            res.sendStatus(200)
 
         } catch (e) {
             console.log(e);
-            res.status(500).json({message: 'Server Error'})
+            res.status(500).json({errorMessage: 'Server Error'})
         }
     })
 
@@ -205,7 +203,7 @@ router.post('/refresh-tokens',
 
         } catch (e) {
             console.log(e);
-            res.status(500).json({message: 'Server Error'})
+            res.status(500).json({errorMessage: 'Server Error'})
         }
     })
 
@@ -222,14 +220,14 @@ router.post('/me',
             const decode = await jwt.verify(authorization, config.get('jwtSecret'));
 
             if (decode.userId = user._id) {
-                res.json({resultCode: 0, login: user.login, id: user._id, email: user.email})
+                res.json({login: user.login, id: user._id, email: user.email})
             } else {
-                res.json({resultCode: 1, message: 'Token is invalid'})
+                res.status(401).json({errorMessage: 'Token is invalid'})
             }
 
         } catch (e) {
             console.log(e);
-            res.status(500).json({message: 'Server Error'})
+            res.status(500).json({errorMessage: 'Server Error'})
         }
     })
 
