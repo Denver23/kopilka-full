@@ -5,7 +5,7 @@ import Breadcrumbs from "../ProductComponent/Breadcrumbs/Breadcrumbs";
 import {Field, reduxForm} from "redux-form";
 import Input from "../common/Input/Input";
 import {emailType, minLength, requiredField} from "../../utils/validators/validators";
-import {changeEditMode, changeProfile, loadProfile} from "../../redux/profileReducer";
+import {profileReducerActions, changeProfile, loadProfile} from "../../redux/profileReducer";
 
 const Profile = (props) => {
 
@@ -71,4 +71,4 @@ let mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, {loadProfile, changeProfile, changeEditMode})(Profile);
+export default connect(mapStateToProps, {loadProfile, changeProfile, changeEditMode: profileReducerActions.changeEditMode})(Profile);

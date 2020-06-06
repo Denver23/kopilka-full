@@ -3,13 +3,14 @@ import {FormAction, stopSubmit} from "redux-form";
 import ResponseMessageError from "../utils/errors/responseErrors";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
+import {GetActionsTypes} from "../types/types";
 
 const SET_USER_DATA = 'SET_USER_DATA';
 const TOGGLE_IS_FETCHING = 'TOGGLE_IS_FETCHING';
 const CHANGE_AUTH_DATA = 'CHANGE_AUTH_DATA';
 
 let initialState = {
-    userId: null as number | null,
+    userId: null as string | null,
     email: null as string | null,
     login: null as string | null,
     isAuth: false as boolean,
@@ -18,7 +19,7 @@ let initialState = {
 
 type InitialStateType = typeof initialState;
 
-const authReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
+const authReducer = (state = initialState, action: GetActionsTypes<typeof authReducersActions>): InitialStateType => {
     switch (action.type) {
         case SET_USER_DATA:
             return {
@@ -40,42 +41,20 @@ const authReducer = (state = initialState, action: ActionsTypes): InitialStateTy
             return state;
     }
 }
-type ActionsTypes = ToggleIsFetchingActionType | SetAuthUserDataActionType | ChangeAuthDataActionType;
 
-type ToggleIsFetchingActionType = {
-    type: typeof TOGGLE_IS_FETCHING,
-    isFetching: boolean
+export const authReducersActions = {
+    toggleIsFetching: (isFetching: boolean) => ({type: TOGGLE_IS_FETCHING, isFetching} as const),
+    setAuthUserData: (userId: string | null, email: string | null, login: string | null, isAuth: boolean) => ({
+        type: SET_USER_DATA,
+        payload: {userId, email, login, isAuth}
+    } as const),
+    changeAuthData: (login: string, email: string) => ({
+        type: CHANGE_AUTH_DATA,
+        data: {login, email}
+    } as const)
 }
-export const toggleIsFetching = (isFetching: boolean): ToggleIsFetchingActionType => ({type: TOGGLE_IS_FETCHING, isFetching});
 
-type SetAuthUserDataActionType = {
-    type: typeof SET_USER_DATA,
-    payload: {
-        userId: number | null,
-        email: string | null,
-        login: string | null,
-        isAuth: boolean
-    }
-}
-export const setAuthUserData = (userId: number | null, email: string | null, login: string | null, isAuth: boolean): SetAuthUserDataActionType => ({
-    type: SET_USER_DATA,
-    payload: {userId, email, login, isAuth}
-});
-
-export type ChangeAuthDataActionType = {
-    type: typeof CHANGE_AUTH_DATA,
-    data: {
-        login: string,
-        email: string
-    }
-}
-export const changeAuthData = (login: string, email: string): ChangeAuthDataActionType => ({
-    type: CHANGE_AUTH_DATA,
-    data: {login, email}
-})
-
-
-type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes | FormAction>
+type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, GetActionsTypes<typeof authReducersActions> | FormAction>
 export const getAuthUserData = (): ThunkType => async (dispatch) => {
     if(!!localStorage.getItem('refreshToken')) {
         try {
@@ -86,20 +65,20 @@ export const getAuthUserData = (): ThunkType => async (dispatch) => {
             }
 
             let {id, login, email} = response.data;
-            dispatch(setAuthUserData(id, email, login, true));
+            dispatch(authReducersActions.setAuthUserData(id, email, login, true));
         } catch(err) {
             let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
-            dispatch(setAuthUserData(null, null, null, false))
+            dispatch(authReducersActions.setAuthUserData(null, null, null, false))
             console.log(message);
         }
     } else {
-        dispatch(setAuthUserData(null, null, null, false))
+        dispatch(authReducersActions.setAuthUserData(null, null, null, false))
     }
 
 }
 
 export const login = (email: string, password: string, rememberMe: boolean): ThunkType => async (dispatch) => {
-    dispatch(toggleIsFetching(true));
+    dispatch(authReducersActions.toggleIsFetching(true));
 
     try {
         let response = await authAPI.login(email, password, rememberMe);
@@ -114,11 +93,11 @@ export const login = (email: string, password: string, rememberMe: boolean): Thu
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('exp', JSON.parse(atob(accessToken.split('.')[1])).exp);
-        dispatch(setAuthUserData(userId, email, login, true));
-        dispatch(toggleIsFetching(false));
+        dispatch(authReducersActions.setAuthUserData(userId, email, login, true));
+        dispatch(authReducersActions.toggleIsFetching(false));
     } catch(err) {
         let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
-        dispatch(toggleIsFetching(false));
+        dispatch(authReducersActions.toggleIsFetching(false));
         dispatch(stopSubmit("loginForm", {_error: message}));
     }
 }
@@ -153,12 +132,12 @@ export const signUp = (data: SignUpDataType): ThunkType => async (dispatch) => {
 
         let {accessToken, refreshToken} = response.data;
 
-        localStorage.setItem('userId', responseUser._id);
+        localStorage.setItem('userId', responseUser.userId);
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('exp', JSON.parse(atob(accessToken.split('.')[1])).exp);
 
-        dispatch(setAuthUserData(responseUser._id, user.email, user.login, true));
+        dispatch(authReducersActions.setAuthUserData(responseUser.userId, user.email, user.login, true));
     } catch(err) {
         let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
         dispatch(stopSubmit("signUpForm", {_error: message}));
@@ -166,7 +145,7 @@ export const signUp = (data: SignUpDataType): ThunkType => async (dispatch) => {
 }
 
 
-export const signOut = (userId: number): ThunkType => async (dispatch) => {
+export const signOut = (userId: string): ThunkType => async (dispatch) => {
     try{
         let response = await authAPI.signOut(userId);
 
@@ -181,7 +160,7 @@ export const signOut = (userId: number): ThunkType => async (dispatch) => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('exp');
-        dispatch(setAuthUserData(null, null, null, false));
+        dispatch(authReducersActions.setAuthUserData(null, null, null, false));
     }
 };
 

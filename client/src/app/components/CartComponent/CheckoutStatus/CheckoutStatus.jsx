@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import s from './CheckoutStatus.module.scss'
 import {connect} from "react-redux";
-import {setCheckOutMessage, toggleCheckoutStatus} from "../../../redux/cartReducer";
+import {cartReducerActions} from "../../../redux/cartReducer";
 import Preloader from "../../common/Preloader/Preloader";
 
 const CheckoutStatus = (props) => {
@@ -23,4 +23,4 @@ let mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps,{setCheckOutMessage})(CheckoutStatus);
+export default connect(mapStateToProps,{setCheckOutMessage: cartReducerActions.setCheckOutMessage})(CheckoutStatus);

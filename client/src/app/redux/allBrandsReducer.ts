@@ -1,5 +1,5 @@
 import {allBrandsApi} from "../api/api";
-import {BrandType} from "../types/types";
+import {BrandType, GetActionsTypes} from "../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
 
@@ -14,7 +14,7 @@ let initialState = {
 
 type InitialStateType = typeof initialState;
 
-const allBrandsReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
+const allBrandsReducer = (state = initialState, action: GetActionsTypes<typeof allBrandsReducerActions>): InitialStateType => {
     switch (action.type) {
         case SET_LOADING:
             return {
@@ -32,37 +32,23 @@ const allBrandsReducer = (state = initialState, action: ActionsTypes): InitialSt
     }
 }
 
-type ActionsTypes = SetLoadingActionType | SetBrandsActionType;
-
-type SetLoadingActionType = {
-    type: typeof SET_LOADING,
-    value: boolean
+export const allBrandsReducerActions = {
+    setLoading: (value: boolean) => ({type: SET_LOADING, value} as const),
+    setBrands: (brands: Array<BrandType>, quantity: number) => ({type: SET_BRANDS, data: {brands, quantity}} as const)
 }
-export const setLoading = (value: boolean): SetLoadingActionType => ({type: SET_LOADING, value});
-
-type SetBrandsActionType = {
-    type: typeof SET_BRANDS,
-    data: {
-        brands: Array<BrandType>
-        quantity: number
-    }
-}
-export const setBrands = (brands: Array<BrandType>, quantity: number): SetBrandsActionType => ({type: SET_BRANDS, data: {brands, quantity}});
-
-
 
 export const uploadAllBrands = (page: number,
-                                brandsOnPage: number): ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes> => async(dispatch) => {
-    dispatch(setLoading(true));
+                                brandsOnPage: number): ThunkAction<Promise<void>, AppStateType, unknown, GetActionsTypes<typeof allBrandsReducerActions>> => async(dispatch) => {
+    dispatch(allBrandsReducerActions.setLoading(true));
     try {
         let result = await allBrandsApi.loadBrands(page, brandsOnPage);
 
-        dispatch(setBrands(result.data.brands, result.data.quantity))
-        dispatch(setLoading(false));
+        dispatch(allBrandsReducerActions.setBrands(result.data.brands, result.data.quantity))
+        dispatch(allBrandsReducerActions.setLoading(false));
 
     } catch (err) {
-        dispatch(setBrands([], 0))
-        dispatch(setLoading(false));
+        dispatch(allBrandsReducerActions.setBrands([], 0))
+        dispatch(allBrandsReducerActions.setLoading(false));
         console.log(err.message);
     }
 }

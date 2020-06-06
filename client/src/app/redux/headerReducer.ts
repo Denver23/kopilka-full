@@ -2,6 +2,7 @@ import {searchApi} from "../api/api";
 import ResponseMessageError from "../utils/errors/responseErrors";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
+import {GetActionsTypes, SearchProductType} from "../types/types";
 
 const SEARCH_PRODUCTS = 'SEARCH_PRODUCTS';
 
@@ -14,12 +15,7 @@ type TopMenuObjectType = {
         url: string
     }>
 }
-type SearchProductType = {
-    id: string,
-    brand: string,
-    productTitle: string,
-    image: string
-}
+
 let initialState = {
     topMenu: [
         {
@@ -188,7 +184,7 @@ let initialState = {
 
 type InitialStateType = typeof initialState;
 
-const headerReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
+const headerReducer = (state = initialState, action: GetActionsTypes<typeof headerReducerActions>): InitialStateType => {
     switch (action.type) {
         case SEARCH_PRODUCTS:
             return {
@@ -199,15 +195,12 @@ const headerReducer = (state = initialState, action: ActionsTypes): InitialState
             return state;
     }
 }
-type ActionsTypes = SetSearchProductsActionType;
 
-type SetSearchProductsActionType = {
-    type: typeof SEARCH_PRODUCTS,
-    data: Array<SearchProductType>
+export const headerReducerActions = {
+    setSearchProducts: (data: Array<SearchProductType>) => ({type: SEARCH_PRODUCTS, data} as const)
 }
-export const setSearchProducts = (data: Array<SearchProductType>): SetSearchProductsActionType => ({type: SEARCH_PRODUCTS, data});
 
-export const searchProducts = (query: string): ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes> => async(dispatch) => {
+export const searchProducts = (query: string): ThunkAction<Promise<void>, AppStateType, unknown, GetActionsTypes<typeof headerReducerActions>> => async(dispatch) => {
     try{
         let response = await searchApi.searchProducts(query);
 
@@ -216,12 +209,12 @@ export const searchProducts = (query: string): ThunkAction<Promise<void>, AppSta
         }
 
         if(response.data) {
-            dispatch(setSearchProducts(response.data.data))
+            dispatch(headerReducerActions.setSearchProducts(response.data.data))
         }
     } catch(err) {
         let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
         console.log(`${err.name}: ${message}`);
-        dispatch(setSearchProducts([]))
+        dispatch(headerReducerActions.setSearchProducts([]))
     }
 }
 

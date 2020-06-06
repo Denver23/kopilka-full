@@ -65,7 +65,6 @@ router.post('/register',
             await session.save();
 
             res.status(201).json({
-                resultCode: 0,
                 user: {userId: user._id, email: user.email, login: user.login},
                 accessToken,
                 refreshToken
@@ -130,14 +129,13 @@ router.post('/login',
                 })
 
                 await newSession.save();
-                res.json({resultCode: 0, accessToken, refreshToken: newRefreshToken, userId: user._id, login: user.login})
             }
 
 
             let tokensArray = session.tokens.concat(refreshTokenMap);
             await Session.findOneAndUpdate({user: user._id}, {tokens: tokensArray});
 
-            res.json({resultCode: 0, accessToken, refreshToken: newRefreshToken, userId: user._id, login: user.login})
+            res.json({accessToken, refreshToken: newRefreshToken, userId: user._id, login: user.login})
 
         } catch (e) {
             console.log(e);
@@ -199,7 +197,7 @@ router.post('/refresh-tokens',
 
             await Session.findOneAndUpdate({user: session.user}, {tokens: tokensArray});
 
-            res.json({resultCode: 0, accessToken, refreshToken: newRefreshToken})
+            res.json({accessToken, refreshToken: newRefreshToken})
 
         } catch (e) {
             console.log(e);

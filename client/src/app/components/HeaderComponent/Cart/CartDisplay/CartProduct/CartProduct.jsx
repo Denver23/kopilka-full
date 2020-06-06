@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import {changeQuantity, deleteFromCart} from "../../../../../redux/cartReducer";
+import {cartReducerActions, deleteFromCart} from "../../../../../redux/cartReducer";
 import {Formik} from "formik";
 
 const CartProduct = ({options, ...props}) => {
@@ -79,4 +79,4 @@ const ProductPrice = (props) => {
     return <span className={s.productPrice}>{props.price * props.quantity}$</span>
 }
 
-export default connect((state) => ({}), {deleteFromCart,changeQuantity})(CartProduct);
+export default connect((state) => ({}), {deleteFromCart,changeQuantity: cartReducerActions.changeQuantity})(CartProduct);

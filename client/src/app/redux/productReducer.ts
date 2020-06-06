@@ -1,20 +1,12 @@
 import {productAPI} from "../api/api";
 import ResponseMessageError from "../utils/errors/responseErrors";
-import {ProductType} from "../types/types";
+import {ProductInListType, SetProductType, ChildProductType, GetActionsTypes} from "../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
 
 const TOGGLE_LOADING = 'TOGGLE_LOADING';
 const SET_PRODUCT = 'SET_PRODUCT';
 
-type ChildProductType = {
-    _id: string,
-    sku: string,
-    price: number,
-    quantity: number,
-    options: Array<Object>
-
-}
 let initialState = {
     loading: false as boolean,
     id: '' as string | null,
@@ -32,12 +24,12 @@ let initialState = {
     shortDescription: '' as string,
     specifications: '' as string,
     features: '' as string,
-    recommendedProducts: [] as Array<ProductType>
+    recommendedProducts: [] as Array<ProductInListType>
 }
 
 type InitialStateType = typeof initialState;
 
-const productReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
+const productReducer = (state = initialState, action: GetActionsTypes<typeof productReducerActions>): InitialStateType => {
     switch (action.type) {
         case SET_PRODUCT:
             return {
@@ -60,41 +52,16 @@ const productReducer = (state = initialState, action: ActionsTypes): InitialStat
             return state;
     }
 }
-type ActionsTypes = ToggleLoadingActionType | SetProductActionType;
 
-type ToggleLoadingActionType = {
-    type: typeof TOGGLE_LOADING,
-    loading: boolean
+export const productReducerActions = {
+    toggleLoading: (loading: boolean) => ({type: TOGGLE_LOADING,loading} as const),
+    setProduct: (data: SetProductType) => ({type: SET_PRODUCT, data} as const)
 }
-export const toggleLoading = (loading: boolean): ToggleLoadingActionType => ({type: TOGGLE_LOADING,loading});
 
-type SetProductActionType = {
-    type: typeof SET_PRODUCT,
-    data: SetProductType
-}
-type SetProductType = {
-    id: string | null,
-    brand: string,
-    category: string,
-    productTitle: string,
-    childProducts: Array<ChildProductType>,
-    images: Array<{
-        _id?: string,
-        original: string,
-        thumbnail: string,
-        alt: string
-    }>,
-    productBrandImage: string,
-    shortDescription: string,
-    specifications: string,
-    features: string,
-    recommendedProducts: Array<ProductType>
-}
-export const setProduct = (data: SetProductType): SetProductActionType => ({type: SET_PRODUCT, data});
 
-type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
+type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, GetActionsTypes<typeof productReducerActions>>
 export const loadProduct = (id: string, brand: string): ThunkType => async (dispatch) => {
-    dispatch(toggleLoading(true));
+    dispatch(productReducerActions.toggleLoading(true));
     try {
         let response = await productAPI.loadProduct(id, brand);
 
@@ -102,12 +69,12 @@ export const loadProduct = (id: string, brand: string): ThunkType => async (disp
             throw new ResponseMessageError(response);
         }
 
-        dispatch(setProduct(response.data.product));
+        dispatch(productReducerActions.setProduct(response.data.product));
     } catch(err) {
         let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
         console.log(`${err.name}: ${message}`);
 
-        dispatch(setProduct({
+        dispatch(productReducerActions.setProduct({
             id: null,
             brand: '',
             category: '',
@@ -121,7 +88,7 @@ export const loadProduct = (id: string, brand: string): ThunkType => async (disp
             recommendedProducts: []
         }));
     } finally {
-        dispatch(toggleLoading(false));
+        dispatch(productReducerActions.toggleLoading(false));
     }
 }
 

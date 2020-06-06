@@ -1,9 +1,10 @@
 import {authAPI} from "../api/api";
 import {FormAction, stopSubmit} from "redux-form";
-import {changeAuthData, ChangeAuthDataActionType} from "./authReducer";
 import ResponseMessageError from "../utils/errors/responseErrors";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
+import {ChangeProfileDataType, GetActionsTypes} from "../types/types";
+import { authReducersActions } from "./authReducer";
 
 const SET_PROFILE_DATA = 'SET_PROFILE_DATA';
 const CHANGE_EDIT_MODE = 'CHANGE_EDIT_MODE';
@@ -21,7 +22,7 @@ let initialState = {
 
 type InitialStateType = typeof initialState;
 
-const profileReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
+const profileReducer = (state = initialState, action: GetActionsTypes<typeof profileReducerActions>): InitialStateType => {
     switch (action.type) {
         case SET_PROFILE_DATA:
             let resultData = action.data.numberOfPurchases === null ? {name: action.data.name,surname: action.data.surname,phone: action.data.phone} : action.data
@@ -38,35 +39,17 @@ const profileReducer = (state = initialState, action: ActionsTypes): InitialStat
             return state;
     }
 }
-type ActionsTypes = SetProfileActionType | ChangeEditModeActionType | ToggleIsFetchingProfileActionType;
 
-type SetProfileActionType = {
-    type: typeof SET_PROFILE_DATA,
-    data: {
-        name: string,
-        surname: string,
-        phone: string,
-        numberOfPurchases: number | null
-    }
+export const profileReducerActions = {
+    setProfile: (name: string, surname: string, phone: string, numberOfPurchases: number | null = null) => ({type: SET_PROFILE_DATA, data: {name, surname, phone, numberOfPurchases}} as const),
+    changeEditMode: (value: boolean) => ({type: CHANGE_EDIT_MODE, value} as const),
+    toggleIsFetchingProfile: (isFetchingProfile: boolean) => ({type: TOGGLE_FETCHING_PROFILE, isFetchingProfile} as const)
 }
-export const setProfile = (name: string, surname: string, phone: string, numberOfPurchases: number | null = null): SetProfileActionType => ({type: SET_PROFILE_DATA, data: {name, surname, phone, numberOfPurchases}});
-
-type ChangeEditModeActionType = {
-    type: typeof CHANGE_EDIT_MODE,
-    value: boolean
-}
-export const changeEditMode = (value: boolean): ChangeEditModeActionType => ({type: CHANGE_EDIT_MODE, value});
-
-type ToggleIsFetchingProfileActionType = {
-    type: typeof TOGGLE_FETCHING_PROFILE,
-    isFetchingProfile: boolean
-}
-export const toggleIsFetchingProfile = (isFetchingProfile: boolean): ToggleIsFetchingProfileActionType => ({type: TOGGLE_FETCHING_PROFILE, isFetchingProfile});
 
 
-type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>;
+type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, GetActionsTypes<typeof profileReducerActions>>;
 export const loadProfile = (id: string): ThunkType => async(dispatch) => {
-    dispatch(toggleIsFetchingProfile(true));
+    dispatch(profileReducerActions.toggleIsFetchingProfile(true));
     try {
         let response = await authAPI.loadProfile(id);
 
@@ -74,8 +57,8 @@ export const loadProfile = (id: string): ThunkType => async(dispatch) => {
             throw new ResponseMessageError(response);
         }
 
-        dispatch(setProfile(response.data.name,response.data.surname,response.data.phone,response.data.numberOfPurchases));
-        dispatch(toggleIsFetchingProfile(false));
+        dispatch(profileReducerActions.setProfile(response.data.name,response.data.surname,response.data.phone,response.data.numberOfPurchases));
+        dispatch(profileReducerActions.toggleIsFetchingProfile(false));
 
     } catch(err) {
         let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
@@ -83,14 +66,7 @@ export const loadProfile = (id: string): ThunkType => async(dispatch) => {
     }
 }
 
-type ChangeProfileDataType = {
-    name: string,
-    surname: string,
-    login: string,
-    email: string,
-    phone: string
-}
-export const changeProfile = (userId: string, data: ChangeProfileDataType): ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes | ChangeAuthDataActionType | FormAction> => async(dispatch) => {
+export const changeProfile = (userId: string, data: ChangeProfileDataType): ThunkAction<Promise<void>, AppStateType, unknown, GetActionsTypes<typeof profileReducerActions> | ReturnType<typeof authReducersActions.changeAuthData> | FormAction> => async(dispatch) => {
     try {
         let response = await authAPI.changeProfile(userId, data);
 
@@ -98,9 +74,9 @@ export const changeProfile = (userId: string, data: ChangeProfileDataType): Thun
             throw new ResponseMessageError(response);
         }
 
-        dispatch(changeAuthData(response.data.login, response.data.email))
-        dispatch(setProfile(response.data.name, response.data.surname, response.data.phone))
-        dispatch(changeEditMode(false))
+        dispatch(authReducersActions.changeAuthData(response.data.login, response.data.email))
+        dispatch(profileReducerActions.setProfile(response.data.name, response.data.surname, response.data.phone))
+        dispatch(profileReducerActions.changeEditMode(false))
     } catch(err) {
         let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
         console.log(`${err.name}: ${message}`);

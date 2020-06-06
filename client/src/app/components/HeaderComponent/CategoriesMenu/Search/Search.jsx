@@ -3,7 +3,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import s from './Search.module.scss';
 import {Field, reduxForm} from "redux-form";
 import {connect} from "react-redux";
-import {searchProducts, setSearchProducts} from "../../../../redux/headerReducer";
+import {searchProducts, headerReducerActions} from "../../../../redux/headerReducer";
 import {Link} from "react-router-dom";
 
 const Search = (props) => {
@@ -79,4 +79,4 @@ let mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, {searchProducts,setSearchProducts})(Search);
+export default connect(mapStateToProps, {searchProducts,setSearchProducts: headerReducerActions.setSearchProducts})(Search);
