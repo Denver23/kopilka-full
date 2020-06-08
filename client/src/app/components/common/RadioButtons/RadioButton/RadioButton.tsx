@@ -1,7 +1,16 @@
 import React from "react";
 import s from './RadioButton.module.scss'
+import {WrappedFieldInputProps, WrappedFieldMetaProps} from "redux-form";
+import {RadioFieldType} from "../../../../types/types";
 
-const RadioButton = ({ input, field, ...props}) => {
+type RadioPropsType = {
+    input: WrappedFieldInputProps,
+    meta: WrappedFieldMetaProps,
+    field: RadioFieldType,
+    value?: string
+}
+
+const RadioButton: React.FC<RadioPropsType> = ({ input, field, meta, ...props }) => {
     let active = (input.value === props.value) ? s.active : '';
     return (
         <label className={`${s.radioButton} ${active}`} data-key={props.value}>

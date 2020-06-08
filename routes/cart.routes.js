@@ -118,8 +118,8 @@ router.post('/initialize-cart',
 router.get('/checkout-options',
     async (req, res) => {
         try {
-            let deliveries = await CheckoutOptions.find({forType: 'deliveryMethod'});
-            let payments = await CheckoutOptions.find({forType: 'paymentMethod'});
+            let deliveries = await CheckoutOptions.find({forType: 'deliveryMethod'}, {name: true, forType: true, _id: false});
+            let payments = await CheckoutOptions.find({forType: 'paymentMethod'}, {name: true, forType: true, _id: false});
 
             res.json({options: [...deliveries,...payments]})
         } catch (e) {

@@ -3,8 +3,19 @@ import s from './CheckoutStatus.module.scss'
 import {connect} from "react-redux";
 import {cartReducerActions} from "../../../redux/cartReducer";
 import Preloader from "../../common/Preloader/Preloader";
+import {AppStateType} from "../../../redux/store";
 
-const CheckoutStatus = (props) => {
+type CheckoutStatusMapStateToPropsType = {
+    message: string
+}
+
+type CheckoutStatusMapDispatchToPropsType = {
+    setCheckOutMessage: (message: string) => void
+}
+
+type CheckoutStatusPropsType = CheckoutStatusMapStateToPropsType & CheckoutStatusMapDispatchToPropsType
+
+const CheckoutStatus: React.FC<CheckoutStatusPropsType> = (props) => {
 
     useEffect(() => {
         return () => {
@@ -13,11 +24,11 @@ const CheckoutStatus = (props) => {
     });
 
     return <div className={s.checkoutStatusWrapper}>
-        {props.message !== '' ? props.message : (<Preloader background={'true'}/>)}
+        {props.message !== '' ? props.message : (<Preloader background={true}/>)}
     </div>
 }
 
-let mapStateToProps = (state) => {
+let mapStateToProps = (state: AppStateType) => {
     return {
         message: state.cartReducer.checkoutMessage
     };

@@ -3,7 +3,7 @@ import s from './CartComponent.module.scss'
 import Breadcrumbs from "../ProductComponent/Breadcrumbs/Breadcrumbs";
 import Checkout from "./Checkout/Checkout";
 
-const CartComponent = (props) => {
+const CartComponent: React.FC = () => {
 
     let brList = [
         {'url': '/', 'title': 'Home'},

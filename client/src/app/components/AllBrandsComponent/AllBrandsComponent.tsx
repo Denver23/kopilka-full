@@ -30,7 +30,7 @@ const AllBrandsComponent: React.FC<AllBrandsComponentProps> = ({loading, ...prop
     },[props.match.url])
 
     return <div className={s.allBrandsWrapper}>
-        {!loading ? <AllBrandsList quantity={props.quantity} productOnPageQuantity={productOnPageQuantity} brands={props.brands} activePage={page}/> : (<Preloader background={'true'}/>)}
+        {!loading ? <AllBrandsList quantity={props.quantity} productOnPageQuantity={productOnPageQuantity} brands={props.brands} activePage={page}/> : (<Preloader background={true}/>)}
     </div>
 }
 

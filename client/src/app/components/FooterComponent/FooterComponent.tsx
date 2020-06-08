@@ -5,7 +5,7 @@ import TwitterIcon from '@material-ui/icons/Twitter';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import PinterestIcon from '@material-ui/icons/Pinterest';
 
-const FooterComponent = (props) => {
+const FooterComponent: React.FC<{}> = (props) => {
     return <div className={s.footer}>
         <div className={s.wrapper}>
             <div className={s.firstLine}>

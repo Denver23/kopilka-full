@@ -1,7 +1,15 @@
 import React from "react";
 import s from './Checkbox.module.scss'
+import {WrappedFieldInputProps, WrappedFieldMetaProps} from "redux-form";
 
-const Checkbox = ({ input, field }) => {
+
+type CheckboxPropsType = {
+    input: WrappedFieldInputProps,
+    meta: WrappedFieldMetaProps,
+    field: string
+}
+
+const Checkbox: React.FC<CheckboxPropsType> = ({ input, field, meta }) => {
     let active = input.value ? s.active : '';
     return (
         <label className={`${s.checkboxButton} ${active}`} data-key={field}>
