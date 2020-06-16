@@ -6,6 +6,17 @@ export type RadioFieldType = {
     forType?: string
 }
 
+export type MainMenuItem = {
+    title: string,
+    url: string
+}
+
+export type localStorageProductType ={
+    sku: string,
+    id: string,
+    quantity: number
+}
+
 export type BrandType = {
     name: string,
     url: string
@@ -104,7 +115,7 @@ export type ProductTypeAPI = {
     productTitle: string,
     thumbnail: string,
     avaibility: boolean,
-    options: Object
+    options: { [key: string]: string | number}
 }
 
 export type ProductType = {
@@ -115,7 +126,7 @@ export type ProductType = {
     productTitle: string,
     thumbnail: string,
     avaibility: boolean,
-    options: Object,
+    options: { [key: string]: string | number},
     quantity: number
 }
 

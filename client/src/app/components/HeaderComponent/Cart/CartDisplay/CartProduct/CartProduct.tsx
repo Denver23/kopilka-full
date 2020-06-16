@@ -5,12 +5,23 @@ import {connect} from "react-redux";
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import {cartReducerActions, deleteFromCart} from "../../../../../redux/cartReducer";
 import {Formik} from "formik";
+import {ProductType, localStorageProductType} from "../../../../../types/types";
 
-const CartProduct = ({options, ...props}) => {
+type ChangeQuantity = (sku: string, quantity: number) => void
 
-    let localProducts = JSON.parse(localStorage.getItem('cartProducts'));
+type CartProductMapDispatchToProps = {
+    deleteFromCart: (sku: string) => void,
+    changeQuantity: ChangeQuantity
+}
 
-    let [quantity, changeQuantity] = useState(localProducts.findIndex(item => {return item.sku === props.sku;}) != -1 ? localProducts.find(item => {
+type CartProductPropsType = CartProductMapDispatchToProps & ProductType
+
+const CartProduct: React.FC<CartProductPropsType> = ({options, ...props}) => {
+
+    let localProductsJSON = typeof localStorage.getItem('cartProducts') == 'string' ? localStorage.getItem('cartProducts') : null;
+    let localProducts = typeof localProductsJSON == 'string' ? JSON.parse(localProductsJSON) : null;
+
+    let [quantity, changeQuantity] = useState(localProducts.findIndex((item: localStorageProductType) => {return item.sku === props.sku;}) != -1 ? localProducts.find((item: localStorageProductType) => {
         return item.sku === props.sku;
     }).quantity : 0)
 
@@ -29,7 +40,7 @@ const CartProduct = ({options, ...props}) => {
                     props.deleteFromCart(props.sku)
                 }} className={s.deleteProduct}><DeleteForeverIcon fontSize="large"/></span>
             </div>
-            {!!options ? <div className={s.productOptions}>{Object.keys(options).map(item => {
+            {!!options ? <div className={s.productOptions}>{Object.keys(options).map((item) => {
                 return <div className={s.option} key={`${props.sku} - ${item} - ${options[item]}`}>
                     <span className={s.optionTitle}>{item}:</span>
                     <span>{options[item]}</span>
@@ -39,16 +50,22 @@ const CartProduct = ({options, ...props}) => {
     </div>
 }
 
-const QuantityForm = (props) => {
+type QuantityFormOwnPropsType = {
+    initialValues: {quantity: number, sku: string},
+    changeQuantity: ChangeQuantity
+}
+
+const QuantityForm: React.FC<QuantityFormOwnPropsType> = (props) => {
 
 
 
-    const changeLocalQuantity = (sku, quantity) => {
+    const changeLocalQuantity = (sku: string, quantity: number) => {
         if(quantity === undefined) {
             return;
         }
-        let localProducts = JSON.parse(localStorage.getItem('cartProducts'));
-        localProducts.forEach(item => {
+        let localProductsJSON = typeof localStorage.getItem('cartProducts') == 'string' ? localStorage.getItem('cartProducts') : null;
+        let localProducts = typeof localProductsJSON == 'string' ? JSON.parse(localProductsJSON) : null;
+        localProducts.forEach((item: localStorageProductType) => {
             if (item.sku === sku) {
                 item.quantity = quantity;
             }
@@ -58,14 +75,14 @@ const QuantityForm = (props) => {
     }
 
     return (
-        <Formik {...props} enableReinitialize>
-            {formik => (
-                <form onSubmit={formik.handleSubmit} onChange={e=> {changeLocalQuantity(formik.values.sku, e.target.value)}}>
+        <Formik {...props} enableReinitialize onSubmit={() => {}}>
+            {(formik: any) => (
+                <form onSubmit={formik.handleSubmit}/*onChange={e=> {changeLocalQuantity(formik.values.sku, e.target.value)}}*/>
                     <input
                         id="quantity"
                         type="number"
                         min={1}
-                        onChange={formik.handleChange}
+                        onChange={e=> {changeLocalQuantity(formik.values.sku, +e.target.value)}}
                         {...formik.getFieldProps('quantity')}
                         className={s.productQuantityField}
                         />
@@ -75,7 +92,13 @@ const QuantityForm = (props) => {
     );
 };
 
-const ProductPrice = (props) => {
+type ProductPricePropsType = {
+    price: number,
+    name: string,
+    quantity: number
+}
+
+const ProductPrice: React.FC<ProductPricePropsType> = (props) => {
     return <span className={s.productPrice}>{props.price * props.quantity}$</span>
 }
 

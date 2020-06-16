@@ -2,7 +2,7 @@ import {searchApi} from "../api/api";
 import ResponseMessageError from "../utils/errors/responseErrors";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
-import {GetActionsTypes, SearchProductType} from "../types/types";
+import {GetActionsTypes, MainMenuItem, SearchProductType} from "../types/types";
 
 const SEARCH_PRODUCTS = 'SEARCH_PRODUCTS';
 
@@ -15,6 +15,7 @@ type TopMenuObjectType = {
         url: string
     }>
 }
+
 
 let initialState = {
     topMenu: [
@@ -156,29 +157,26 @@ let initialState = {
     ] as Array<TopMenuObjectType>,
     mainMenu: [
         {
-            'title': 'Home',
-            'url': '#'
+            title: 'Home',
+            url: '#'
         },
         {
-            'title': 'All Brands',
-            'url': '/all-brands'
+            title: 'All Brands',
+            url: '/all-brands'
         },
         {
-            'title': 'Delivery & Payment',
-            'url': '#'
+            title: 'Delivery & Payment',
+            url: '#'
         },
         {
-            'title': 'Guarantee',
-            'url': '#'
+            title: 'Guarantee',
+            url: '#'
         },
         {
-            'title': 'About Us',
-            'url': '/about-us/'
+            title: 'About Us',
+            url: '/about-us/'
         }
-    ] as Array<{
-        title: string,
-        url: string
-    }>,
+    ] as Array<MainMenuItem>,
     searchProducts: [] as Array<SearchProductType>
 }
 

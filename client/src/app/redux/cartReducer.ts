@@ -2,7 +2,7 @@ import {cartAPI} from "../api/api";
 import ResponseMessageError from "../utils/errors/responseErrors";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
-import {CheckoutProduct, InitializeProductsType, ProductType, GetActionsTypes, OptionType} from "../types/types";
+import {CheckoutProduct, InitializeProductsType, ProductType, GetActionsTypes, OptionType, localStorageProductType} from "../types/types";
 
 const SET_PRODUCTS = 'SET_PRODUCTS';
 const ADD_PRODUCT = 'ADD_PRODUCT';
@@ -86,7 +86,7 @@ export const addToCart = (brand: string, id: string, sku: string): ThunkType => 
     let localProductsJSON = typeof localStorage.getItem('cartProducts') == 'string' ? localStorage.getItem('cartProducts') : null;
     let localProducts = typeof localProductsJSON == 'string' ? JSON.parse(localProductsJSON) : null;
 
-    if(localProducts !== null && localProducts.find((item: {sku: string, id: string, quantity: string}) => {
+    if(localProducts !== null && localProducts.find((item: localStorageProductType) => {
         return item.sku == sku;
     })) {
         return;

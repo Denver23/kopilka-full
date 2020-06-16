@@ -2,15 +2,22 @@ import React, {useEffect, useRef} from "react";
 import s from './CartDisplay.module.scss'
 import CartProduct from "./CartProduct/CartProduct";
 import {Link} from "react-router-dom";
+import {ProductType} from "../../../../types/types";
 
-const CartDisplay = (props) => {
+type CartDisplayPropsType = {
+    products: Array<ProductType>,
+    changeDisplay: (e: boolean) => void
+}
 
-    let cartDisplay = useRef();
+const CartDisplay: React.FC<CartDisplayPropsType> = (props) => {
 
-    let handleClickOutside = (e) => {
+    let cartDisplay = useRef<HTMLDivElement>(null);
+
+    let handleClickOutside = (e: Event) => {
         const domNode = cartDisplay;
-        if ((!domNode.current || !domNode.current.contains(e.target))) {
-            if(e.target.nodeName !== 'path' && e.target.nodeName !== 'svg' && e.target.nodeName !== 'SPAN') {
+        const eventNode = e.target as Node;
+        if ((!domNode.current || !domNode.current.contains(eventNode as Node))) {
+            if(eventNode.nodeName !== 'path' && eventNode.nodeName !== 'svg' && eventNode.nodeName !== 'SPAN') {
                 props.changeDisplay(false);
             }
         }

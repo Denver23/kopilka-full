@@ -1,14 +1,22 @@
 import React, {useEffect, useRef} from "react";
 import s from './BurgerDisplay.module.scss'
 import {Link} from "react-router-dom";
+import {MainMenuItem} from "../../../../types/types";
 
-const BurgerDisplay = (props) => {
 
-    let burgerDisplayRef = useRef();
+type BurgerDisplayAllProps = {
+    mainMenu: Array<MainMenuItem>,
+    burgerDisplay: boolean,
+    setBurgerDisplay: (e: boolean) => void
+}
 
-    let handleClickOutside = (e) => {
+const BurgerDisplay: React.FC<BurgerDisplayAllProps> = (props) => {
+
+    let burgerDisplayRef = useRef<HTMLDivElement>(null);
+
+    let handleClickOutside = (e: Event) => {
         const domNode = burgerDisplayRef;
-        if ((!domNode.current || !domNode.current.contains(e.target))) {
+        if ((!domNode.current || !domNode.current.contains(e.target as Node))) {
             if(props.burgerDisplay) {
                 props.setBurgerDisplay(false);
             }
