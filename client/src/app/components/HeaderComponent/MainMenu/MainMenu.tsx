@@ -1,8 +1,13 @@
 import React from "react";
 import {NavLink} from 'react-router-dom';
 import s from './MainMenu.module.scss';
+import {MainMenuItem} from "../../../types/types";
 
-const MainMenu = (props) => {
+type PropsType = {
+    mainMenu: Array<MainMenuItem>
+}
+
+const MainMenu: React.FC<PropsType> = (props) => {
     return (
         <ul className={s.topMenuList}>
             {props.mainMenu.map(item => {

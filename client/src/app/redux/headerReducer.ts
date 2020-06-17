@@ -2,20 +2,9 @@ import {searchApi} from "../api/api";
 import ResponseMessageError from "../utils/errors/responseErrors";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
-import {GetActionsTypes, MainMenuItem, SearchProductType} from "../types/types";
+import {GetActionsTypes, MainMenuItem, SearchProductType, TopMenuObjectType} from "../types/types";
 
 const SEARCH_PRODUCTS = 'SEARCH_PRODUCTS';
-
-type TopMenuObjectType = {
-    categoryTitle: string,
-    url: string,
-    hasPtypes: boolean,
-    ptypesList: Array<{
-        ptypeTitle: string,
-        url: string
-    }>
-}
-
 
 let initialState = {
     topMenu: [

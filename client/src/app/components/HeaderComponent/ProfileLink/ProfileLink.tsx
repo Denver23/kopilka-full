@@ -1,8 +1,13 @@
 import React, {useState} from "react";
 import s from './ProfileLink.module.scss';
 import ProfileMenu from "./ProfileMenu/ProfileMenu";
+import { AuthReducerInitialStateType } from "../../../redux/authReducer";
 
-const ProfileLink = ({profile, ...props}) => {
+type PropsType = {
+    profile: AuthReducerInitialStateType
+}
+
+const ProfileLink: React.FC<PropsType> = ({profile, ...props}) => {
 
     let [showMenu, setShowMenu] = useState(false);
 
@@ -14,4 +19,4 @@ const ProfileLink = ({profile, ...props}) => {
     )
 }
 
-export default ProfileLink
+export default ProfileLink;

@@ -2,16 +2,22 @@ import React, {useEffect, useRef, useState} from 'react';
 import s from './CategoriesMenu.module.scss';
 import {NavLink} from "react-router-dom";
 import Search from "./Search/Search";
+import {TopMenuObjectType} from "../../../types/types";
 
-const CategoriesMenu = (props) => {
+type PropsType = {
+    topMenu: Array<TopMenuObjectType>
+}
+
+const CategoriesMenu: React.FC<PropsType> = (props) => {
 
     let [showCategories, setShowCategories] = useState(false);
 
-    let categoriesRef = useRef();
+    let categoriesRef = useRef<HTMLUListElement>(null);
 
-    let handleClickOutside = (e) => {
+    let handleClickOutside = (e: Event) => {
         const domNode = categoriesRef;
-        if ((!domNode.current || !domNode.current.contains(e.target))) {
+        const eventNode = e.target as Node;
+        if ((!domNode.current || !domNode.current.contains(eventNode))) {
             if(showCategories) {
                 setShowCategories(false);
             }

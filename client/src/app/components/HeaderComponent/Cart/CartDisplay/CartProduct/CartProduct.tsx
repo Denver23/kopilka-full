@@ -6,6 +6,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import {cartReducerActions, deleteFromCart} from "../../../../../redux/cartReducer";
 import {Formik} from "formik";
 import {ProductType, localStorageProductType} from "../../../../../types/types";
+import {AppStateType} from "../../../../../redux/store";
 
 type ChangeQuantity = (sku: string, quantity: number) => void
 
@@ -102,4 +103,4 @@ const ProductPrice: React.FC<ProductPricePropsType> = (props) => {
     return <span className={s.productPrice}>{props.price * props.quantity}$</span>
 }
 
-export default connect((state) => ({}), {deleteFromCart,changeQuantity: cartReducerActions.changeQuantity})(CartProduct);
+export default connect<{}, CartProductMapDispatchToProps, {}, AppStateType>((state) => ({}), {deleteFromCart,changeQuantity: cartReducerActions.changeQuantity})(CartProduct);

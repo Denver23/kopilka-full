@@ -1,18 +1,31 @@
 import React, {useEffect, useRef, useState} from "react";
 import SearchIcon from '@material-ui/icons/Search';
 import s from './Search.module.scss';
-import {Field, reduxForm} from "redux-form";
+import {Field, InjectedFormProps, reduxForm, WrappedFieldInputProps, WrappedFieldMetaProps} from "redux-form";
 import {connect} from "react-redux";
 import {searchProducts, headerReducerActions} from "../../../../redux/headerReducer";
 import {Link} from "react-router-dom";
+import {SearchProductType} from "../../../../types/types";
+import {AppStateType} from "../../../../redux/store";
 
-const Search = (props) => {
+
+type SearchMapStateToPropsType = {
+    searchProductsList: Array<SearchProductType>
+}
+type SearchMapDispatchToProps = {
+    searchProducts: (query: string) => void,
+    setSearchProducts: (data: Array<SearchProductType>) => void
+}
+
+type SearchType  = SearchMapStateToPropsType & SearchMapDispatchToProps
+
+const Search: React.FC<SearchType> = (props) => {
 
     let [showResults, setShowResults] = useState(false);
-    let latestQueryString = useRef(undefined);
+    let latestQueryString = useRef<string | undefined>(undefined);
 
 
-    const SearchResult = (query) => {
+    const SearchResult = (query: {search: string}) => {
         latestQueryString.current = query.search;
 
         if(query.search !== undefined) {
@@ -27,11 +40,12 @@ const Search = (props) => {
         }
     }
 
-    let searchResultList = useRef();
+    let searchResultList = useRef<HTMLUListElement>(null);
 
-    let handleClickOutside = (e) => {
+    let handleClickOutside = (e: Event) => {
         const domNode = searchResultList;
-        if ((!domNode.current || !domNode.current.contains(e.target))) {
+        const eventNode = e.target as Node;
+        if ((!domNode.current || !domNode.current.contains(eventNode))) {
             setShowResults(false);
         }
     }
@@ -60,23 +74,34 @@ const Search = (props) => {
     )
 }
 
-const SearchForm = (props) => {
+type SearchFormValuesType = {
+    search: string
+}
+
+type SearchFormOwnProps = {}
+
+const SearchForm: React.FC<InjectedFormProps<SearchFormValuesType, SearchFormOwnProps> & SearchFormOwnProps> = (props) => {
     return <form onSubmit={props.handleSubmit}>
         <Field component={SearchInput} placeholder={'I\'m looking for...'} type={'text'} name={'search'} />
     </form>
 }
 
-const SearchInput = ({input, meta: {touched, error}, ...props}) => {
+type SearchInputPropsType = {
+    input: WrappedFieldInputProps,
+    meta: WrappedFieldMetaProps
+}
+
+const SearchInput: React.FC<SearchInputPropsType> = ({input, meta: {touched, error}, ...props}) => {
     return <div>
         <input {...input} {...props} autoComplete={'off'} className={s.searchInput}/>
     </div>
 }
-const SearchFormRedux = reduxForm({form: 'searchForm'})(SearchForm)
+const SearchFormRedux = reduxForm<SearchFormValuesType, SearchFormOwnProps>({form: 'searchForm'})(SearchForm)
 
-let mapStateToProps = (state) => {
+let mapStateToProps = (state: AppStateType): SearchMapStateToPropsType => {
     return {
         searchProductsList: state.headerReducer.searchProducts
     }
 }
 
-export default connect(mapStateToProps, {searchProducts,setSearchProducts: headerReducerActions.setSearchProducts})(Search);
+export default connect<SearchMapStateToPropsType, SearchMapDispatchToProps, {}, AppStateType>(mapStateToProps, {searchProducts,setSearchProducts: headerReducerActions.setSearchProducts})(Search);

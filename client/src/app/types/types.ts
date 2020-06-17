@@ -141,3 +141,13 @@ export type SearchProductType = {
     productTitle: string,
     image: string
 }
+
+export type TopMenuObjectType = {
+    categoryTitle: string,
+    url: string,
+    hasPtypes: boolean,
+    ptypesList: Array<{
+        ptypeTitle: string,
+        url: string
+    }>
+}

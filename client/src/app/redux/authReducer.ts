@@ -17,9 +17,9 @@ let initialState = {
     isFetching: false as boolean
 }
 
-type InitialStateType = typeof initialState;
+export type AuthReducerInitialStateType = typeof initialState;
 
-const authReducer = (state = initialState, action: GetActionsTypes<typeof authReducersActions>): InitialStateType => {
+const authReducer = (state = initialState, action: GetActionsTypes<typeof authReducersActions>): AuthReducerInitialStateType => {
     switch (action.type) {
         case SET_USER_DATA:
             return {
