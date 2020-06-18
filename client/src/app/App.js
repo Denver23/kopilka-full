@@ -1,5 +1,5 @@
-import React, {Component, useEffect, useState} from 'react';
-import HeaderComponent from "./components/HeaderComponent/HeaderComponent.jsx";
+import React, {useEffect} from 'react';
+import HeaderComponent from "./components/HeaderComponent/HeaderComponent";
 import ProductGroupContainer from "./components/ProductGroupComponent/ProductGroupContainer.jsx";
 import FooterComponent from "./components/FooterComponent/FooterComponent";
 import s from './App.module.scss';
@@ -15,7 +15,6 @@ import ProfileComponent from "./components/ProfileComponent/ProfileComponent";
 import AboutUsComponent from "./components/AboutUsComponent/AboutUsComponent";
 import PageNotFoundComponent from "./components/PageNotFoundComponent/PageNotFoundComponent";
 import AllBrandsComponent from "./components/AllBrandsComponent/AllBrandsComponent";
-import {USER_DATA} from "./api/api";
 
 const App = (props) => {
 

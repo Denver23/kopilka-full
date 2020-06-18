@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import HeaderComponent from "./components/HeaderComponent/HeaderComponent.jsx";
+import HeaderComponent from "./components/HeaderComponent/HeaderComponent.js";
 import ProductGroupContainer from "./components/ProductGroupComponent/ProductGroupContainer.jsx";
 import FooterComponent from "./components/FooterComponent/FooterComponent";
 import s from './App.module.scss';

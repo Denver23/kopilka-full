@@ -1,14 +1,23 @@
 import React, {useEffect, useRef} from "react";
 import s from './SignInForm.module.scss';
-import {Field, reduxForm} from "redux-form";
+import {Field, InjectedFormProps, reduxForm} from "redux-form";
 import Checkbox from "../../../common/Checkboxes/Checkbox/Checkbox";
 import {Link} from "react-router-dom";
 import {minLength, requiredField} from "../../../../utils/validators/validators";
 import {connect} from "react-redux";
 import Preloader from "../../../common/Preloader/Preloader";
 import Input from "../../../common/Input/Input";
+import {AppStateType} from "../../../../redux/store";
 
-const SignInForm = (props) => {
+export type SignInFormValuesType = {
+    email: string,
+    password: string,
+    rememberMe: boolean
+}
+type SignInFormOwnPropsType = {
+}
+
+const SignInForm: React.FC<InjectedFormProps<SignInFormValuesType, SignInFormOwnPropsType> & SignInFormOwnPropsType> = (props) => {
     return <form className={s.signInForm} onSubmit={props.handleSubmit}>
         <Field placeholder={'Email'} component={Input} type={'text'} name={'email'} validate={[requiredField, minLength]}/>
         <Field placeholder={'Password'} component={Input} type={'password'} name={'password'} validate={[requiredField, minLength]}/>
@@ -19,17 +28,29 @@ const SignInForm = (props) => {
     </form>
 }
 
-const SignInFormRedux = reduxForm({
+const SignInFormRedux = reduxForm<SignInFormValuesType, SignInFormOwnPropsType>({
     form: 'loginForm'
 })(SignInForm);
 
-const SignInPreloader = ({onSubmit, isFetching, ...props}) => {
+type MapStateToPropsType = {
+    isFetching: boolean
+}
 
-    let signInFormWrapper = useRef();
+type OwnProps = {
+    onSubmit: (formData: SignInFormValuesType) => void,
+    setShowForm: (showMenu: boolean) => void
+}
 
-    let handleClickOutside = (e) => {
+type PropsType = MapStateToPropsType & OwnProps;
+
+const SignInPreloader: React.FC<PropsType> = ({onSubmit, isFetching, ...props}) => {
+
+    let signInFormWrapper = useRef<HTMLDivElement>(null);
+
+    let handleClickOutside = (e: Event) => {
         const domNode = signInFormWrapper;
-        if ((!domNode.current || !domNode.current.contains(e.target))) {
+        const eventNode = e.target as Node;
+        if ((!domNode.current || !domNode.current.contains(eventNode))) {
             props.setShowForm(false);
         }
     }
@@ -44,10 +65,10 @@ const SignInPreloader = ({onSubmit, isFetching, ...props}) => {
     </div>
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: AppStateType) => {
     return {
         isFetching: state.authReducer.isFetching
     }
 }
 
-export default connect(mapStateToProps,{})(SignInPreloader);
+export default connect<MapStateToPropsType, {}, {}, AppStateType>(mapStateToProps,{})(SignInPreloader);

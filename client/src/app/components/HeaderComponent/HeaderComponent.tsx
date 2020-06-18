@@ -9,8 +9,19 @@ import {connect} from "react-redux";
 import ProfileLink from "./ProfileLink/ProfileLink";
 import {Link} from "react-router-dom";
 import BurgerDisplay from "./BurgerMenu/BurgerDisplay/BurgerDisplay";
+import {AppStateType} from "../../redux/store";
+import {AuthReducerInitialStateType} from "../../redux/authReducer";
+import {MainMenuItem, TopMenuObjectType} from "../../types/types";
 
-const HeaderComponent = (props) => {
+type MapStateToPropsType = {
+    profile: AuthReducerInitialStateType,
+    mainMenu: Array<MainMenuItem>,
+    topMenu: Array<TopMenuObjectType>
+}
+
+type PropsType = MapStateToPropsType;
+
+const HeaderComponent: React.FC<PropsType> = (props) => {
 
     let [burgerDisplay, setBurgerDisplay] = useState(false);
 
@@ -30,7 +41,7 @@ const HeaderComponent = (props) => {
     )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: AppStateType) => {
     return {
         profile: state.authReducer,
         mainMenu: state.headerReducer.mainMenu,
@@ -38,4 +49,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, {})(HeaderComponent);
+export default connect<MapStateToPropsType, {}, {}, AppStateType>(mapStateToProps, {})(HeaderComponent);

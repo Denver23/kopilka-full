@@ -1,13 +1,18 @@
 import React, {useState} from "react";
 import s from "./SignIn.module.scss";
-import SignInForm from "./SignInForm/SignInForm";
+import SignInForm, { SignInFormValuesType } from "./SignInForm/SignInForm";
 import {connect} from "react-redux";
 import {login} from "../../../redux/authReducer";
+import {AppStateType} from "../../../redux/store";
 
-const SignIn = (props) => {
+type MapDispatchToPropsType = {
+    login: (email: string, password: string, rememberMe: boolean) => void
+}
+
+const SignIn: React.FC<MapDispatchToPropsType> = (props) => {
     let [showForm, setShowForm] = useState(false);
 
-    const onSubmitForm = (formData) => {
+    const onSubmitForm = (formData: SignInFormValuesType) => {
         props.login(formData.email, formData.password, formData.rememberMe);
     }
 
@@ -17,4 +22,4 @@ const SignIn = (props) => {
     </div>
 }
 
-export default connect((state)=>{return {}},{login})(SignIn);
+export default connect<{}, MapDispatchToPropsType, {}, AppStateType>((state)=>{return {}},{login})(SignIn);
