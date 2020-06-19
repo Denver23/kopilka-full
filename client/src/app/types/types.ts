@@ -104,7 +104,7 @@ export type ChildProductType = {
     sku: string,
     price: number,
     quantity: number,
-    options: Array<Object>
+    options: {[key: string]: string}
 }
 
 export type ProductTypeAPI = {
