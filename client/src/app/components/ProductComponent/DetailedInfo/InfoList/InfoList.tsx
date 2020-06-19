@@ -1,7 +1,13 @@
 import React from "react";
 import s from './InfoList.module.scss';
 
-const InfoList = (props) => {
+type InfoListPropsType = {
+    title: string,
+    type: string,
+    items: string
+}
+
+const InfoList: React.FC<InfoListPropsType> = (props) => {
     return <div className={s.infoList}>
         <p className={s.title}>{props.title}</p>
         {
@@ -11,7 +17,11 @@ const InfoList = (props) => {
     </div>
 }
 
-const Features = (props) => {
+type PropsType = {
+    items: string
+}
+
+const Features: React.FC<PropsType> = (props) => {
     return <ul className={s.list}>
         {props.items.split(/\[:os:\]/).map(item => {
             return <li className={s.listItem} key={item}>{item}</li>
@@ -19,7 +29,7 @@ const Features = (props) => {
     </ul>
 }
 
-const Specs = (props) => {
+const Specs: React.FC<PropsType> = (props) => {
     return <table className={s.table}>
         <tbody>
         {props.items.split(/\[:os:\]/).map(item => {

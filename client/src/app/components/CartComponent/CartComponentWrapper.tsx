@@ -33,4 +33,4 @@ let mapStateToProps = (state: AppStateType) => {
     }
 }
 
-export default connect(mapStateToProps, {loadOptions})(CartComponentWrapper);
+export default connect<MapStateToPropsType, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {loadOptions})(CartComponentWrapper);

@@ -2,7 +2,11 @@ import React from "react";
 import s from "./Breadcrumbs.module.scss";
 import {Link} from "react-router-dom";
 
-const Breadcrumbs = (props) => {
+type PropsType = {
+    list: Array<{url: string, title: string}>
+}
+
+const Breadcrumbs: React.FC<PropsType> = (props) => {
 
     return (
         <ul className={s.list}>

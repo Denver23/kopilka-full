@@ -1,19 +1,31 @@
 import React, {useLayoutEffect, useState} from "react";
 import s from './ProductsInfo.module.scss';
-import {Link, withRouter} from "react-router-dom";
+import {Link, RouteComponentProps, withRouter} from "react-router-dom";
 import {compose} from "redux";
 import {connect} from "react-redux";
+import {AppStateType} from "../../../../redux/store";
+import {ChildProductType} from "../../../../types/types";
 
-const ProductsInfo = (props) => {
+type MapStateToPropsType = {
+    childProducts: Array<ChildProductType>
+}
 
-    let skuRow = React.createRef();
+type OwnProps = {
+    brand: string
+}
+
+type PropsType = OwnProps & MapStateToPropsType & RouteComponentProps<{brand: string}>;
+
+const ProductsInfo: React.FC<PropsType> = (props) => {
+
+    let skuRow = React.useRef<HTMLDivElement>(null);
     let [skuAllHeight, changeSKUAllHeight] = useState(skuRow.current ? skuRow.current.scrollHeight : 0);
-    let [skuHeight, changeSKUHeight] = useState();
+    let [skuHeight, changeSKUHeight] = useState(0);
     let [activeSKUList, changeSKUListStatus] = useState(false);
 
     useLayoutEffect(() => {
-        changeSKUAllHeight(skuRow.current.scrollHeight);
-        changeSKUHeight(skuRow.current.clientHeight)
+        changeSKUAllHeight(skuRow.current ? skuRow.current.scrollHeight : 0);
+        changeSKUHeight(skuRow.current ? skuRow.current.clientHeight : 0)
     }, [skuAllHeight])
 
     return <div className={s.ProductsInfo}>
@@ -33,10 +45,10 @@ const ProductsInfo = (props) => {
     </div>
 }
 
-let mapStateToProps = (state) => {
+let mapStateToProps = (state: AppStateType): MapStateToPropsType => {
     return {
         childProducts: state.productReducer.childProducts
     }
 }
 
-export default compose(withRouter, connect(mapStateToProps, {}))(ProductsInfo);
+export default compose(withRouter, connect<MapStateToPropsType, {}, {}, AppStateType>(mapStateToProps, {}))(ProductsInfo) as React.FC<OwnProps>;
