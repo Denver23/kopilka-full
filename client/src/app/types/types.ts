@@ -1,6 +1,11 @@
 export type PropertiesType<T> = T extends {[key: string]: infer U} ? U : never;
 export type GetActionsTypes<T extends {[key: string]: (...args: any[]) => any}> = ReturnType<PropertiesType<T>>
 
+export type ProductRouteType = {
+    brand: string,
+    id: string
+}
+
 export type RadioFieldType = {
     name: string,
     forType?: string
@@ -9,6 +14,13 @@ export type RadioFieldType = {
 export type MainMenuItem = {
     title: string,
     url: string
+}
+
+export type productImage = {
+    _id?: string,
+    original: string,
+    thumbnail: string,
+    alt: string
 }
 
 export type localStorageProductType ={

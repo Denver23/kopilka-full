@@ -1,6 +1,6 @@
 import {productAPI} from "../api/api";
 import ResponseMessageError from "../utils/errors/responseErrors";
-import {ProductInListType, SetProductType, ChildProductType, GetActionsTypes} from "../types/types";
+import {ProductInListType, SetProductType, ChildProductType, GetActionsTypes, productImage} from "../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
 
@@ -14,12 +14,7 @@ let initialState = {
     category: '' as string,
     productTitle: '' as string,
     childProducts: [] as Array<ChildProductType>,
-    images: [] as Array<{
-        _id?: string,
-        original: string,
-        thumbnail: string,
-        alt: string
-    }>,
+    images: [] as Array<productImage>,
     productBrandImage: '' as string,
     shortDescription: '' as string,
     specifications: '' as string,

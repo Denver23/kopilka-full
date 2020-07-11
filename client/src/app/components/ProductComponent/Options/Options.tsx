@@ -13,17 +13,17 @@ type OptionsValuesType = {
 }
 
 type OptionsOwnPropsType = {
-    fields: Array<ChildProductType>
+    options: Array<ChildProductType>
 }
 
 type optionType = {name: string, key: string};
 
-const Options: React.FC<InjectedFormProps<OptionsValuesType, OptionsOwnPropsType> & OptionsOwnPropsType> = ({ handleSubmit, fields, ...props }) => {
+const Options: React.FC<InjectedFormProps<OptionsValuesType, OptionsOwnPropsType> & OptionsOwnPropsType> = ({ handleSubmit, options, ...props }) => {
 
-    let [activeOptions, changeOptions] = useState(fields.length > 1 ? Object.keys(fields[0].options).map(option => {
+    let [activeOptions, changeOptions] = useState(options.length > 1 ? Object.keys(options[0].options).map(option => {
         return {name: option, key: ''};
     }) : []);
-    let [currentProduct, changeProduct] = useState(fields.length === 1 ? fields[0] : undefined);
+    let [currentProduct, changeProduct] = useState(options.length === 1 ? options[0] : undefined);
 
     let dataOption = (option: string, value: string) => {
         let result = activeOptions;
@@ -49,17 +49,17 @@ const Options: React.FC<InjectedFormProps<OptionsValuesType, OptionsOwnPropsType
         return min;
     };
 
-    let lowPrice = getMinValue(fields.map(item => {
+    let lowPrice = getMinValue(options.map(item => {
         return +item.price;
     }));
 
-    let highPrice = getMaxValue(fields.map(item => {
+    let highPrice = getMaxValue(options.map(item => {
         return +item.price;
     }));
 
     let changeFormOption = (e: FormEvent<HTMLFormElement>) => {
         changeOptions(dataOption(e.currentTarget.name, e.currentTarget.value));
-        let newProduct = fields.find((product: ChildProductType) => {
+        let newProduct = options.find((product: ChildProductType) => {
             return activeOptions.every((option: optionType) => {
                 return option.key === product.options[option.name];
             })
@@ -71,7 +71,7 @@ const Options: React.FC<InjectedFormProps<OptionsValuesType, OptionsOwnPropsType
         {
             activeOptions.length ?
             activeOptions.map((option) => {
-                return <Field name={option.name} component={Select} currentProduct={currentProduct} activeOptions={activeOptions} parentProducts={fields} type={'select'} key={option.name}/>
+                return <Field name={option.name} component={Select} currentProduct={currentProduct} activeOptions={activeOptions} parentProducts={options} type={'select'} key={option.name}/>
             }) : ''
         }
         {currentProduct !== undefined ? <ProductStatus currentProduct={currentProduct} /> : <div className={s.productStatus}><span className={s.cost}>${lowPrice} - ${highPrice}</span></div>}
@@ -138,4 +138,4 @@ const Select: React.FC<SelectPropsType & WrappedFieldProps> = ({input, parentPro
     </div>
 }
 
-export default reduxForm<OptionsValuesType, OptionsOwnPropsType>({'form': 'options'})(Options);
+export default reduxForm<OptionsValuesType, OptionsOwnPropsType>({form: 'options'})(Options);
