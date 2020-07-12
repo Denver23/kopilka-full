@@ -2,7 +2,17 @@ import React, {useState} from 'react';
 import {NavLink} from "react-router-dom";
 import s from './PagesButtonList.module.scss';
 
-const PagesButtonList = ({portionSize = 12,...props}) => {
+type PropsType = {
+    itemsCount: number,
+    productsOnPage: number,
+    activePage: number,
+    activeURL: string,
+    type: string,
+    query?: string,
+    portionSize?: number
+}
+
+const PagesButtonList: React.FC<PropsType> = ({portionSize = 12,...props}) => {
 
     let type = props.type;
     let activeURL = props.activeURL === undefined ? '' : props.activeURL;
@@ -13,7 +23,7 @@ const PagesButtonList = ({portionSize = 12,...props}) => {
     if(query.has('page')) {
         query.delete("page");
     }
-    query = [...query.keys()].length > 0 ? `&${query.toString()}` : '';
+    const queryResult = [...query.keys()].length > 0 ? `&${query.toString()}` : '';
     let url = type === 'category' ?
         (props.activeURL !== undefined ? `/${props.activeURL}-category?page=` : `?page=`) :
     type === 'brand' ? `/brands/${props.activeURL}?page=` : `/${activeURL}?page=`;
@@ -42,19 +52,19 @@ const PagesButtonList = ({portionSize = 12,...props}) => {
         <div className={s.pagesListWrapper}>
             {pagesCount > 1 ?
             <div className={s.pagesList}>
-                {+activePage !== 1 ? <NavLink to={`${url}${activePage - 1}`} className={`${s.pagesArrows} ${s.leftArrow}`}>&#60;</NavLink> : ''}
+                {+activePage !== 1 ? <NavLink to={`${url}${activePage - 1}${queryResult}`} className={`${s.pagesArrows} ${s.leftArrow}`}>&#60;</NavLink> : ''}
                 <div className={s.numbers}>
-                    <NavLink to={`${url}${1}${query}`} className={activePage === 1 ? `${s.pageNumber} ${s.pageNumberActive}` : s.pageNumber} key={`page-${1}`}>{1}</NavLink>
+                    <NavLink to={`${url}${1}${queryResult}`} className={activePage === 1 ? `${s.pageNumber} ${s.pageNumberActive}` : s.pageNumber} key={`page-${1}`}>{1}</NavLink>
                     {pagesArray[0] - 1 === 1 || pagesArray.length === 0 ? '' : <div className={s.paginationDots}>...</div>}
                     {
                         pagesArray.map(page => {
-                            return <NavLink to={`${url}${page}${query}`} className={activePage === page ? `${s.pageNumber} ${s.pageNumberActive}` : s.pageNumber} key={`page-${page}`}>{page}</NavLink>
+                            return <NavLink to={`${url}${page}${queryResult}`} className={activePage === page ? `${s.pageNumber} ${s.pageNumberActive}` : s.pageNumber} key={`page-${page}`}>{page}</NavLink>
                         })
                     }
                     {pagesArray[pagesArray.length - 1] + 1 === pagesCount || pagesArray.length === 0 ? '' : <div className={s.paginationDots}>...</div>}
-                    <NavLink to={`${url}${pagesCount}${query}`} className={activePage === pagesCount ? `${s.pageNumber} ${s.pageNumberActive}` : s.pageNumber} key={`page-${pagesCount}`}>{pagesCount}</NavLink>
+                    <NavLink to={`${url}${pagesCount}${queryResult}`} className={activePage === pagesCount ? `${s.pageNumber} ${s.pageNumberActive}` : s.pageNumber} key={`page-${pagesCount}`}>{pagesCount}</NavLink>
                 </div>
-                {+activePage !== pagesCount ? <NavLink to={`${url}${activePage + 1}`} className={`${s.pagesArrows} ${s.rightArrow}`}>&#62;</NavLink> : ''}
+                {+activePage !== pagesCount ? <NavLink to={`${url}${activePage + 1}${queryResult}`} className={`${s.pagesArrows} ${s.rightArrow}`}>&#62;</NavLink> : ''}
             </div> : ''}
         </div>
     )

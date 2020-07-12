@@ -17,7 +17,7 @@ let initialState = {
     refines: [] as Array<RefineType>,
     childCategories: [] as Array<ChildCategoryType>,
     reviews: [] as Array<Object> | undefined,
-    bestSellers: [] as Array<Object> | undefined,
+    bestSellers: [] as Array<ProductInListType> | undefined,
     slides: [] as Array<string>,
     productsOnPage: 7 as number,
     loading: false as boolean,

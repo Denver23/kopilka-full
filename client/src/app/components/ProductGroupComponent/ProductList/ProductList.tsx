@@ -2,8 +2,15 @@ import React from 'react';
 import Product from "./Product/Product";
 import s from './ProductList.module.scss';
 import {connect} from "react-redux";
+import {ProductInListType} from "../../../types/types";
+import {AppStateType} from "../../../redux/store";
 
-const ProductList = (props) => {
+type MapStateToPropsType = {
+    products: Array<ProductInListType>,
+    url: string | null
+}
+
+const ProductList: React.FC<MapStateToPropsType> = (props) => {
     return (
         <div className={s.productList}>
             {props.products.map((prod) => {
@@ -13,11 +20,11 @@ const ProductList = (props) => {
     )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: AppStateType): MapStateToPropsType => {
     return {
         products: state.productGroupReducer.products,
         url: state.productGroupReducer.url
     }
 }
 
-export default connect(mapStateToProps)(ProductList);
+export default connect<MapStateToPropsType, {}, {}, AppStateType>(mapStateToProps)(ProductList);

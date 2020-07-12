@@ -8,7 +8,7 @@ const SET_BRANDS = 'SET_BRANDS'
 
 let initialState = {
     loading: false,
-    quantity: null as number | null,
+    quantity: 0 as number,
     brands: [] as Array<BrandType>
 }
 

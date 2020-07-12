@@ -12,7 +12,7 @@ import { AppStateType } from "../../redux/store";
 
 type AllBrandsComponentMapStatePropsType = {
     loading: boolean,
-    quantity: number | null,
+    quantity: number,
     brands: Array<BrandType>
 }
 type AllBrandsComponentMapDispatchPropsType = {
@@ -38,7 +38,7 @@ type AllBrandsListProps = {
     brands: Array<BrandType>,
     productOnPageQuantity: number,
     activePage: number,
-    quantity: number | null
+    quantity: number
 }
 const AllBrandsList: React.FC<AllBrandsListProps> = (props) => {
 

@@ -2,14 +2,21 @@ import React, {useState} from "react";
 import s from './CategoriesBlock.module.scss';
 import {Link, NavLink} from "react-router-dom";
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import {ChildCategoryType} from "../../../../types/types";
 
-const CategoriesBlock = (props) => {
+type PropsType = {
+    type: string,
+    brandName: string,
+    categoriesList: Array<ChildCategoryType>
+}
 
-    let [activeList, changeActiveList] = useState();
+const CategoriesBlock: React.FC<PropsType> = (props) => {
+
+    let [activeList, changeActiveList] = useState('');
 
     const brandQuery = props.type === 'brand' ? `?brands=${props.brandName}` : '';
 
-    const toggleActiveList = (e) => {
+    const toggleActiveList = (e: string) => {
         if (e === activeList) {
             changeActiveList('')
         } else {

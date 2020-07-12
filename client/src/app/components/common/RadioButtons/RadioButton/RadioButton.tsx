@@ -1,12 +1,12 @@
 import React from "react";
 import s from './RadioButton.module.scss'
 import {WrappedFieldInputProps, WrappedFieldMetaProps} from "redux-form";
-import {RadioFieldType} from "../../../../types/types";
+import {FieldType} from "../../../../types/types";
 
 type RadioPropsType = {
     input: WrappedFieldInputProps,
     meta: WrappedFieldMetaProps,
-    field: RadioFieldType,
+    field: FieldType,
     value?: string
 }
 

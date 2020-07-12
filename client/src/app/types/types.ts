@@ -6,7 +6,7 @@ export type ProductRouteType = {
     id: string
 }
 
-export type RadioFieldType = {
+export type FieldType = {
     name: string,
     forType?: string
 }
@@ -73,7 +73,7 @@ export type PrGroupDataType = {
     refines: Array<RefineType>,
     childCategories: Array<ChildCategoryType>,
     reviews?: Array<Object>,
-    bestSellers?: Array<Object>,
+    bestSellers?: Array<ProductInListType> | undefined,
     slides: Array<string>
 }
 
