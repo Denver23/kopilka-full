@@ -34,7 +34,7 @@ const CustomRefine: React.FC<PropsType> = ({...props}) => {
         }
     }
 
-    let returnData = (options: any) => {
+    let returnData = (options: CheckboxesFormValuesType) => {
         let data = Object.keys(options).filter(title => {
             return options[title] === true;
         }).map(item => {
@@ -61,7 +61,7 @@ const CustomRefine: React.FC<PropsType> = ({...props}) => {
         />;
     } else if(props.type === "checkbox") {
         refineBody = <Checkboxes
-            onSubmit={options=>{returnData(options)}}
+            onSubmit={(options: CheckboxesFormValuesType)=>{returnData(options)}}
             onChange={(e)=>{checkReinitalize(e)}}
             form={refineTitle}
             refineValues={props.items as Array<string>}

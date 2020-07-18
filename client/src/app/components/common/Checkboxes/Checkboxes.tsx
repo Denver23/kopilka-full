@@ -2,10 +2,9 @@ import React from "react";
 import Checkbox from "./Checkbox/Checkbox";
 import s from './Checkboxes.module.scss';
 import {Field, InjectedFormProps, reduxForm} from "redux-form";
-import {FieldType} from "../../../types/types";
 
 export type CheckboxesFormValuesType = {
-    [key: string]: string | Array<string>
+    [key: string]: boolean
 }
 type CheckboxesOwnPropsType = {
     refineValues: Array<string>

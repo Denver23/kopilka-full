@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import HeaderComponent from "./components/HeaderComponent/HeaderComponent";
-import ProductGroupContainer from "./components/ProductGroupComponent/ProductGroupContainer.jsx";
+import ProductGroupContainer from "./components/ProductGroupComponent/ProductGroupComponent";
 import FooterComponent from "./components/FooterComponent/FooterComponent";
 import s from './App.module.scss';
 import {Route, withRouter, Switch} from "react-router-dom";

@@ -3,10 +3,10 @@ import {NavLink} from "react-router-dom";
 import s from './PagesButtonList.module.scss';
 
 type PropsType = {
-    itemsCount: number,
+    itemsCount: number | null,
     productsOnPage: number,
     activePage: number,
-    activeURL: string,
+    activeURL: string | undefined,
     type: string,
     query?: string,
     portionSize?: number
@@ -17,7 +17,8 @@ const PagesButtonList: React.FC<PropsType> = ({portionSize = 12,...props}) => {
     let type = props.type;
     let activeURL = props.activeURL === undefined ? '' : props.activeURL;
     let activePage = +props.activePage;
-    let pagesCount = Math.ceil(props.itemsCount / props.productsOnPage);
+    let itemsCount = props.itemsCount !== null ? props.itemsCount : 0;
+    let pagesCount = Math.ceil(itemsCount / props.productsOnPage);
     let step = 3;
     let query = new URLSearchParams(props.query);
     if(query.has('page')) {

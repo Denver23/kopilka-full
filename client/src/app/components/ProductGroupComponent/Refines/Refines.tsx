@@ -1,14 +1,20 @@
-import React, {useRef} from "react";
+import React, {ComponentType, useRef} from "react";
 import CustomRefine from "./CustomRefine/CustomRefine";
 import s from './Refines.module.scss';
-import {withRouter} from "react-router-dom";
+import {RouteComponentProps, withRouter} from "react-router-dom";
 import {submit} from 'redux-form';
-import {compose} from "redux";
+import {compose, Dispatch} from "redux";
 import {connect} from "react-redux";
+import {ProductGroupRouteType, RefineType} from "../../../types/types";
+import {AppStateType} from "../../../redux/store";
 
-const Refines = ({dispatch, ...props}) => {
+type PropsType = {
+    fields: Array<RefineType>,
+}
 
-    let initialValues = {};
+const Refines: React.FC<PropsType & ReturnType<typeof mapDispatchToProps> & RouteComponentProps<ProductGroupRouteType>> = ({dispatch, ...props}) => {
+
+    let initialValues: {[key: string]: {[key: string]: boolean}} = {};
     if(props.location.search.slice(1).length > 1) {
         decodeURIComponent(props.location.search.slice(1)).split('&').forEach(item => {
             let values = item.split("=");
@@ -20,14 +26,14 @@ const Refines = ({dispatch, ...props}) => {
                 initialValue[values[1]] = true;
                 initialValues[values[0]] = initialValue;
             } else {
-                let initialValue = {};
+                let initialValue: {[key: string]: boolean} = {};
                 initialValue[values[1]] = true;
                 initialValues[values[0]] = initialValue;
             }
         })
     }
 
-    let data = {};
+    let data: {[key: string]: Array<string>} = {};
 
     props.fields.forEach(refine => {
         data[refine.title] = [];
@@ -35,7 +41,7 @@ const Refines = ({dispatch, ...props}) => {
 
     let refinesData = useRef(data);
 
-    const updateRefineData = (dispatch) => new Promise((resolve, reject) => {
+    const updateRefineData = (dispatch: Dispatch) => new Promise((resolve, reject) => {
         props.fields.forEach(item => {
             dispatch(submit(item.title.replace('.', '{:dot:}').replace(' ', '+')));
         })
@@ -79,4 +85,14 @@ return (
 )
 }
 
-export default compose(withRouter, connect())(Refines);
+function mapDispatchToProps(dispatch: Dispatch) {
+    return {
+        dispatch
+    };
+}
+
+let mapStateToProps = (state: AppStateType): {} => {
+    return {}
+}
+
+export default compose<ComponentType<PropsType>>(withRouter, connect<{}, ReturnType<typeof mapDispatchToProps>, {}, AppStateType>(mapStateToProps, mapDispatchToProps))(Refines);

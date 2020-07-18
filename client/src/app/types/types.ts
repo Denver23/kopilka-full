@@ -6,6 +6,12 @@ export type ProductRouteType = {
     id: string
 }
 
+export type ProductGroupRouteType = {
+    search: string,
+    brand?: string,
+    category?: string
+}
+
 export type FieldType = {
     name: string,
     forType?: string
@@ -72,7 +78,7 @@ export type PrGroupDataType = {
     products: Array<ProductInListType>,
     refines: Array<RefineType>,
     childCategories: Array<ChildCategoryType>,
-    reviews?: Array<Object>,
+    reviews?: Array<{[key: string]: string}>,
     bestSellers?: Array<ProductInListType> | undefined,
     slides: Array<string>
 }

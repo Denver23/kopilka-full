@@ -1,8 +1,13 @@
 import React, {useLayoutEffect, useState} from "react";
 import s from './Slider.module.scss';
 import {connect} from "react-redux";
+import {AppStateType} from "../../../redux/store";
 
-const Slider = (props) => {
+type MapStateToPropsType = {
+    slides: Array<string>
+}
+
+const Slider: React.FC<MapStateToPropsType> = (props) => {
 
     let [delay, changeDelay] = useState(1000);
     let [status, changeStatus] = useState(false);
@@ -60,10 +65,10 @@ const Slider = (props) => {
     )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: AppStateType): MapStateToPropsType => {
     return {
         slides: state.productGroupReducer.slides
     }
 }
 
-export default connect(mapStateToProps)(Slider);
+export default connect<MapStateToPropsType, {}, {}, AppStateType>(mapStateToProps)(Slider);

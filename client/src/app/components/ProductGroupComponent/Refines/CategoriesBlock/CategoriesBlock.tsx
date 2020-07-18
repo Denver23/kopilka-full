@@ -6,7 +6,7 @@ import {ChildCategoryType} from "../../../../types/types";
 
 type PropsType = {
     type: string,
-    brandName: string,
+    brandName: string | null,
     categoriesList: Array<ChildCategoryType>
 }
 
