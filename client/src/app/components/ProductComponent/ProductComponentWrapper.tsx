@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {ComponentType, useEffect} from "react";
 import s from "./ProductComponent.module.scss";
 import Preloader from "../common/Preloader/Preloader";
 import {connect} from "react-redux";
@@ -41,4 +41,4 @@ let mapStateToProps = (state: AppStateType): MapStateToPropsType => {
     }
 }
 
-export default compose(withRouter, connect<MapStateToPropsType, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {loadProduct}))(ProductComponentWrapper);
+export default compose<ComponentType>(withRouter, connect<MapStateToPropsType, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {loadProduct}))(ProductComponentWrapper);

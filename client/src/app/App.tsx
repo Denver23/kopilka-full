@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {ComponentType, useEffect} from 'react';
 import HeaderComponent from "./components/HeaderComponent/HeaderComponent";
 import ProductGroupContainer from "./components/ProductGroupComponent/ProductGroupComponent";
 import FooterComponent from "./components/FooterComponent/FooterComponent";
@@ -15,8 +15,20 @@ import ProfileComponent from "./components/ProfileComponent/ProfileComponent";
 import AboutUsComponent from "./components/AboutUsComponent/AboutUsComponent";
 import PageNotFoundComponent from "./components/PageNotFoundComponent/PageNotFoundComponent";
 import AllBrandsComponent from "./components/AllBrandsComponent/AllBrandsComponent";
+import {AppStateType} from "./redux/store";
 
-const App = (props) => {
+type MapDispatchToPropsType = {
+    initializeApp: () => void
+}
+
+type MapStateToPropsType = {
+    initialized: boolean,
+    userId: string | null
+}
+
+type PropsType = MapStateToPropsType & MapDispatchToPropsType;
+
+const App: React.FC<PropsType> = (props) => {
 
     useEffect(() => {
         function autoInitial() {
@@ -55,12 +67,12 @@ const App = (props) => {
     </div>
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: AppStateType): MapStateToPropsType => ({
     initialized: state.appReducer.initialized,
     userId: state.authReducer.userId
 })
 
 
-export default compose(
+export default compose<ComponentType>(
     withRouter,
-    connect(mapStateToProps, {initializeApp}))(App);
+    connect<MapStateToPropsType, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {initializeApp}))(App);

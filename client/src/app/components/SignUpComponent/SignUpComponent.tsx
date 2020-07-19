@@ -1,21 +1,28 @@
 import React from "react";
 import s from './SignUpComponent.module.scss'
 import Breadcrumbs from "../ProductComponent/Breadcrumbs/Breadcrumbs";
-import {Field, reduxForm} from "redux-form";
+import {Field, InjectedFormProps, reduxForm} from "redux-form";
 import Input from "../common/Input/Input";
 import {emailType, minLength, requiredField} from "../../utils/validators/validators";
 import RadioButton from "../common/RadioButtons/RadioButton/RadioButton";
 import {connect} from "react-redux";
-import {signUp} from "../../redux/authReducer";
+import {signUp, SignUpDataType} from "../../redux/authReducer";
+import {AppStateType} from "../../redux/store";
 
-const SignUpComponent = (props) => {
+type MapDispatchToPropsType = {
+    signUp: (data: SignUpDataType) => void
+}
+
+type PropsType = MapDispatchToPropsType
+
+const SignUpComponent: React.FC<PropsType> = (props) => {
 
     let brList = [
         {'url': '/', 'title': 'Home'},
         {'url': '/sign-up/', 'title': 'Sign Up'},
     ];
 
-    const SignUpSubmit = (data) => {
+    const SignUpSubmit = (data: SignUpDataType) => {
         props.signUp(data);
     }
 
@@ -29,7 +36,11 @@ const SignUpComponent = (props) => {
         </div>
 }
 
-const SignUpForm = (props) => {
+type SignUpFormValuesType = SignUpDataType
+
+type SignUpOwnPropsType = {}
+
+const SignUpForm: React.FC<InjectedFormProps<SignUpFormValuesType, SignUpOwnPropsType> & SignUpOwnPropsType> = (props) => {
     return <form className={s.signUpForm} onSubmit={props.handleSubmit}>
         {props.error && <div className={s.errorMessage}>{props.error}</div>}
         <Field placeholder={'Login'} component={Input} type={'text'} name={'login'} validate={[requiredField, minLength]}/>
@@ -45,14 +56,14 @@ const SignUpForm = (props) => {
     </form>
 }
 
-const SignUpFormRedux = reduxForm({
+const SignUpFormRedux = reduxForm<SignUpFormValuesType, SignUpOwnPropsType>({
     form: 'signUpForm'
 })(SignUpForm);
 
-let mapStateToProps = (state) => {
+let mapStateToProps = (state: AppStateType): {} => {
     return {
 
     }
 }
 
-export default connect(mapStateToProps, {signUp})(SignUpComponent);
+export default connect<{}, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {signUp})(SignUpComponent);

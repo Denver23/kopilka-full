@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {ComponentType, useEffect} from "react";
 import s from './AllBrandsComponent.module.scss'
 import Preloader from "../common/Preloader/Preloader";
 import {connect} from "react-redux";
@@ -66,4 +66,4 @@ let mapStateToProps = (state: AppStateType): AllBrandsComponentMapStatePropsType
     }
 }
 
-export default compose(withRouter, connect<AllBrandsComponentMapStatePropsType, AllBrandsComponentMapDispatchPropsType, {}, AppStateType>(mapStateToProps, {uploadAllBrands}))(AllBrandsComponent);
+export default compose<ComponentType>(withRouter, connect<AllBrandsComponentMapStatePropsType, AllBrandsComponentMapDispatchPropsType, {}, AppStateType>(mapStateToProps, {uploadAllBrands}))(AllBrandsComponent);

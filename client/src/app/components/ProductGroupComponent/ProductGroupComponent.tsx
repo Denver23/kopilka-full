@@ -1,4 +1,4 @@
-import React, {ReactText, useEffect} from 'react';
+import React, {ComponentType, ReactText, useEffect} from 'react';
 import Slider from './Slider/Slider';
 import Refines from './Refines/Refines';
 import ProductList from './ProductList/ProductList';
@@ -139,6 +139,6 @@ let wrapperMapStateToProps = (state: AppStateType): ProductGroupContainerMapStat
     }
 }
 
-const ProductGroupContainer = compose(withRouter, connect<ProductGroupContainerMapStateToPropsType, ProductGroupContainerMapDispatchToPropsType, {}, AppStateType>(wrapperMapStateToProps, {loadPrGroup, loadProducts}))(ProductGroupComponentWrapper);
+const ProductGroupContainer = compose<ComponentType>(withRouter, connect<ProductGroupContainerMapStateToPropsType, ProductGroupContainerMapDispatchToPropsType, {}, AppStateType>(wrapperMapStateToProps, {loadPrGroup, loadProducts}))(ProductGroupComponentWrapper);
 
 export default ProductGroupContainer;

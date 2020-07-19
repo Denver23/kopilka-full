@@ -102,7 +102,7 @@ export const login = (email: string, password: string, rememberMe: boolean): Thu
     }
 }
 
-type SignUpDataType = {
+export type SignUpDataType = {
     name: string,
     surname: string,
     login: string,
