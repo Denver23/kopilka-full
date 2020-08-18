@@ -2,7 +2,7 @@
   "name": "kopilka-react",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://denver23.github.io/kopilka-react/",
+  "homepage": "https://localhost:3000/",
   "dependencies": {
     "@material-ui/core": "^4.7.1",
     "@material-ui/icons": "^4.5.1",
@@ -26,6 +26,7 @@
     "redux": "^4.0.5",
     "redux-form": "^8.2.6",
     "redux-thunk": "^2.3.0",
+    "reselect": "^4.0.0",
     "typescript": "^3.9.3"
   },
   "scripts": {

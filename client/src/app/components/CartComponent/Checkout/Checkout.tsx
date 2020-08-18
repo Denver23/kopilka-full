@@ -2,61 +2,58 @@ import React, {useState} from "react";
 import s from './Checkout.module.scss'
 import {Field, InjectedFormProps, reduxForm, FormState, FormAction} from "redux-form";
 import RadioButton from "../../common/RadioButtons/RadioButton/RadioButton";
-import {connect} from "react-redux";
+import {connect, useDispatch, useSelector} from "react-redux";
 import { submit } from 'redux-form'
 import CartProduct from "../../HeaderComponent/Cart/CartDisplay/CartProduct/CartProduct";
 import {checkoutProducts} from "../../../redux/cartReducer";
 import {requiredField, phoneType} from "../../../utils/validators/validators";
 import Input from "../../common/Input/Input";
 import CheckoutStatus from "../CheckoutStatus/CheckoutStatus";
-import {CheckoutProduct, OptionType, ProductType} from "../../../types/types";
-import {AppStateType} from "../../../redux/store";
+import {CheckoutProduct, OptionType} from "../../../types/types";
 import {Dispatch} from "redux";
+import {GetCartProducts, GetCheckoutMessage, GetCheckoutOptions} from "../../../redux/selectors/cartReducerSelectors";
 
-type CheckoutMapStateToProps = {
-    products: Array<ProductType>,
-    checkoutOptions: Array<OptionType>,
-    message: string
-}
-type CheckoutMapDispatchToProps = {
-    checkoutProducts: (products: Array<CheckoutProduct>, options: Object) => void
-}
+const Checkout: React.FC = (props) => {
 
-type CheckoutAllProps = CheckoutMapStateToProps & CheckoutMapDispatchToProps
-
-const Checkout: React.FC<CheckoutAllProps> = (props) => {
+    const products = useSelector(GetCartProducts);
+    const checkoutOptions = useSelector(GetCheckoutOptions);
+    const message = useSelector(GetCheckoutMessage);
+    const dispatch = useDispatch();
+    const checkoutProductsThunk = (products: Array<CheckoutProduct>, options: Object): void => {
+        dispatch(checkoutProducts(products, options));
+    }
 
     let [deliveryCost, changeCost] = useState(0);
 
     let totalPrice = 0;
 
-    props.products.forEach(product => {
+    products.forEach(product => {
         totalPrice += product.price * product.quantity;
     })
 
     const checkoutSubmit = (options: Object): void => {
-        let products = props.products.map(product => {
+        let productsApply = products.map(product => {
             return {productId: product.id, sku: product.sku, quantity: product.quantity}
         })
 
-        props.checkoutProducts(products, options);
+        checkoutProductsThunk(productsApply, options);
 
     }
 
     return <div>
         {
-            props.message === '' ? <div className={s.checkout}>
-                <CustomerFormRedux options={props.checkoutOptions} onSubmit={checkoutSubmit}/>
+            message === '' ? <div className={s.checkout}>
+                <CustomerFormRedux options={checkoutOptions} onSubmit={checkoutSubmit}/>
                 <div className={s.productsInfo}>
-                    {props.products.length ? props.products.map(product => {
+                    {products.length ? products.map(product => {
                         return <CartProduct {...product} key={product.sku} />
                     }) : <span className={s.message}>Your cart is empty</span>}
-                    {props.products.length ? <div className={s.priceInfo}>
+                    {products.length ? <div className={s.priceInfo}>
                         <div className={s.priceItem}><span className={s.priceTitle}>Sum:</span>{totalPrice}$</div>
                         <div className={s.priceItem}><span className={s.priceTitle}>Delivery:</span>{deliveryCost}$</div>
                         <div className={s.priceItem}><span className={s.priceTitle}>Total Price:</span>{totalPrice + deliveryCost}$</div>
                     </div> : ''}
-                    {props.products.length ? <RemoveSubmitButtonConnect /> : ''}
+                    {products.length ? <RemoveSubmitButton /> : ''}
                 </div>
             </div> : <CheckoutStatus />
         }
@@ -115,18 +112,9 @@ const CutomerForm: React.FC<InjectedFormProps<CustomerFormValuesType, CustomerFo
 
 const CustomerFormRedux = reduxForm<CustomerFormValuesType, CustomerFormOwnPropsType>({form: 'CustomerForm',enableReinitialize: true})(CutomerForm)
 
-const RemoveSubmitButton: React.FC<{dispatch: Dispatch<FormAction>}> = ({ dispatch }) => {
+const RemoveSubmitButton: React.FC = () => {
+    const dispatch = useDispatch();
     return <button type={'button'} className={s.submitButton} onClick={() => dispatch(submit('CustomerForm'))}>Checkout</button>
 }
 
-const RemoveSubmitButtonConnect = connect()(RemoveSubmitButton);
-
-let mapStateToProps = (state: AppStateType): CheckoutMapStateToProps => {
-    return {
-        products: state.cartReducer.products,
-        checkoutOptions: state.cartReducer.checkoutOptions,
-        message: state.cartReducer.checkoutMessage
-    }
-}
-
-export default connect(mapStateToProps, {checkoutProducts})(Checkout);
+export default Checkout;

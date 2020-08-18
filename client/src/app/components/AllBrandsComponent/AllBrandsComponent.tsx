@@ -1,36 +1,34 @@
 import React, {ComponentType, useEffect} from "react";
 import s from './AllBrandsComponent.module.scss'
 import Preloader from "../common/Preloader/Preloader";
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import Breadcrumbs from "../ProductComponent/Breadcrumbs/Breadcrumbs";
 import PagesButtonList from "../ProductGroupComponent/PagesButtonList/PagesButtonList";
-import {compose} from "redux";
 import {Link, withRouter, RouteComponentProps} from "react-router-dom";
 import {uploadAllBrands} from "../../redux/allBrandsReducer";
 import {BrandType} from "../../types/types";
-import { AppStateType } from "../../redux/store";
+import {GetAllBrands, GetBrandsLoading, GetBrandsQuantity} from "../../redux/selectors/allBrandsSelectors";
 
-type AllBrandsComponentMapStatePropsType = {
-    loading: boolean,
-    quantity: number,
-    brands: Array<BrandType>
-}
-type AllBrandsComponentMapDispatchPropsType = {
-    uploadAllBrands: (page: number, productOnPageQuantity: number) => void
-}
+type AllBrandsComponentProps = RouteComponentProps<{}>;
+const AllBrandsComponent: React.FC<AllBrandsComponentProps> = ({...props}) => {
+    const loading = useSelector(GetBrandsLoading);
+    const quantity = useSelector(GetBrandsQuantity);
+    const brands = useSelector(GetAllBrands);
+    const dispatch = useDispatch();
+    const uploadAllBrandsThunk = (page: number, productOnPageQuantity: number): void => {
+        dispatch(uploadAllBrands(page, productOnPageQuantity));
+    }
 
-type AllBrandsComponentProps = AllBrandsComponentMapStatePropsType & AllBrandsComponentMapDispatchPropsType & RouteComponentProps<{}>;
-const AllBrandsComponent: React.FC<AllBrandsComponentProps> = ({loading, ...props}) => {
     let productOnPageQuantity = 40;
     let UrlSearchParamsPage = new URLSearchParams(props.location.search).get('page');
     let page = UrlSearchParamsPage !== null ? +UrlSearchParamsPage : 1;
 
     useEffect(() => {
-        props.uploadAllBrands(page, productOnPageQuantity)
+        uploadAllBrandsThunk(page, productOnPageQuantity)
     },[props.match.url])
 
     return <div className={s.allBrandsWrapper}>
-        {!loading ? <AllBrandsList quantity={props.quantity} productOnPageQuantity={productOnPageQuantity} brands={props.brands} activePage={page}/> : (<Preloader background={true}/>)}
+        {!loading ? <AllBrandsList quantity={quantity} productOnPageQuantity={productOnPageQuantity} brands={brands} activePage={page}/> : (<Preloader background={true}/>)}
     </div>
 }
 
@@ -58,12 +56,4 @@ const AllBrandsList: React.FC<AllBrandsListProps> = (props) => {
     </div>
 }
 
-let mapStateToProps = (state: AppStateType): AllBrandsComponentMapStatePropsType => {
-    return {
-        loading: state.allBrandsReducer.loading,
-        quantity: state.allBrandsReducer.quantity,
-        brands: state.allBrandsReducer.brands
-    }
-}
-
-export default compose<ComponentType>(withRouter, connect<AllBrandsComponentMapStatePropsType, AllBrandsComponentMapDispatchPropsType, {}, AppStateType>(mapStateToProps, {uploadAllBrands}))(AllBrandsComponent);
+export default withRouter(AllBrandsComponent);

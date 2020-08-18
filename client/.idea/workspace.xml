@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e8cb397f-ce51-4e85-b306-212e0ed585fe" name="Default Changelist" comment="" />
+    <list default="true" id="e8cb397f-ce51-4e85-b306-212e0ed585fe" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/admin-panel.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app.js" beforeDir="false" afterPath="$PROJECT_DIR$/../app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../package.json" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,7 +26,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="JsFlowSettings">
     <service-enabled>true</service-enabled>
@@ -126,8 +135,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="npm.deploy" />
         <item itemvalue="npm.predeploy" />
+        <item itemvalue="npm.deploy" />
         <item itemvalue="npm.build" />
       </list>
     </recent_temporary>
@@ -222,6 +231,9 @@
       <workItem from="1585067248765" duration="533000" />
       <workItem from="1585067870705" duration="21000" />
       <workItem from="1585067929314" duration="16000" />
+      <workItem from="1597743607290" duration="142000" />
+      <workItem from="1597744862262" duration="1042000" />
+      <workItem from="1597749682373" duration="400000" />
     </task>
     <task id="LOCAL-00001" summary="First-update">
       <created>1575304457996</created>

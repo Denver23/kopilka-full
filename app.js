@@ -2,6 +2,7 @@ const express = require('express');
 const config = require('config');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 
@@ -24,6 +25,14 @@ app.use('/api/cart', require('./routes/cart.routes'));
 app.use('/api/search', require('./routes/search.routes'));
 
 app.use('/api/all-brands', require('./routes/allBrands.routes'));
+
+app.use('/admin/', express.static(path.join(__dirname, 'admin-panel/build/')))
+
+app.use(express.static(path.join(__dirname, 'client/build/')));
+
+// app.get('*', function (req, res) {
+//     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+// });
 
 const PORT = config.get('port') || 5000;
 
