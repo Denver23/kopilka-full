@@ -5,48 +5,36 @@ import Cart from "./Cart/Cart";
 import SignIn from "./SignIn/SignIn";
 import s from './HeaderComponent.module.scss';
 import CategoriesMenu from "./CategoriesMenu/CategoriesMenu";
-import {connect} from "react-redux";
+import {useSelector} from "react-redux";
 import ProfileLink from "./ProfileLink/ProfileLink";
 import {Link} from "react-router-dom";
 import BurgerDisplay from "./BurgerMenu/BurgerDisplay/BurgerDisplay";
-import {AppStateType} from "../../redux/store";
-import {AuthReducerInitialStateType} from "../../redux/authReducer";
-import {MainMenuItem, TopMenuObjectType} from "../../types/types";
+import {GetProfile} from "../../redux/selectors/authSelectors";
+import {GetMainMenu, GetTopMenu} from "../../redux/selectors/headerSelectors";
 
-type MapStateToPropsType = {
-    profile: AuthReducerInitialStateType,
-    mainMenu: Array<MainMenuItem>,
-    topMenu: Array<TopMenuObjectType>
-}
+const HeaderComponent: React.FC = (props) => {
 
-type PropsType = MapStateToPropsType;
+    const profile = useSelector(GetProfile);
+    const mainMenu = useSelector(GetMainMenu);
+    const topMenu = useSelector(GetTopMenu);
 
-const HeaderComponent: React.FC<PropsType> = (props) => {
 
     let [burgerDisplay, setBurgerDisplay] = useState(false);
 
     return (
         <div className={s.headerDecorator}>
-            <BurgerDisplay mainMenu={props.mainMenu} burgerDisplay={burgerDisplay} setBurgerDisplay={setBurgerDisplay}/>
+            <BurgerDisplay mainMenu={mainMenu} burgerDisplay={burgerDisplay} setBurgerDisplay={setBurgerDisplay}/>
             <div className={s.headerComponent}>
                 <div className={s.burgerLogo}>
                     <BurgerMenu burgerDisplay={burgerDisplay} setBurgerDisplay={setBurgerDisplay}/>
                     <Link to="/" className={s.logoUrl}>Portland</Link>
                 </div>
-                <MainMenu mainMenu={props.mainMenu}/>
-                {props.profile.isAuth ? (<div className={s.profileMenu}><Cart/><ProfileLink profile={props.profile} /></div>) : (<div className={s.profileMenu}><Cart/><SignIn/></div>)}
+                <MainMenu mainMenu={mainMenu}/>
+                {profile.isAuth ? (<div className={s.profileMenu}><Cart/><ProfileLink profile={profile} /></div>) : (<div className={s.profileMenu}><Cart/><SignIn/></div>)}
             </div>
-            <CategoriesMenu topMenu={props.topMenu} />
+            <CategoriesMenu topMenu={topMenu} />
         </div>
     )
 }
 
-const mapStateToProps = (state: AppStateType) => {
-    return {
-        profile: state.authReducer,
-        mainMenu: state.headerReducer.mainMenu,
-        topMenu: state.headerReducer.topMenu
-    }
-}
-
-export default connect<MapStateToPropsType, {}, {}, AppStateType>(mapStateToProps, {})(HeaderComponent);
+export default HeaderComponent;

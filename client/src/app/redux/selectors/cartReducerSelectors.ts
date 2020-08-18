@@ -11,3 +11,7 @@ export const GetCheckoutOptions = (state: AppStateType): Array<OptionType> => {
 export const GetCheckoutMessage = (state: AppStateType): string => {
     return state.cartReducer.checkoutMessage;
 }
+
+export const GetLoadingCheckout = (state: AppStateType): boolean => {
+    return state.cartReducer.loadingCheckout;
+}

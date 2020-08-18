@@ -2,21 +2,19 @@ import React, {useEffect, useState} from "react";
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import s from './Cart.module.scss';
 import CartDisplay from "./CartDisplay/CartDisplay";
-import {connect} from "react-redux";
+import {connect, useDispatch, useSelector} from "react-redux";
 import {initializeProducts} from "../../../redux/cartReducer";
 import {InitializeProductsType, ProductType} from "../../../types/types";
 import {AppStateType} from "../../../redux/store";
+import {GetCartProducts} from "../../../redux/selectors/cartReducerSelectors";
 
-type MapStateToPropsType = {
-    products: Array<ProductType>
-}
-type MapDispatchToPropsType = {
-    initializeProducts: (cartProducts: Array<InitializeProductsType>) => void
-}
+const Cart: React.FC = ({...props}) => {
 
-type PropsType = MapStateToPropsType & MapDispatchToPropsType
-
-const Cart: React.FC<PropsType> = ({products, ...props}) => {
+    const products = useSelector(GetCartProducts);
+    const dispatch = useDispatch();
+    const initializeProductsThunk = (cartProducts: Array<InitializeProductsType>): void => {
+        dispatch(initializeProducts(cartProducts));
+    }
 
     let [cartDisplay, changeDisplay] = useState(false);
 
@@ -27,7 +25,7 @@ const Cart: React.FC<PropsType> = ({products, ...props}) => {
         let localProducts = typeof localProductsJSON == 'string' ? JSON.parse(localProductsJSON) : null;
 
         if (Array.isArray(localProducts)) {
-            props.initializeProducts(localProducts);
+            initializeProductsThunk(localProducts);
         }
     }, [])
 
@@ -36,7 +34,7 @@ const Cart: React.FC<PropsType> = ({products, ...props}) => {
         function updateProducts() {
             let localProductsJSON = typeof localStorage.getItem('cartProducts') == 'string' ? localStorage.getItem('cartProducts') : null;
             let localProducts = typeof localProductsJSON == 'string' ? JSON.parse(localProductsJSON) : null;
-            props.initializeProducts(localProducts);
+            initializeProductsThunk(localProducts);
         }
 
         window.addEventListener('storage', updateProducts);
@@ -58,10 +56,4 @@ const Cart: React.FC<PropsType> = ({products, ...props}) => {
     )
 }
 
-let mapStateToProps = (state: AppStateType): MapStateToPropsType => {
-    return {
-        products: state.cartReducer.products
-    }
-}
-
-export default connect<MapStateToPropsType, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {initializeProducts})(Cart)
+export default Cart;

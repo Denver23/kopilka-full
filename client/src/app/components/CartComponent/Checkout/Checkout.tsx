@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import s from './Checkout.module.scss'
-import {Field, InjectedFormProps, reduxForm, FormState, FormAction} from "redux-form";
+import {Field, InjectedFormProps, reduxForm} from "redux-form";
 import RadioButton from "../../common/RadioButtons/RadioButton/RadioButton";
-import {connect, useDispatch, useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import { submit } from 'redux-form'
 import CartProduct from "../../HeaderComponent/Cart/CartDisplay/CartProduct/CartProduct";
 import {checkoutProducts} from "../../../redux/cartReducer";
@@ -10,7 +10,6 @@ import {requiredField, phoneType} from "../../../utils/validators/validators";
 import Input from "../../common/Input/Input";
 import CheckoutStatus from "../CheckoutStatus/CheckoutStatus";
 import {CheckoutProduct, OptionType} from "../../../types/types";
-import {Dispatch} from "redux";
 import {GetCartProducts, GetCheckoutMessage, GetCheckoutOptions} from "../../../redux/selectors/cartReducerSelectors";
 
 const Checkout: React.FC = (props) => {

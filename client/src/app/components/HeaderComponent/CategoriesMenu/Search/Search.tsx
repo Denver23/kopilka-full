@@ -2,24 +2,23 @@ import React, {useEffect, useRef, useState} from "react";
 import SearchIcon from '@material-ui/icons/Search';
 import s from './Search.module.scss';
 import {Field, InjectedFormProps, reduxForm, WrappedFieldInputProps, WrappedFieldMetaProps} from "redux-form";
-import {connect} from "react-redux";
+import {connect, useDispatch, useSelector} from "react-redux";
 import {searchProducts, headerReducerActions} from "../../../../redux/headerReducer";
 import {Link} from "react-router-dom";
 import {SearchProductType} from "../../../../types/types";
 import {AppStateType} from "../../../../redux/store";
+import {GetSearchProductsList} from "../../../../redux/selectors/headerSelectors";
 
+const Search: React.FC = () => {
 
-type SearchMapStateToPropsType = {
-    searchProductsList: Array<SearchProductType>
-}
-type SearchMapDispatchToProps = {
-    searchProducts: (query: string) => void,
-    setSearchProducts: (data: Array<SearchProductType>) => void
-}
-
-type SearchType  = SearchMapStateToPropsType & SearchMapDispatchToProps
-
-const Search: React.FC<SearchType> = (props) => {
+    const searchProductsList = useSelector(GetSearchProductsList);
+    const dispatch = useDispatch();
+    const searchProductsThunk = (query: string): void => {
+        dispatch(searchProducts(query));
+    }
+    const setSearchProducts = (data: Array<SearchProductType>): void => {
+        dispatch(headerReducerActions.setSearchProducts(data));
+    }
 
     let [showResults, setShowResults] = useState(false);
     let latestQueryString = useRef<string | undefined>(undefined);
@@ -31,12 +30,12 @@ const Search: React.FC<SearchType> = (props) => {
         if(query.search !== undefined) {
             setTimeout(() => {
                 if(query.search === latestQueryString.current) {
-                    props.searchProducts(query.search);
+                    searchProductsThunk(query.search);
                     setShowResults(true);
                 }
             }, 1000)
         } else {
-            props.setSearchProducts([]);
+            setSearchProducts([]);
         }
     }
 
@@ -60,8 +59,8 @@ const Search: React.FC<SearchType> = (props) => {
             <SearchIcon style={{ fontSize: 20 }}  />
             <SearchFormRedux onChange={SearchResult}/>
 
-                {props.searchProductsList[0] !== undefined ? (<ul ref={searchResultList} className={showResults ? s.searchResultList : `${s.searchResultList} ${s.disabled}`}>
-                    {props.searchProductsList.map(product => {
+                {searchProductsList[0] !== undefined ? (<ul ref={searchResultList} className={showResults ? s.searchResultList : `${s.searchResultList} ${s.disabled}`}>
+                    {searchProductsList.map(product => {
                         return <li className={s.searchListItem}>
                             <Link className={s.searchItemLink} to={`/brands/${product.brand.toLowerCase()}/id${product.id}`} onClick={()=>{setShowResults(false)}}>
                                 <div className={s.productThumbnail}><img src={product.image} alt=""/></div>
@@ -98,10 +97,4 @@ const SearchInput: React.FC<SearchInputPropsType> = ({input, meta: {touched, err
 }
 const SearchFormRedux = reduxForm<SearchFormValuesType, SearchFormOwnProps>({form: 'searchForm'})(SearchForm)
 
-let mapStateToProps = (state: AppStateType): SearchMapStateToPropsType => {
-    return {
-        searchProductsList: state.headerReducer.searchProducts
-    }
-}
-
-export default connect<SearchMapStateToPropsType, SearchMapDispatchToProps, {}, AppStateType>(mapStateToProps, {searchProducts,setSearchProducts: headerReducerActions.setSearchProducts})(Search);
+export default Search;

@@ -1,25 +1,21 @@
 import React, {useEffect} from "react";
 import s from "./CartComponent.module.scss";
 import Preloader from "../common/Preloader/Preloader";
-import {connect} from "react-redux";
+import { useDispatch, useSelector} from "react-redux";
 import CartComponent from "./CartComponent";
 import {loadOptions} from "../../redux/cartReducer";
-import {AppStateType} from "../../redux/store";
+import {GetLoadingCheckout} from "../../redux/selectors/cartReducerSelectors";
 
-type MapStateToPropsType = {
-    loading: boolean
-}
+const CartComponentWrapper: React.FC = ({...props}) => {
 
-type MapDispatchToPropsType = {
-    loadOptions: () => void
-}
-
-type CartComponentWrapperPropsType = MapStateToPropsType & MapDispatchToPropsType;
-
-const CartComponentWrapper: React.FC<CartComponentWrapperPropsType> = ({loading, ...props}) => {
+    const loading = useSelector(GetLoadingCheckout);
+    const dispatch = useDispatch();
+    const loadOptionsThunk = (): void => {
+        dispatch(loadOptions());
+    }
 
     useEffect(() => {
-        props.loadOptions();
+        loadOptionsThunk();
     }, [])
 
     return <div className={s.cartComponentWrapper}>
@@ -27,10 +23,4 @@ const CartComponentWrapper: React.FC<CartComponentWrapperPropsType> = ({loading,
     </div>
 }
 
-let mapStateToProps = (state: AppStateType) => {
-    return {
-        loading: state.cartReducer.loadingCheckout,
-    }
-}
-
-export default connect<MapStateToPropsType, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {loadOptions})(CartComponentWrapper);
+export default CartComponentWrapper;

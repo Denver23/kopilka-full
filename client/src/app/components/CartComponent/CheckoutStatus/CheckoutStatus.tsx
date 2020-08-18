@@ -1,37 +1,26 @@
 import React, {useEffect} from "react";
 import s from './CheckoutStatus.module.scss'
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {cartReducerActions} from "../../../redux/cartReducer";
 import Preloader from "../../common/Preloader/Preloader";
-import {AppStateType} from "../../../redux/store";
+import {GetCheckoutMessage} from "../../../redux/selectors/cartReducerSelectors";
 
-type CheckoutStatusMapStateToPropsType = {
-    message: string
-}
+const CheckoutStatus: React.FC = (props) => {
 
-type CheckoutStatusMapDispatchToPropsType = {
-    setCheckOutMessage: (message: string) => void
-}
-
-type CheckoutStatusPropsType = CheckoutStatusMapStateToPropsType & CheckoutStatusMapDispatchToPropsType
-
-const CheckoutStatus: React.FC<CheckoutStatusPropsType> = (props) => {
+    const message = useSelector(GetCheckoutMessage);
+    const dispatch = useDispatch();
+    const setCheckOutMessage = (message: string): void => {
+        dispatch(cartReducerActions.setCheckOutMessage(message));
+    }
 
     useEffect(() => {
         return () => {
-            props.setCheckOutMessage('')
+            setCheckOutMessage('')
         };
     });
 
     return <div className={s.checkoutStatusWrapper}>
-        {props.message !== '' ? props.message : (<Preloader background={true}/>)}
+        {message !== '' ? message : (<Preloader background={true}/>)}
     </div>
 }
-
-let mapStateToProps = (state: AppStateType) => {
-    return {
-        message: state.cartReducer.checkoutMessage
-    };
-}
-
-export default connect(mapStateToProps,{setCheckOutMessage: cartReducerActions.setCheckOutMessage})(CheckoutStatus);
+export default CheckoutStatus;

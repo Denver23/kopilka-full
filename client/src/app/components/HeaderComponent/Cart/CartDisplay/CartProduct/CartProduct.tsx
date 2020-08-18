@@ -1,23 +1,25 @@
 import s from "./CartProduct.module.scss";
 import {Link} from "react-router-dom";
-import React, {useEffect, useState} from "react";
-import {connect} from "react-redux";
+import React, {useState} from "react";
+import {useDispatch} from "react-redux";
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import {cartReducerActions, deleteFromCart} from "../../../../../redux/cartReducer";
 import {Formik} from "formik";
 import {ProductType, localStorageProductType} from "../../../../../types/types";
-import {AppStateType} from "../../../../../redux/store";
 
 type ChangeQuantity = (sku: string, quantity: number) => void
 
-type CartProductMapDispatchToProps = {
-    deleteFromCart: (sku: string) => void,
-    changeQuantity: ChangeQuantity
-}
-
-type CartProductPropsType = CartProductMapDispatchToProps & ProductType
+type CartProductPropsType = ProductType
 
 const CartProduct: React.FC<CartProductPropsType> = ({options, ...props}) => {
+
+    const dispatch = useDispatch();
+    const deleteFromCartAction = (sku: string): void => {
+        dispatch(deleteFromCart(sku));
+    }
+    const changeQuantityAction = (sku: string, quantity: number): void => {
+        dispatch(cartReducerActions.changeQuantity(sku, quantity))
+    }
 
     let localProductsJSON = typeof localStorage.getItem('cartProducts') == 'string' ? localStorage.getItem('cartProducts') : null;
     let localProducts = typeof localProductsJSON == 'string' ? JSON.parse(localProductsJSON) : null;
@@ -35,10 +37,10 @@ const CartProduct: React.FC<CartProductPropsType> = ({options, ...props}) => {
                     <img src={props.thumbnail} alt="" className={s.thumbnail}/>
                     <span className={s.productTitle}>{`${props.brand} - ${props.productTitle}`}</span>
                 </Link>
-                <QuantityForm initialValues={{quantity: props.quantity,sku: props.sku}} changeQuantity={props.changeQuantity}/>
+                <QuantityForm initialValues={{quantity: props.quantity,sku: props.sku}} changeQuantity={changeQuantityAction}/>
                 <ProductPrice price={props.price} name={props.sku} quantity={props.quantity}/>
                 <span onClick={(e) => {
-                    props.deleteFromCart(props.sku)
+                    deleteFromCartAction(props.sku)
                 }} className={s.deleteProduct}><DeleteForeverIcon fontSize="large"/></span>
             </div>
             {!!options ? <div className={s.productOptions}>{Object.keys(options).map((item) => {
@@ -103,4 +105,4 @@ const ProductPrice: React.FC<ProductPricePropsType> = (props) => {
     return <span className={s.productPrice}>{props.price * props.quantity}$</span>
 }
 
-export default connect<{}, CartProductMapDispatchToProps, {}, AppStateType>((state) => ({}), {deleteFromCart,changeQuantity: cartReducerActions.changeQuantity})(CartProduct);
+export default CartProduct;

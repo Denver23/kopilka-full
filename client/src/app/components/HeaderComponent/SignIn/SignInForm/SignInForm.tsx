@@ -4,10 +4,10 @@ import {Field, InjectedFormProps, reduxForm} from "redux-form";
 import Checkbox from "../../../common/Checkboxes/Checkbox/Checkbox";
 import {Link} from "react-router-dom";
 import {minLength, requiredField} from "../../../../utils/validators/validators";
-import {connect} from "react-redux";
+import {useSelector} from "react-redux";
 import Preloader from "../../../common/Preloader/Preloader";
 import Input from "../../../common/Input/Input";
-import {AppStateType} from "../../../../redux/store";
+import {GetUserFetching} from "../../../../redux/selectors/authSelectors";
 
 export type SignInFormValuesType = {
     email: string,
@@ -32,18 +32,16 @@ const SignInFormRedux = reduxForm<SignInFormValuesType, SignInFormOwnPropsType>(
     form: 'loginForm'
 })(SignInForm);
 
-type MapStateToPropsType = {
-    isFetching: boolean
-}
-
 type OwnProps = {
     onSubmit: (formData: SignInFormValuesType) => void,
     setShowForm: (showMenu: boolean) => void
 }
 
-type PropsType = MapStateToPropsType & OwnProps;
+type PropsType = OwnProps;
 
-const SignInPreloader: React.FC<PropsType> = ({onSubmit, isFetching, ...props}) => {
+const SignInPreloader: React.FC<PropsType> = ({onSubmit, ...props}) => {
+
+    const isFetching = useSelector(GetUserFetching);
 
     let signInFormWrapper = useRef<HTMLDivElement>(null);
 
@@ -65,10 +63,4 @@ const SignInPreloader: React.FC<PropsType> = ({onSubmit, isFetching, ...props}) 
     </div>
 }
 
-const mapStateToProps = (state: AppStateType) => {
-    return {
-        isFetching: state.authReducer.isFetching
-    }
-}
-
-export default connect<MapStateToPropsType, {}, {}, AppStateType>(mapStateToProps,{})(SignInPreloader);
+export default SignInPreloader;
