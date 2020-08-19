@@ -1,32 +1,29 @@
 import React, {ComponentType, useEffect} from "react";
 import s from "./ProductComponent.module.scss";
 import Preloader from "../common/Preloader/Preloader";
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {loadProduct} from "../../redux/productReducer";
 import {RouteComponentProps, withRouter} from "react-router-dom";
-import {compose} from "redux";
 import PageNotFoundComponent from "../PageNotFoundComponent/PageNotFoundComponent";
 import {ProductRouteType} from "../../types/types";
-import {AppStateType} from "../../redux/store";
 import ProductComponent from "./ProductComponent";
+import {GetProductId, GetProductLoading} from "../../redux/selectors/productSelectors";
 
-type MapStateToPropsType = {
-    loading: boolean,
-    id: string | null
-}
+type PropsType =  RouteComponentProps<ProductRouteType>;
 
-type MapDispatchToPropsType = {
-    loadProduct: (id: string, brand: string) => void
-}
+const ProductComponentWrapper: React.FC<PropsType> = ({...props}) => {
 
-type PropsType = MapStateToPropsType & MapDispatchToPropsType & RouteComponentProps<ProductRouteType>;
-
-const ProductComponentWrapper: React.FC<PropsType> = ({loading, id, ...props}) => {
+    const loading = useSelector(GetProductLoading);
+    const id = useSelector(GetProductId);
+    const dispatch = useDispatch();
+    const loadProductThunk = (id: string, brand: string): void => {
+        dispatch(loadProduct(id, brand));
+    }
 
     useEffect(() => {
         let id = props.match.params.id;
         let brand = props.match.params.brand;
-        props.loadProduct(id, brand);
+        loadProductThunk(id, brand);
     }, [props.match.url])
 
     return <div className={s.productWrapper}>
@@ -34,11 +31,4 @@ const ProductComponentWrapper: React.FC<PropsType> = ({loading, id, ...props}) =
     </div>
 }
 
-let mapStateToProps = (state: AppStateType): MapStateToPropsType => {
-    return {
-        loading: state.productReducer.loading,
-        id: state.productReducer.id
-    }
-}
-
-export default compose<ComponentType>(withRouter, connect<MapStateToPropsType, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {loadProduct}))(ProductComponentWrapper);
+export default withRouter(ProductComponentWrapper);

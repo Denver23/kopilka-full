@@ -1,22 +1,18 @@
 import React, {useLayoutEffect, useState} from "react";
 import s from './ProductsInfo.module.scss';
 import {Link, RouteComponentProps, withRouter} from "react-router-dom";
-import {compose} from "redux";
-import {connect} from "react-redux";
-import {AppStateType} from "../../../../redux/store";
-import {ChildProductType} from "../../../../types/types";
-
-type MapStateToPropsType = {
-    childProducts: Array<ChildProductType>
-}
+import {useSelector} from "react-redux";
+import {GetChildProducts} from "../../../../redux/selectors/productSelectors";
 
 type OwnProps = {
     brand: string
 }
 
-type PropsType = OwnProps & MapStateToPropsType & RouteComponentProps<{brand: string}>;
+type PropsType = OwnProps & RouteComponentProps<{brand: string}>;
 
 const ProductsInfo: React.FC<PropsType> = (props) => {
+
+    const childProducts = useSelector(GetChildProducts);
 
     let skuRow = React.useRef<HTMLDivElement>(null);
     let [skuAllHeight, changeSKUAllHeight] = useState(skuRow.current ? skuRow.current.scrollHeight : 0);
@@ -36,7 +32,7 @@ const ProductsInfo: React.FC<PropsType> = (props) => {
         <div className={s.infoRow}>
             <div className={s.infoTitle}>Part Number:</div>
             <div className={activeSKUList ? `${s.infoContent} ${s.active}` : s.infoContent} ref={skuRow}>
-                {props.childProducts.map(product => {
+                {childProducts.map(product => {
                     return <div className={s.productSKU} key={product.sku}>{product.sku}</div>
                 })}
                 {skuAllHeight > skuHeight ? <span className={s.skuArrow} onClick={() => {changeSKUListStatus(!activeSKUList)}}>&#8744;</span> : ''}
@@ -45,10 +41,4 @@ const ProductsInfo: React.FC<PropsType> = (props) => {
     </div>
 }
 
-let mapStateToProps = (state: AppStateType): MapStateToPropsType => {
-    return {
-        childProducts: state.productReducer.childProducts
-    }
-}
-
-export default compose(withRouter, connect<MapStateToPropsType, {}, {}, AppStateType>(mapStateToProps, {}))(ProductsInfo) as React.FC<OwnProps>;
+export default withRouter(ProductsInfo);

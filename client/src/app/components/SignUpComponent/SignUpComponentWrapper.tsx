@@ -1,24 +1,17 @@
 import React from "react";
 import s from './SignUpComponent.module.scss'
-import {connect} from "react-redux";
+import {useSelector} from "react-redux";
 import SignUpComponent from "./SignUpComponent";
 import {Redirect} from "react-router-dom";
-import {AppStateType} from "../../redux/store";
+import {GetIsAuth} from "../../redux/selectors/authSelectors";
 
-type MapStateToPropsType = {
-    isAuth: boolean
-}
+const SignUpComponentWrapper: React.FC = () => {
 
-const SignUpComponentWrapper: React.FC<MapStateToPropsType> = (props) => {
+    const isAuth = useSelector(GetIsAuth);
+
     return <div className={s.signUpComponentWrapper}>
-        {!props.isAuth ? <SignUpComponent/> : <Redirect to={'/'}/>}
+        {!isAuth ? <SignUpComponent/> : <Redirect to={'/'}/>}
     </div>
 }
 
-let mapStateToProps = (state: AppStateType): MapStateToPropsType => {
-    return {
-        isAuth: state.authReducer.isAuth
-    }
-}
-
-export default connect<MapStateToPropsType, {}, {}, AppStateType>(mapStateToProps, {})(SignUpComponentWrapper);
+export default SignUpComponentWrapper;

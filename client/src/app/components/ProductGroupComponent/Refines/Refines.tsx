@@ -1,18 +1,19 @@
-import React, {ComponentType, useRef} from "react";
+import React, {useRef} from "react";
 import CustomRefine from "./CustomRefine/CustomRefine";
 import s from './Refines.module.scss';
 import {RouteComponentProps, withRouter} from "react-router-dom";
 import {submit} from 'redux-form';
-import {compose, Dispatch} from "redux";
-import {connect} from "react-redux";
+import {Dispatch} from "redux";
+import {useDispatch} from "react-redux";
 import {ProductGroupRouteType, RefineType} from "../../../types/types";
-import {AppStateType} from "../../../redux/store";
 
 type PropsType = {
     fields: Array<RefineType>,
 }
 
-const Refines: React.FC<PropsType & ReturnType<typeof mapDispatchToProps> & RouteComponentProps<ProductGroupRouteType>> = ({dispatch, ...props}) => {
+const Refines: React.FC<PropsType & RouteComponentProps<ProductGroupRouteType>> = ({...props}) => {
+
+    const dispatch = useDispatch();
 
     let initialValues: {[key: string]: {[key: string]: boolean}} = {};
     if(props.location.search.slice(1).length > 1) {
@@ -85,14 +86,4 @@ return (
 )
 }
 
-function mapDispatchToProps(dispatch: Dispatch) {
-    return {
-        dispatch
-    };
-}
-
-let mapStateToProps = (state: AppStateType): {} => {
-    return {}
-}
-
-export default compose<ComponentType<PropsType>>(withRouter, connect<{}, ReturnType<typeof mapDispatchToProps>, {}, AppStateType>(mapStateToProps, mapDispatchToProps))(Refines);
+export default withRouter(Refines);

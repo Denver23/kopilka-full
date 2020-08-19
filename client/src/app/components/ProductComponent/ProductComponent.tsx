@@ -6,39 +6,35 @@ import Options from "./Options/Options";
 import {Link} from "react-router-dom";
 import DetailedInfo from "./DetailedInfo/DetailedInfo";
 import RecommendedProducts from "./RecommendedProducts/RecommendedProducts";
-import {connect} from "react-redux";
-import {compose} from "redux";
+import {useDispatch, useSelector} from "react-redux";
 import {addToCart} from "../../redux/cartReducer";
-import {ChildProductType} from "../../types/types";
-import {AppStateType} from "../../redux/store";
-
-type MapStateToPropsType = {
-    brand: string,
-    category: string,
-    productTitle: string,
-    childProducts: Array<ChildProductType>
-}
-
-type MapDispatchToPropsType = {
-    addToCart: (brand: string, id: string, sku: string) => void
-}
+import {GetBrand, GetCategory, GetChildProducts, GetProductTitle} from "../../redux/selectors/productSelectors";
 
 type OwnPropsType = {
     params: {[key: string]: string}
 }
 
-type PropsType = OwnPropsType & MapStateToPropsType & MapDispatchToPropsType;
+type PropsType = OwnPropsType;
 
 const ProductComponent: React.FC<PropsType> = (props) => {
+
+    const brand = useSelector(GetBrand);
+    const category = useSelector(GetCategory);
+    const productTitle = useSelector(GetProductTitle);
+    const childProducts = useSelector(GetChildProducts);
+    const dispatch = useDispatch();
+    const addToCartAction = (brand: string, id: string, sku: string): void => {
+        dispatch(addToCart(brand, id, sku));
+    }
 
     let brList = [
         {'url': '/', 'title': 'Home'},
         {'url': '/all-brands', 'title': 'All Brands'},
-        {'url': `/brands/${props.params.brand}`, 'title': props.brand}
+        {'url': `/brands/${props.params.brand}`, 'title': brand}
     ];
 
-    let [currentProduct, changeProduct] = useState(props.childProducts.length > 1 ? undefined : props.childProducts.length === 1 ? props.childProducts[0] : undefined);
-    let [activeOptions, changeOptions] = useState(props.childProducts.length > 1 ? Object.keys(props.childProducts[0].options).map(option => {
+    let [currentProduct, changeProduct] = useState(childProducts.length > 1 ? undefined : childProducts.length === 1 ? childProducts[0] : undefined);
+    let [activeOptions, changeOptions] = useState(childProducts.length > 1 ? Object.keys(childProducts[0].options).map(option => {
         return {'name': option, 'key': ''};
     }) : []);
 
@@ -55,7 +51,7 @@ const ProductComponent: React.FC<PropsType> = (props) => {
 
     const updateProduct = (options: any) => {
         changeOptions(dataOption(options));
-        let newProduct = props.childProducts.find(product => {
+        let newProduct = childProducts.find(product => {
             return activeOptions.every(option => {
                 return option.key === product.options[option.name];
             })
@@ -67,37 +63,28 @@ const ProductComponent: React.FC<PropsType> = (props) => {
     return <div className={s.productContainer}>
             <div className={s.ProductComponent}>
                 <Breadcrumbs list={brList}/>
-                <span className={s.productTitle}>{props.brand}® - {props.productTitle}</span>
+                <span className={s.productTitle}>{brand}® - {productTitle}</span>
                 <div className={s.mainInfo}>
                     <ProductGallery/>
                     <div className={s.priceInfo}>
-                        <Options onChange={(e)=>{updateProduct(e)}} options={props.childProducts}/>
+                        <Options onChange={(e)=>{updateProduct(e)}} options={childProducts}/>
                         <div className={s.productActions}>
                             <button className={currentProduct === undefined || currentProduct.quantity === 0 ? `${s.addToCartButton} ${s.disabled}` : s.addToCartButton} onClick={() => {
                                 if(currentProduct !== undefined) {
-                                    props.addToCart(props.brand, props.params.id, currentProduct.sku)
+                                    addToCartAction(brand, props.params.id, currentProduct.sku)
                                 }
                             }} disabled={currentProduct === undefined || currentProduct.quantity === 0}>Add to Cart
                             </button>
-                            <Link to={`/${props.category}-category`} className={s.viewSimilar}>View Similar</Link>
+                            <Link to={`/${category}-category`} className={s.viewSimilar}>View Similar</Link>
                         </div>
                     </div>
                 </div>
                 <div className={s.detailedInfo}>
-                    <DetailedInfo productTitle={props.productTitle} brand={props.brand}/>
+                    <DetailedInfo productTitle={productTitle} brand={brand}/>
                     <RecommendedProducts/>
                 </div>
             </div>
         </div>
 }
 
-let mapStateToProps = (state: AppStateType): MapStateToPropsType => {
-    return {
-        brand: state.productReducer.brand,
-        category: state.productReducer.category,
-        productTitle: state.productReducer.productTitle,
-        childProducts: state.productReducer.childProducts
-    }
-}
-
-export default compose(connect<MapStateToPropsType, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {addToCart}))(ProductComponent);
+export default ProductComponent;

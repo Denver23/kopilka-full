@@ -1,4 +1,4 @@
-import React, {ComponentType, ReactText, useEffect} from 'react';
+import React, {ReactText, useEffect} from 'react';
 import Slider from './Slider/Slider';
 import Refines from './Refines/Refines';
 import ProductList from './ProductList/ProductList';
@@ -8,83 +8,78 @@ import Reviews from './Reviews/Reviews';
 import s from './ProductGroupComponent.module.scss';
 import Preloader from "../common/Preloader/Preloader";
 import PageNotFoundComponent from "../PageNotFoundComponent/PageNotFoundComponent";
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import CategoriesBlock from "./Refines/CategoriesBlock/CategoriesBlock";
-import {ChildCategoryType, ProductGroupRouteType, ProductInListType, RefineType} from "../../types/types";
+import {ProductGroupRouteType} from "../../types/types";
 import {loadPrGroup, loadProducts} from "../../redux/productGroupReducer";
-import {compose} from "redux";
 import {RouteComponentProps, withRouter} from "react-router";
-import {AppStateType} from "../../redux/store";
-
-type ProductGroupContainerMapDispatchToPropsType = {
-    loadPrGroup: (type: string, queryURL: string, query: string, productsOnPage: number) => void,
-    loadProducts: (type: string, queryURL: string, query: string, productsOnPage: number) => void
-}
-
-type ProductGroupContainerMapStateToPropsType = {
-    loading: boolean,
-    url: string | null,
-    bestSellers: Array<ProductInListType> | undefined,
-    reviews: Array<{[key: string]: string}> | undefined,
-    productsOnPage: number
-}
-
-type ProductGroupMapStateToPropsType = {
-    productsLoading: boolean,
-    refines: Array<RefineType>,
-    productCount: number | null,
-    categoriesList: Array<ChildCategoryType>,
-    name: string | null
-}
+import {
+    GetProductGroupCategoriesList,
+    GetProductGroupProductsLoading, GetProductGroupName,
+    GetProductGroupProductsCount,
+    GetProductGroupRefines,
+    GetSlides, GetProductGroupLoading, GetURL, GetProductGroupBestSellers, GetProductGroupReviews, GetProductsOnPage
+} from "../../redux/selectors/productGroupSelectors";
 
 type PropsType = {
     type: string,
     activePage: ReactText,
     activeURL: string | undefined,
-    query: string
-} & ProductGroupMapStateToPropsType & ProductGroupContainerMapStateToPropsType;
+    query: string,
+    productsOnPage: number,
+    loading: boolean,
+    url: string | null
+};
 
-const ProductGroup: React.FC<PropsType> = (props) => {
+const ProductGroupComponent: React.FC<PropsType> = (props) => {
+
+    const productsLoading = useSelector(GetProductGroupProductsLoading);
+    const refines = useSelector(GetProductGroupRefines);
+    const productCount = useSelector(GetProductGroupProductsCount);
+    const categoriesList = useSelector(GetProductGroupCategoriesList);
+    const name = useSelector(GetProductGroupName) ;
+    const slides = useSelector(GetSlides);
+    const bestSellers = useSelector(GetProductGroupBestSellers);
+    const reviews = useSelector(GetProductGroupReviews);
 
     return (
         <div className={s.CategoryComponent}>
-            <Slider/>
+            <Slider slides={slides}/>
             <div className={s.productsGrid}>
                 <div className={s.refineBlock}>
-                    {props.categoriesList.length > 0 ? (<CategoriesBlock type={props.type} brandName={props.name} categoriesList={props.categoriesList}/>) : ''}
-                    <Refines fields={props.refines}/>
+                    {categoriesList.length > 0 ? (<CategoriesBlock type={props.type} brandName={name} categoriesList={categoriesList}/>) : ''}
+                    <Refines fields={refines}/>
                 </div>
-                {!props.productsLoading ? <ProductList/> : (<div className={s.productListWrapper}><ProductList /><Preloader position={'absolute'} borderRadius={4}/></div>)}
+                {!productsLoading ? <ProductList/> : (<div className={s.productListWrapper}><ProductList /><Preloader position={'absolute'} borderRadius={4}/></div>)}
             </div>
             <PagesButtonList
-                itemsCount={props.productCount}
+                itemsCount={productCount}
                 productsOnPage={props.productsOnPage}
                 activePage={props.activePage as number}
                 activeURL={props.activeURL}
                 type={props.type}
                 query={props.query}
             />
-            {props.bestSellers !== undefined && props.bestSellers.length > 0 ? <BestSellers bestSellers={props.bestSellers}/> : ''}
-            {props.reviews !== undefined && props.reviews.length > 0 ? <Reviews reviews={props.reviews}/> : ''}
+            {bestSellers !== undefined && bestSellers.length > 0 ? <BestSellers bestSellers={bestSellers}/> : ''}
+            {reviews !== undefined && reviews.length > 0 ? <Reviews reviews={reviews}/> : ''}
         </div>
     )
 }
 
-const mapStateToProps = (state: AppStateType): ProductGroupMapStateToPropsType => {
-    return {
-        productsLoading: state.productGroupReducer.productsLoading,
-        refines: state.productGroupReducer.refines,
-        productCount: state.productGroupReducer.productCount,
-        categoriesList: state.productGroupReducer.childCategories,
-        name: state.productGroupReducer.name
+type WrapperPropsType = RouteComponentProps<ProductGroupRouteType>
+
+const ProductGroupComponentWrapper: React.FC<WrapperPropsType> = ({...props}) => {
+
+    const loading = useSelector(GetProductGroupLoading);
+    const url = useSelector(GetURL);
+    const productsOnPage = useSelector(GetProductsOnPage);
+    const dispatch = useDispatch();
+    const loadPrGroupThunk = (type: string, queryURL: string, query: string, productsOnPage: number): void => {
+        dispatch(loadPrGroup(type, queryURL, query, productsOnPage));
     }
-}
-
-const ProductGroupComponent = connect<ProductGroupMapStateToPropsType, {}, {}, AppStateType>(mapStateToProps, {})(ProductGroup);
-
-type WrapperPropsType = ProductGroupContainerMapStateToPropsType & ProductGroupContainerMapDispatchToPropsType & RouteComponentProps<ProductGroupRouteType>
-
-const ProductGroupComponentWrapper: React.FC<WrapperPropsType> = ({loading, url, ...props}) => {
+    const loadProductsThunk = (type: string, queryURL: string, query: string, productsOnPage: number): void => {
+        dispatch(loadProducts(type, queryURL, query, productsOnPage));
+    }
 
     let type = props.match.params.brand ? 'brand' : 'category';
     let searchParamsPage = new URLSearchParams(props.location.search).get("page");
@@ -101,9 +96,9 @@ const ProductGroupComponentWrapper: React.FC<WrapperPropsType> = ({loading, url,
 
     useEffect(() => {
         if(queryURL === url){
-            props.loadProducts(type, queryURL, query, props.productsOnPage);
+            loadProductsThunk(type, queryURL, query, productsOnPage);
         } else {
-            props.loadPrGroup(type, queryURL, query, props.productsOnPage);
+            loadPrGroupThunk(type, queryURL, query, productsOnPage);
         }
     }, [props.match])
 
@@ -118,6 +113,7 @@ const ProductGroupComponentWrapper: React.FC<WrapperPropsType> = ({loading, url,
                             activePage={activePage}
                             activeURL={props.match.params.brand ? props.match.params.brand : props.match.params.category}
                             query={query}
+                            productsOnPage={productsOnPage}
                             {...props}
                             loading={loading}
                             url={url}
@@ -129,16 +125,4 @@ const ProductGroupComponentWrapper: React.FC<WrapperPropsType> = ({loading, url,
     </div>
 }
 
-let wrapperMapStateToProps = (state: AppStateType): ProductGroupContainerMapStateToPropsType => {
-    return {
-        loading: state.productGroupReducer.loading,
-        url: state.productGroupReducer.url,
-        bestSellers: state.productGroupReducer.bestSellers,
-        reviews: state.productGroupReducer.reviews,
-        productsOnPage: state.productGroupReducer.productsOnPage
-    }
-}
-
-const ProductGroupContainer = compose<ComponentType>(withRouter, connect<ProductGroupContainerMapStateToPropsType, ProductGroupContainerMapDispatchToPropsType, {}, AppStateType>(wrapperMapStateToProps, {loadPrGroup, loadProducts}))(ProductGroupComponentWrapper);
-
-export default ProductGroupContainer;
+export default withRouter(ProductGroupComponentWrapper);

@@ -5,17 +5,15 @@ import {Field, InjectedFormProps, reduxForm} from "redux-form";
 import Input from "../common/Input/Input";
 import {emailType, minLength, requiredField} from "../../utils/validators/validators";
 import RadioButton from "../common/RadioButtons/RadioButton/RadioButton";
-import {connect} from "react-redux";
+import {useDispatch} from "react-redux";
 import {signUp, SignUpDataType} from "../../redux/authReducer";
-import {AppStateType} from "../../redux/store";
 
-type MapDispatchToPropsType = {
-    signUp: (data: SignUpDataType) => void
-}
+const SignUpComponent: React.FC = () => {
 
-type PropsType = MapDispatchToPropsType
-
-const SignUpComponent: React.FC<PropsType> = (props) => {
+    const dispatch = useDispatch();
+    const signUpThunk = (data: SignUpDataType): void => {
+        dispatch(signUp(data));
+    }
 
     let brList = [
         {'url': '/', 'title': 'Home'},
@@ -23,7 +21,7 @@ const SignUpComponent: React.FC<PropsType> = (props) => {
     ];
 
     const SignUpSubmit = (data: SignUpDataType) => {
-        props.signUp(data);
+        signUpThunk(data);
     }
 
 
@@ -60,10 +58,4 @@ const SignUpFormRedux = reduxForm<SignUpFormValuesType, SignUpOwnPropsType>({
     form: 'signUpForm'
 })(SignUpForm);
 
-let mapStateToProps = (state: AppStateType): {} => {
-    return {
-
-    }
-}
-
-export default connect<{}, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {signUp})(SignUpComponent);
+export default SignUpComponent;

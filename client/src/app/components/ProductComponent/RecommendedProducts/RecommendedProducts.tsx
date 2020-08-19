@@ -1,23 +1,18 @@
 import React from "react";
 import s from './RecommendedProducts.module.scss';
 import Product from "../../ProductGroupComponent/ProductList/Product/Product";
-import {connect} from "react-redux";
-import {ProductInListType} from "../../../types/types";
-import {AppStateType} from "../../../redux/store";
+import {useSelector} from "react-redux";
+import {GetRecommendedProducts} from "../../../redux/selectors/productSelectors";
 
-type MapStateToPropsType = {
-    recommendedProducts: Array<ProductInListType>
-}
+const RecommendedProducts: React.FC = () => {
 
-type PropsType = MapStateToPropsType
-
-const RecommendedProducts: React.FC<PropsType> = (props) => {
+    const recommendedProducts = useSelector(GetRecommendedProducts);
 
     return <div className={s.recommendedProducts}>
         <div className={s.title}>Recommended Products</div>
         <div className={s.productList}>
             {
-                props.recommendedProducts.map(item => {
+                recommendedProducts.map(item => {
                     return <Product key={item.id} {...item} />
                 })
             }
@@ -25,10 +20,4 @@ const RecommendedProducts: React.FC<PropsType> = (props) => {
     </div>
 }
 
-let mapStateToProps = (state: AppStateType): MapStateToPropsType => {
-    return {
-        recommendedProducts: state.productReducer.recommendedProducts
-    }
-}
-
-export default connect<MapStateToPropsType, {}, {}, AppStateType>(mapStateToProps, {})(RecommendedProducts);
+export default RecommendedProducts;

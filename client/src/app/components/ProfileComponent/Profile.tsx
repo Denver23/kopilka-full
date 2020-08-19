@@ -1,34 +1,41 @@
-import {connect} from "react-redux";
-import React, {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import React, {useEffect} from "react";
 import s from './ProfileComponent.module.scss';
 import Breadcrumbs from "../ProductComponent/Breadcrumbs/Breadcrumbs";
 import {Field, InjectedFormProps, reduxForm} from "redux-form";
 import Input from "../common/Input/Input";
 import {emailType, minLength, requiredField} from "../../utils/validators/validators";
 import {profileReducerActions, changeProfile, loadProfile} from "../../redux/profileReducer";
-import {AppStateType} from "../../redux/store";
 import {ChangeProfileDataType} from "../../types/types";
+import {GetUserEmail, GetUserId, GetUserLogin} from "../../redux/selectors/authSelectors";
+import {
+    GetEditMode,
+    GetUserName,
+    GetUserNumberOfPurchases,
+    GetUserPhone,
+    GetUserSurname
+} from "../../redux/selectors/profileSelectors";
 
-type MapDispatchToProps = {
-    loadProfile: (id: string) => void,
-    changeProfile: (userId: string, data: ChangeProfileDataType) => void,
-    changeEditMode: (value: boolean) => void
-}
+const Profile: React.FC = () => {
 
-type MapStateToPropsType = {
-    userId: string | null,
-    editMode: boolean,
-    name: string | null,
-    surname: string | null,
-    login: string | null,
-    email: string | null,
-    phone: string | null,
-    numberOfPurchases: number | null
-}
-
-type PropsType = MapStateToPropsType & MapDispatchToProps;
-
-const Profile: React.FC<PropsType> = (props) => {
+    const userId = useSelector(GetUserId);
+    const editMode = useSelector(GetEditMode);
+    const name = useSelector(GetUserName);
+    const surname = useSelector(GetUserSurname);
+    const login = useSelector(GetUserLogin);
+    const email = useSelector(GetUserEmail);
+    const phone = useSelector(GetUserPhone);
+    const numberOfPurchases = useSelector(GetUserNumberOfPurchases);
+    const dispatch = useDispatch();
+    const loadProfileThunk = (id: string): void => {
+        dispatch(loadProfile(id));
+    }
+    const changeProfileThunk = (userId: string, data: ChangeProfileDataType): void => {
+        dispatch(changeProfile(userId, data));
+    }
+    const changeEditMode = (value: boolean): void => {
+        dispatch(profileReducerActions.changeEditMode(value))
+    }
 
     let brList = [
         {'url': '/', 'title': 'Home'},
@@ -36,13 +43,13 @@ const Profile: React.FC<PropsType> = (props) => {
     ];
 
     useEffect(() => {
-        if(props.userId !== null) {
-            props.loadProfile(props.userId);
+        if(userId !== null) {
+            loadProfileThunk(userId);
         }
-    }, [props.userId])
+    }, [userId])
     const saveChange = (data: ChangeProfileDataType) => {
-        if(props.userId !== null) {
-            props.changeProfile(props.userId, data);
+        if(userId !== null) {
+            changeProfileThunk(userId, data);
         }
     }
 
@@ -50,21 +57,29 @@ const Profile: React.FC<PropsType> = (props) => {
     return <div className={s.profile}>
         <Breadcrumbs list={brList}/>
         <div className={s.profileBody}>
-            <div><span className={s.title}>Profile</span><button className={s.profileChangeButton} onClick={() => {props.changeEditMode(true)}}>(change)</button></div>
-            {props.editMode ? <ProfileFormRedux initialValues={
+            <div><span className={s.title}>Profile</span><button className={s.profileChangeButton} onClick={() => {changeEditMode(true)}}>(change)</button></div>
+            {editMode ? <ProfileFormRedux initialValues={
                 {
-                    name: props.name !== null ? props.name : undefined,
-                    surname: props.surname !== null ? props.surname : undefined,
-                    login: props.login !== null ? props.login : undefined,
-                    email: props.email !== null ? props.email : undefined,
-                    phone: props.phone !== null ? props.phone : undefined
-                }} onSubmit={saveChange} /> : <ProfileInfo {...props}/>}
-            <span className={s.profileItem}>Number of Purchases: {props.numberOfPurchases}</span>
+                    name: name !== null ? name : undefined,
+                    surname: surname !== null ? surname : undefined,
+                    login: login !== null ? login : undefined,
+                    email: email !== null ? email : undefined,
+                    phone: phone !== null ? phone : undefined
+                }} onSubmit={saveChange} /> : <ProfileInfo name={name} surname={surname} login={login} email={email} phone={phone}/>}
+            <span className={s.profileItem}>Number of Purchases: {numberOfPurchases}</span>
         </div>
     </div>
 }
 
-const ProfileInfo: React.FC<PropsType> = (props) => {
+type ProfileInfoPropsType = {
+    name: string | null,
+    surname: string | null,
+    login: string | null,
+    email: string | null,
+    phone: string | null,
+}
+
+const ProfileInfo: React.FC<ProfileInfoPropsType> = (props) => {
     return <ul className={s.profileData}>
         <li className={s.profileItem}>Name: {props.name}</li>
         <li className={s.profileItem}>Surname: {props.surname}</li>
@@ -102,17 +117,4 @@ const ProfileForm: React.FC<InjectedFormProps<ProfileFormValuesType, ProfileForm
 
 const ProfileFormRedux = reduxForm<ProfileFormValuesType, ProfileFormOwnPropsType>({form: 'profileForm', enableReinitialize: true})(ProfileForm);
 
-let mapStateToProps = (state: AppStateType): MapStateToPropsType => {
-    return {
-        userId: state.authReducer.userId,
-        editMode: state.profileReducer.editMode,
-        name: state.profileReducer.name,
-        surname: state.profileReducer.surname,
-        login: state.authReducer.login,
-        email: state.authReducer.email,
-        phone: state.profileReducer.phone,
-        numberOfPurchases: state.profileReducer.numberOfPurchases
-    }
-}
-
-export default connect<MapStateToPropsType, MapDispatchToProps, {}, AppStateType>(mapStateToProps, {loadProfile, changeProfile, changeEditMode: profileReducerActions.changeEditMode})(Profile);
+export default Profile;
