@@ -1,0 +1,15 @@
+.tagInput {
+  width: 78px;
+  margin-right: 8px;
+  vertical-align: top;
+}
+
+.warningRow {
+  background-color: rgba(255, 0, 0, 0.5);
+
+  &:hover {
+    td {
+      background-color: rgba(255, 0, 0, 0.7);
+    }
+  }
+}

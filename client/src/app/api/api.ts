@@ -23,9 +23,10 @@ const isAccessTokenExpired = (exp: number): boolean => {
 }
 
 instance.interceptors.request.use(request => {
-    if (!!localStorage.getItem('accessToken')) {
-        const accessToken = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    if (accessToken !== 'undefined' && refreshToken !== 'undefined') {
         let exp = Number(localStorage.getItem('exp'));
 
         if (isAccessTokenExpired(exp) && refreshToken) {

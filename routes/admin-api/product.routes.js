@@ -1,27 +1,28 @@
 const {Router} = require('express');
-const Product = require('../models/Product');
+const Product = require('../../models/Product');
 const router = Router();
 
-router.get('/:brand/id:id',
+router.get('/id:id',
     async (req, res) => {
         try {
-            const {id, brand} = req.params;
+            const {id} = req.params;
 
             const product = await Product.findById(id).populate('brand').populate('category');
 
-            if(product.brand.url === brand) {
+            if(product.brand.url) {
                 let result = {
                     id: product._id,
                     brand: product.brand.name,
-                    category: product.category.url,
+                    category: product.category.name,
                     productTitle: product.productTitle,
                     childProducts: product.childProducts,
                     images: product.images,
-                    productBrandImage: product.brand.slides[0],
+                    customFields: product.customFields,
                     shortDescription: product.shortDescription,
                     specifications: product.specifications,
                     features: product.features,
-                    recommendedProducts: []
+                    recommendedProducts: [],
+                    productCategoryCustomFields: product.category.refines
                 }
                 res.json({product: result})
             } else {
@@ -31,6 +32,6 @@ router.get('/:brand/id:id',
         } catch (e) {
             res.status(500).json({erorMessage: 'Server Error'})
         }
-})
+    })
 
 module.exports = router;

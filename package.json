@@ -6,9 +6,11 @@
   "scripts": {
     "start": "node app.js",
     "server": "nodemon app.js",
-    "client": "npm run start --prefix client",
-    "admin-panel": "npm run start --prefix admin-panel",
-    "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run admin-panel\""
+    "client:start": "npm run start --prefix client",
+    "admin-panel:start": "npm run start --prefix admin-panel",
+    "client-build": "npm run build --prefix client",
+    "admin-build": "npm run build --prefix admin-panel",
+    "dev": "concurrently \"npm run server\" \"npm run client:start\" \"npm run admin-panel:start\""
   },
   "keywords": [
     "mern",

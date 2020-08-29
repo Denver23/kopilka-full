@@ -1,4 +1,4 @@
-import React, {ComponentType, useEffect} from "react";
+import React, {useEffect} from "react";
 import s from "./ProductComponent.module.scss";
 import Preloader from "../common/Preloader/Preloader";
 import {useDispatch, useSelector} from "react-redux";

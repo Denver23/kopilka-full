@@ -2,14 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e8cb397f-ce51-4e85-b306-212e0ed585fe" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/admin-panel.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../admin-panel/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/src/api/api.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/src/components/SignInComponents/SignIn.module.scss" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/src/components/SignInComponents/SignIn.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/src/redux/appReducer.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/src/redux/authReducer.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/src/redux/store.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin-panel/src/types/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin-panel/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../admin-panel/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin-panel/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../admin-panel/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin-panel/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin-panel/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin-panel/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin-panel/src/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app.js" beforeDir="false" afterPath="$PROJECT_DIR$/../app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../package.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -53,6 +57,7 @@
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.completion" />
+    <property name="ts.external.directory.path" value="D:\WebUI\kopilka-full\client\node_modules\typescript\lib" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -135,9 +140,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.build" />
         <item itemvalue="npm.predeploy" />
         <item itemvalue="npm.deploy" />
-        <item itemvalue="npm.build" />
       </list>
     </recent_temporary>
   </component>
@@ -234,6 +239,7 @@
       <workItem from="1597743607290" duration="142000" />
       <workItem from="1597744862262" duration="1042000" />
       <workItem from="1597749682373" duration="400000" />
+      <workItem from="1597938655496" duration="685000" />
     </task>
     <task id="LOCAL-00001" summary="First-update">
       <created>1575304457996</created>

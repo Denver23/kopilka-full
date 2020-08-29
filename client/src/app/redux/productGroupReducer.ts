@@ -1,8 +1,8 @@
-import {prGroupAPI} from "../api/api";
 import ResponseMessageError from "../utils/errors/responseErrors";
 import {ProductInListType, PrGroupDataType, ChildCategoryType, RefineType, GetActionsTypes} from "../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
+import {prGroupAPI} from "../api/api";
 
 const SET_PR_GROUP = 'SET_PR_GROUP';
 const TOGGLE_LOADING = 'TOGGLE_LOADING';

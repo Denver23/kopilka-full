@@ -1,11 +1,10 @@
-import React, {ComponentType, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import HeaderComponent from "./components/HeaderComponent/HeaderComponent";
 import ProductGroupContainer from "./components/ProductGroupComponent/ProductGroupComponent";
 import FooterComponent from "./components/FooterComponent/FooterComponent";
 import s from './App.module.scss';
 import {Route, withRouter, Switch} from "react-router-dom";
-import {compose} from "redux";
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {initializeApp} from "./redux/appReducer";
 import Preloader from "./components/common/Preloader/Preloader";
 import ProductComponentWrapper from "./components/ProductComponent/ProductComponentWrapper";
@@ -15,29 +14,25 @@ import ProfileComponent from "./components/ProfileComponent/ProfileComponent";
 import AboutUsComponent from "./components/AboutUsComponent/AboutUsComponent";
 import PageNotFoundComponent from "./components/PageNotFoundComponent/PageNotFoundComponent";
 import AllBrandsComponent from "./components/AllBrandsComponent/AllBrandsComponent";
-import {AppStateType} from "./redux/store";
+import {GetInitialized} from "./redux/selectors/appSelectors";
+import {GetUserId} from "./redux/selectors/authSelectors";
 
-type MapDispatchToPropsType = {
-    initializeApp: () => void
-}
+const App: React.FC = () => {
 
-type MapStateToPropsType = {
-    initialized: boolean,
-    userId: string | null
-}
-
-type PropsType = MapStateToPropsType & MapDispatchToPropsType;
-
-const App: React.FC<PropsType> = (props) => {
+    const initialized = useSelector(GetInitialized);
+    const userId = useSelector(GetUserId);
+    const dispatch = useDispatch();
+    const initializeAppThunk = (): void => {
+        dispatch(initializeApp());
+    }
 
     useEffect(() => {
         function autoInitial() {
-            let userId = props.userId;
             let localUserId = localStorage.getItem('userId') ? localStorage.getItem('userId') : null;
             if(userId === localUserId && localUserId !== null) {
                 return;
             }
-            props.initializeApp();
+            initializeAppThunk();
         }
 
         window.addEventListener('storage', autoInitial);
@@ -46,7 +41,7 @@ const App: React.FC<PropsType> = (props) => {
     }, []);
 
     return <div className={s.appWrapper}>
-        {!props.initialized ? <Preloader/> :
+        {!initialized ? <Preloader/> :
             (<div className={s.appGrid}><HeaderComponent/>
                 <Switch>
                     <Route exact path='/' component={ProductGroupContainer}/>
@@ -67,12 +62,4 @@ const App: React.FC<PropsType> = (props) => {
     </div>
 }
 
-const mapStateToProps = (state: AppStateType): MapStateToPropsType => ({
-    initialized: state.appReducer.initialized,
-    userId: state.authReducer.userId
-})
-
-
-export default compose<ComponentType>(
-    withRouter,
-    connect<MapStateToPropsType, MapDispatchToPropsType, {}, AppStateType>(mapStateToProps, {initializeApp}))(App);
+export default withRouter(App);

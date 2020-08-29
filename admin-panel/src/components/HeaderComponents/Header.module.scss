@@ -1,0 +1,34 @@
+.headerWrapper {
+  background-color: #2f54eb;
+  height: 3rem;
+  color: #fff;
+
+  .generalLink {
+    font-size: 1.2rem;
+    font-style: italic;
+    float: left;
+    color: #fff;
+    padding-left: 40px;
+    line-height: 3rem;
+
+    &:hover {
+      color: #aeb8c2;
+    }
+  }
+
+  .signOutButton {
+    border: 0;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.0);
+    float: right;
+    padding-right: 40px;
+    line-height: 3rem;
+    font-size: 1rem;
+  }
+
+  &:after {
+    clear: both;
+    content: "";
+    display: block;
+  }
+}
