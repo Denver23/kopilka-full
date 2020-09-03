@@ -32,7 +32,7 @@ const appReducer = (state = initialState, action: GetActionsTypes<typeof appRedu
 
 export const appReducerActions = {
     initializedSuccess: () => ({type: INITIALIZED_SUCCESS} as const),
-    changeTheme: (theme: 'light' | 'dark') => ({type: CHANGE_THEME, theme})
+    changeTheme: (theme: 'light' | 'dark') => ({type: CHANGE_THEME, theme} as const)
 }
 
 export const initializeApp = (): ThunkAction<void, AppStateType, unknown, GetActionsTypes<typeof appReducerActions>> => (dispatch) => {

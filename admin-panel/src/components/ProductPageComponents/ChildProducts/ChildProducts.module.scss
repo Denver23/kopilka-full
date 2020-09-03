@@ -1,0 +1,12 @@
+
+.virtOptionList {
+  display: flex;
+  flex-direction: row;
+
+  .optionList {
+    margin: 0 20px;
+  }
+}
+.childTableRow {
+  margin-bottom: 0 !important;
+}

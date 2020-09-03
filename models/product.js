@@ -10,8 +10,7 @@ const schema = new Schema({
             sku: {type: String, required: true},
             price: {type: Number, required: true},
             quantity: {type: Number, required: true},
-            options: {type: Schema.Types.Mixed},
-            customFields: [{}]
+            options: {type: Schema.Types.Mixed}
         }
     ],
     images: [

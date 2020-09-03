@@ -1,5 +1,5 @@
 import {AppStateType} from "../store";
-import {productImage, RefineType} from "../../types/types";
+import {ChildProductType, productImage, RefineType} from "../../types/types";
 
 export const GetProductBrand = (state: AppStateType): string | null => {
     return state.productReducer.brand;
@@ -43,5 +43,9 @@ export const GetProductCustomFields = (state: AppStateType): Array<{[key: string
 
 export const GetNewCategoryProductCustomFields = (state: AppStateType): Array<RefineType> => {
     return state.productReducer.productCategoryCustomFields;
+}
+
+export const GetChildProducts = (state: AppStateType): Array<ChildProductType> => {
+    return state.productReducer.childProducts;
 }
 

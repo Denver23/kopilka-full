@@ -10,7 +10,6 @@ import {
 } from "../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
-import {productGroupReducerActions} from "../../../client/src/app/redux/productGroupReducer";
 
 const TOGGLE_LOADING = 'TOGGLE_LOADING';
 const SET_PRODUCT = 'SET_PRODUCT';
@@ -22,6 +21,11 @@ const DELETE_CUSTOMFIELD_TAG = 'DELETE_CUSTOMFIELD_TAG';
 const CHANGE_CUSTOMFIELD_TAG = 'CHANGE_CUSTOMFIELD_TAG';
 const ADD_NEW_CUSTOMFIELD_TAG = 'ADD_NEW_CUSTOMFIELD_TAG';
 const SET_PR_REFINES = 'SET_PR_REFINES';
+const DELETE_PR_REFINE = 'DELETE_PR_REFINE';
+const ADD_NEW_PR_REFINE = 'ADD_NEW_PR_REFINE';
+const DELETE_VIRT_OPTION = 'DELETE_VIRT_OPTION';
+const EDIT_VIRT_OPTION_NAME = 'EDIT_VIRT_OPTION_NAME';
+const ADD_NEW_VIRT_OPTION = 'ADD_NEW_VIRT_OPTION';
 function makeCounter() {
     let count = 0;
 
@@ -136,7 +140,45 @@ const productReducer = (state = initialState, action: GetActionsTypes<typeof pro
             });
             return {...state, customFields: customFieldsAdded};
         case SET_PR_REFINES:
-            return {...state, productCategoryCustomFields: action.data}
+            return {...state, productCategoryCustomFields: action.data};
+        case DELETE_PR_REFINE:
+            let newRefinesList = state.customFields.filter(refine => {
+                return Object.keys(refine)[0] !== action.name;
+            })
+            return {...state, customFields: [...newRefinesList]};
+        case ADD_NEW_PR_REFINE:
+            let newCF: {[key: string]: Array<string>} = {};
+            newCF[action.value] = []
+            let addedRefinesList = state.customFields;
+            addedRefinesList.push(newCF)
+            return {...state, customFields: [...addedRefinesList]}
+        case DELETE_VIRT_OPTION:
+            let newChildProductsWOOption = [...state.childProducts].map(item => {
+                let newItemOptions = {...item.options};
+                delete newItemOptions[action.value];
+                return {...item, options: newItemOptions};
+            });
+            return {...state, childProducts: newChildProductsWOOption};
+        case EDIT_VIRT_OPTION_NAME:
+            let newChildProductsWEditOption = [...state.childProducts].map(item => {
+                let newItemOptions: {[key: string]: string} = {};
+                Object.keys(item.options).forEach(optionName => {
+                    if(optionName === action.oldValue) {
+                        newItemOptions[action.newValue] = item.options[action.oldValue];
+                    } else {
+                        newItemOptions[optionName] = item.options[optionName];
+                    }
+                })
+                return {...item, options: newItemOptions};
+            })
+            return {...state, childProducts: newChildProductsWEditOption};
+        case ADD_NEW_VIRT_OPTION:
+            let newChildProductsWNewOption = [...state.childProducts].map(item => {
+                let newOptions = item.options;
+                newOptions[action.value] = ''
+                return {...item, options: {...newOptions}}
+            })
+            return {...state, childProducts: newChildProductsWNewOption};
         default:
             return state;
     }
@@ -152,7 +194,12 @@ export const productReducerActions = {
     deleteCustomFieldTag: (tag: string, customFieldName: string) => ({type: DELETE_CUSTOMFIELD_TAG, tag, customFieldName} as const),
     changeCustomFieldTag: (oldTag: string, newTag: string, customFieldName: string) => ({type: CHANGE_CUSTOMFIELD_TAG, oldTag, newTag, customFieldName} as const),
     addNewCustomFieldTag: (newTag: string, customFieldName: string) => ({type: ADD_NEW_CUSTOMFIELD_TAG, newTag, customFieldName} as const),
-    setNewProductRefines: (data: Array<RefineType>) => ({type: SET_PR_REFINES, data} as const)
+    setNewProductRefines: (data: Array<RefineType>) => ({type: SET_PR_REFINES, data} as const),
+    deleteProductRefine: (name: string) => ({type: DELETE_PR_REFINE, name} as const),
+    addNewPrRefine: (value: string) => ({type: ADD_NEW_PR_REFINE, value} as const),
+    deleteVirtOption: (value: string) => ({type: DELETE_VIRT_OPTION, value} as const),
+    editVirtOption: (oldValue: string, newValue: string) => ({type: EDIT_VIRT_OPTION_NAME, oldValue, newValue} as const),
+    addVirtOption: (value: string) => ({type: ADD_NEW_VIRT_OPTION, value} as const)
 }
 
 

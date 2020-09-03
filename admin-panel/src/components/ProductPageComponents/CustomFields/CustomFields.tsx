@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import {Button, Table, Tag, Tooltip, Input, Select} from "antd";
+import React, {useState} from 'react';
+import {Button, Table, Tag, Tooltip, Select} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {PlusOutlined} from "@ant-design/icons";
 import {useDispatch, useSelector} from "react-redux";
 import {GetNewCategoryProductCustomFields, GetProductCustomFields} from "../../../redux/selectors/productSelector";
 import {productCustomField, RefineType} from "../../../types/types";
 import 'antd/dist/antd.css';
+import generalInfoStyle from '../GeneralInfo/GeneralInfo.module.scss';
 import s from './CustomFields.module.scss';
 import {productReducerActions} from "../../../redux/productReducer";
+import {DeleteOutlined} from "@ant-design/icons/lib";
 
 const CustomFields: React.FC = () => {
 
@@ -20,11 +22,17 @@ const CustomFields: React.FC = () => {
     };
     const addNewCustomFieldTag = (newTag: string, customFieldName: string): void => {
         dispatch(productReducerActions.addNewCustomFieldTag(newTag, customFieldName))
-    }
+    };
+    const deleteProductRefine = (name: string): void => {
+        dispatch(productReducerActions.deleteProductRefine(name));
+    };
+    const addNewPrRefine = (value: string): void => {
+        dispatch(productReducerActions.addNewPrRefine(value));
+    };
 
-    const [editInputIndex, changeInputIndex] = useState<{[key: string]: number}>({row: -1, item: -1});
-    const [editInputValue, changeEditInputValue] = useState<string>('');
+    const [editInputIndex, changeInputIndex] = useState<{ [key: string]: number }>({row: -1, item: -1});
     const [newTagInputVisible, changeInputVisible] = useState<number>(-1);
+    const [newPrRefine, changeNewPrRefine] = useState<string>('');
 
     const customFields = useSelector(GetProductCustomFields);
     const newCategoryCustomFields = useSelector(GetNewCategoryProductCustomFields);
@@ -32,7 +40,7 @@ const CustomFields: React.FC = () => {
     const refinesCheck = (name: string): boolean => {
         let result = false;
         newCategoryCustomFields.forEach((item: RefineType) => {
-            if(item.title === name) {
+            if (item.title === name) {
                 result = true;
             }
         });
@@ -52,26 +60,28 @@ const CustomFields: React.FC = () => {
         deleteCustomFieldTag(removedTag, customFieldName);
     };
 
-    const handleInputChange = (e: any) => {
-        changeEditInputValue(e.target.value);
-    };
-
-    const handleInputConfirm = (customFieldName: string) => {
-        if(editInputValue.length > 0) {
-            addNewCustomFieldTag(editInputValue, customFieldName);
-        }
+    const handleInputConfirm = (value: string, customFieldName: string) => {
+        addNewCustomFieldTag(value, customFieldName);
         changeInputVisible(-1);
-        changeEditInputValue('');
     }
-
-    const handleEditInputChange = (e: any) => {
-        changeEditInputValue(e.target.value);
-    };
+    const handleNewSelectBlur = () => {
+        changeInputVisible(-1);
+    }
 
     const handleEditInputConfirm = (oldTag: string, newTag: string, customFieldName: string) => {
         changeCustomFieldTag(oldTag, newTag, customFieldName);
         changeInputIndex({row: -1, item: -1});
-        changeEditInputValue('');
+    };
+    const hangleSelectBlur = () => {
+        changeInputIndex({row: -1, item: -1});
+    };
+
+    const handleAddNewPrRefine = (value: string) => {
+        let result = true;
+        customFields.forEach(refine => {
+            if(Object.keys(refine)[0] === value) result = false
+        })
+        if(newPrRefine !== '' && result) addNewPrRefine(value);
     };
 
     const customFieldsColumns: ColumnsType<productCustomField> = [
@@ -89,26 +99,22 @@ const CustomFields: React.FC = () => {
                 return <div key={`customField${index}`}>{keys.map((item, itemIndex) => {
                     if (editInputIndex.item === itemIndex && editInputIndex.row == index) {
                         return (
-                            /*<Input
-                                key={item}
-                                size="small"
-                                className={s.tagInput}
-                                value={editInputValue}
-                                onChange={handleEditInputChange}
-                                onBlur={e => {handleEditInputConfirm(item, editInputValue, record.customFieldName)}}
-                                onPressEnter={e => {handleEditInputConfirm(item, editInputValue, record.customFieldName)}}
-                                autoFocus={true}
-                            />*/
-                            <Select size={"small"} defaultValue="lucy" style={{ width: 120 }}
+                            <Select size={"small"} defaultValue={item} style={{width: 120}}
                                     autoFocus={true}
-                                    onChange={(value) => {handleEditInputConfirm(item, value, record.customFieldName)}}>
+                                    onBlur={() => {
+                                        hangleSelectBlur()
+                                    }}
+                                    onChange={(value) => {
+                                        handleEditInputConfirm(item, value, record.customFieldName)
+                                    }}>
                                 {newCategoryCustomFields.filter((categoryRefine: RefineType) => {
                                     return categoryRefine.title === record.customFieldName;
-                                })[0].items.map(item => {
-                                    if(record.customFieldTags.includes(item)) {
-                                        return <Select.Option value={item} disabled={true}>{item}</Select.Option>
+                                })[0].items.map(selectItem => {
+                                    if (record.customFieldTags.includes(selectItem) && selectItem !== item) {
+                                        return <Select.Option value={selectItem}
+                                                              disabled={true}>{selectItem}</Select.Option>
                                     }
-                                    return <Select.Option value={item}>{item}</Select.Option>
+                                    return <Select.Option value={selectItem}>{selectItem}</Select.Option>
                                 })}
                             </Select>
                         );
@@ -121,10 +127,10 @@ const CustomFields: React.FC = () => {
                             closable={true}
                             color={"geekblue"}
                             onClose={() => handleClose(item, record.customFieldName)}
+                            style={{userSelect: 'none'}}
                         >
                             <span onDoubleClick={e => {
                                 changeInputIndex({row: index, item: itemIndex});
-                                changeEditInputValue(item);
                                 e.preventDefault();
                             }}>
                                 {isLongTag ? `${item.slice(0, 20)}...` : item}
@@ -147,21 +153,43 @@ const CustomFields: React.FC = () => {
                     )
                 })}
                     {
-                        newTagInputVisible === index ? <Input
-                            type="text"
-                            size="small"
-                            className={s.tagInput}
-                            value={editInputValue}
-                            onChange={handleInputChange}
-                            onBlur={() => {handleInputConfirm(record.customFieldName)}}
-                            onPressEnter={() => {handleInputConfirm(record.customFieldName)}}
-                            autoFocus={true}
-                        /> : record.warningStyle ? <Tag style={{borderStyle: 'dashed', background: '#fff'}} onClick={() => {changeInputVisible(index)}}>
-                            <PlusOutlined/> New Tag
-                        </Tag> : ''
+                        newTagInputVisible === index ? <Select size={"small"} style={{width: 120}}
+                                                               autoFocus={true}
+                                                               onBlur={() => {
+                                                                   handleNewSelectBlur()
+                                                               }}
+                                                               onChange={(value) => {
+                                                                   handleInputConfirm(`${value}`, record.customFieldName)
+                                                               }}>
+                            {newCategoryCustomFields.filter((categoryRefine: RefineType) => {
+                                return categoryRefine.title === record.customFieldName;
+                            })[0].items.map(selectItem => {
+                                if (record.customFieldTags.includes(selectItem)) {
+                                    return <Select.Option value={selectItem}
+                                                          disabled={true}>{selectItem}</Select.Option>
+                                }
+                                return <Select.Option value={selectItem}>{selectItem}</Select.Option>
+                            })}
+                        </Select> : record.warningStyle ?
+                            <Tag style={{borderStyle: 'dashed', background: '#fff'}} onClick={() => {
+                                changeInputVisible(index)
+                            }}>
+                                <PlusOutlined/> New Tag
+                            </Tag> : ''
                     }
 
                 </div>
+            }
+        },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            key: 'action',
+            width: 50,
+            render: (item, record, index) => {
+                return <button className={generalInfoStyle.deleteImageButton} onClick={() => {
+                    deleteProductRefine(record.customFieldName)
+                }}><DeleteOutlined/></button>
             }
         }
     ]
@@ -169,14 +197,29 @@ const CustomFields: React.FC = () => {
     return <div>
         <Table pagination={false} columns={customFieldsColumns} dataSource={customFieldsTableData}
                rowClassName={(record: productCustomField, index: number): string => {
-                   if(record.warningStyle === false) {
+                   if (record.warningStyle === false) {
                        return s.warningRow
                    } else return '';
                }}
                footer={() => {
-                   return <Button type="dashed" icon={<PlusOutlined/>}>
-                       Add New Custom Field
-                   </Button>
+                   return <>
+                       <Select size={"middle"} style={{width: 120}} onChange={value => {changeNewPrRefine(`${value}`)}}>
+                           {newCategoryCustomFields.filter((categoryRefine: RefineType) => {
+                               let result = true;
+                               customFields.forEach(oldFilter => {
+                                   if(Object.keys(oldFilter)[0] === categoryRefine.title) {
+                                       result = false;
+                                   }
+                               })
+                               return result;
+                           }).map(categoryRefine => {
+                               return <Select.Option value={categoryRefine.title}>{categoryRefine.title}</Select.Option>
+                           })}
+                       </Select>
+                       <Button type="dashed" icon={<PlusOutlined/>} onClick={() => {handleAddNewPrRefine(newPrRefine)}}>
+                           Add New Custom Field
+                       </Button>
+                   </>
                }}/>
     </div>
 }

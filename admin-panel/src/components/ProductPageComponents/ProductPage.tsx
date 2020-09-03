@@ -9,6 +9,7 @@ import Preloader from "../common/Preloader/Preloader";
 import s from './ProductPage.module.scss';
 import GeneralInfo from "./GeneralInfo/GeneralInfo";
 import CustomFields from "./CustomFields/CustomFields";
+import ChildProducts from "./ChildProducts/ChildProducts";
 
 const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => {
 
@@ -34,6 +35,9 @@ const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => 
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Custom Fields" key="2">
                     <CustomFields/>
+                </Tabs.TabPane>
+                <Tabs.TabPane tab="Child Products" key="3">
+                    <ChildProducts/>
                 </Tabs.TabPane>
             </Tabs>
         </div>
