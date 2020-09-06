@@ -64,3 +64,16 @@ export type RefineType = {
     title: string,
     type: string
 }
+
+export type SaveProductType = {
+    id: string,
+    brand: string,
+    category: string,
+    productTitle: string,
+    childProducts: Array<ChildProductType>,
+    images: Array<productImage>,
+    customFields: Array<{[key: string]: Array<string>}>,
+    shortDescription: string,
+    specifications: string,
+    features: string
+}

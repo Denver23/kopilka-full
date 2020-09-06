@@ -2,6 +2,7 @@
 .virtOptionList {
   display: flex;
   flex-direction: row;
+  margin-bottom: 20px;
 
   .optionList {
     margin: 0 20px;
@@ -9,4 +10,8 @@
 }
 .childTableRow {
   margin-bottom: 0 !important;
+}
+
+.childProductForm {
+  margin-bottom: 20px;
 }

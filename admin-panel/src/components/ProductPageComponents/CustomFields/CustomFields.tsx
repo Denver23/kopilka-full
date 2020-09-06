@@ -195,7 +195,7 @@ const CustomFields: React.FC = () => {
     ]
 
     return <div>
-        <Table pagination={false} columns={customFieldsColumns} dataSource={customFieldsTableData}
+        <Table className={s.customFieldTable} pagination={false} columns={customFieldsColumns} dataSource={customFieldsTableData}
                rowClassName={(record: productCustomField, index: number): string => {
                    if (record.warningStyle === false) {
                        return s.warningRow

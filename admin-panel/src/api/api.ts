@@ -1,5 +1,5 @@
 import axios from "axios";
-import {RefineType, SetProductType} from "../types/types";
+import {RefineType, SaveProductType, SetProductType} from "../types/types";
 
 export const baseURL = 'http://localhost:5000/';
 
@@ -114,5 +114,8 @@ export const productAPI = {
     },
     getNewRefinesForProduct(category: string) {
         return instance.get<LoadNewRefinesForProductResponseType>(`/admin-api/categories/refines/${category}`);
+    },
+    saveProduct(data: SaveProductType) {
+        return instance.post<LoadProductResponseType>(`/admin-api/product/id${data.id}`,{data})
     }
 }

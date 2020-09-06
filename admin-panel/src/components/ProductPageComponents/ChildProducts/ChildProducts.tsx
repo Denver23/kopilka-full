@@ -8,18 +8,22 @@ import {ChildProductType} from "../../../types/types";
 import {ColumnsType} from "antd/es/table";
 import s from "./ChildProducts.module.scss";
 import customFieldsStyle from "../CustomFields/CustomFields.module.scss"
+import {checkRowValidator} from "../../../utils/productFunc/productFunc";
 
 const ChildProducts: React.FC = () => {
 
     const dispatch = useDispatch();
     const deleteVirtOption = (value: string): void => {
         dispatch(productReducerActions.deleteVirtOption(value));
-    }
+    };
     const editVirtOption = (oldValue: string, newValue: string): void => {
         dispatch(productReducerActions.editVirtOption(oldValue, newValue));
-    }
+    };
     const addVirtOption = (value: string): void => {
         dispatch(productReducerActions.addVirtOption(value));
+    };
+    const changeChildProductOptionValue = (newValue: string | number, position: string, index: number, option: boolean): void => {
+        dispatch(productReducerActions.changeChildProductOptionValue(newValue, position, index, option))
     }
     const [childForm] = Form.useForm();
 
@@ -28,8 +32,6 @@ const ChildProducts: React.FC = () => {
     const [editInputIndex, changeInputIndex] = useState<number>(-1);
     const [editInputValue, changeEditInputValue] = useState<string>('');
     const [newTagInputVisible, changeInputVisible] = useState<boolean>(false);
-    const [oldTableValue, changeOldTableValue] = useState<string>('');
-    const [tempTableValue, changeTempTableValue] = useState<string>('');
 
     let virtOptionsList = Object.keys(childProductsList[0].options);
 
@@ -60,12 +62,17 @@ const ChildProducts: React.FC = () => {
         }
         changeInputVisible(false);
         changeEditInputValue('');
-    }
+    };
 
-    const onHandleChange = (newValue: string | number, position: string, index: number) => {
-        //console.log(newValue);
-        //console.log(position);
-        //console.log(index);
+    const onHandleChange = (newValue: string | number, position: string, index: number, option: boolean) => {
+        let value: string | number = position == 'quantity' || position == 'price' && newValue !== null && newValue !== '' && newValue  !== undefined ? +newValue : position !== 'quantity' && position !== 'price' && newValue !== null && newValue !== undefined ? newValue.toString() : 0;
+        changeChildProductOptionValue(value, position, index, option);
+    };
+
+    const onHandleBlur = (fieldName: string) => {
+        let field: {[key: string]: number} = {};
+        field[fieldName] = 0;
+        childForm.setFieldsValue(field);
     }
 
     const childProductsColumn: ColumnsType<ChildProductType> = [
@@ -75,7 +82,7 @@ const ChildProducts: React.FC = () => {
             key: 'sku',
             width: 200,
             render: (key, record, index) => {
-                return <Form.Item className={s.childTableRow} name={`sku-${index}`}><Input maxLength={100} placeholder="Basic usage" /></Form.Item>;
+                return <Form.Item className={s.childTableRow} name={`sku-${index}`}><Input maxLength={100} onChange={(value)=>{onHandleChange(value.target.value.toString(), 'sku', index, false)}} placeholder="Input SKU for Child Product" /></Form.Item>;
             }
         },
         {
@@ -86,7 +93,7 @@ const ChildProducts: React.FC = () => {
             render: (keys, record, index) => {
                 return <Form.Item
                     className={s.childTableRow}
-                    name={`price-${index}`}><InputNumber min={0} max={999999} maxLength={7}/></Form.Item>
+                    name={`price-${index}`}><InputNumber min={0} onBlur={()=>{onHandleBlur(`price-${index}`)}} onChange={(value)=>{onHandleChange(value == null || value == undefined ? 0 : value, 'price', index, false)}} max={999999} maxLength={7}/></Form.Item>
             }
         },
         {
@@ -95,7 +102,7 @@ const ChildProducts: React.FC = () => {
             key: 'quantity',
             width: 150,
             render: (keys, record, index) => {
-                return <Form.Item className={s.childTableRow} name={`quantity-${index}`}><InputNumber min={0} max={999999} maxLength={6} onChange={() => {}}/></Form.Item>
+                return <Form.Item className={s.childTableRow} name={`quantity-${index}`}><InputNumber onBlur={()=>{onHandleBlur(`quantity-${index}`)}} onChange={(value)=>{onHandleChange(value == null || value == undefined ? 0 : value, 'quantity', index, false)}} min={0} max={999999} maxLength={6} /></Form.Item>
             }
         }
     ];
@@ -106,41 +113,11 @@ const ChildProducts: React.FC = () => {
             dataIndex: 'options',
             key: item,
             render: (keys: {[key: string]: string}, record: ChildProductType, index: number) => {
-                return <Form.Item className={s.childTableRow} name={`${item}-${index}-option`}><Input placeholder="Basic usage" /></Form.Item>
+                return <Form.Item className={s.childTableRow} name={`${item}-${index}-option`}><Input onChange={(value)=>{onHandleChange(value.currentTarget.value.toString(), item, index, true)}} placeholder="Input Child Product Option" /></Form.Item>
             }
         }
         childProductsColumn.push(newColumn)
     });
-
-    let checkRowValidator = (childProductsList: Array<ChildProductType>) => {
-
-        let rows = childProductsList.map(item => {
-            return Object.keys(item.options).map(elem => { return item.options[elem]}).join('');
-        })
-
-        let checkObject: {[key: string]: number} = {};
-        let resultArray: Array<number> = [];
-
-        rows.forEach(item => {
-            if(checkObject.hasOwnProperty(item)) {
-                checkObject[item] = checkObject[item]++;
-            } else {
-                checkObject[item] = 1;
-            }
-        })
-
-        Object.keys(checkObject).forEach(objectKey => {
-            if(checkObject[objectKey] > 1) {
-                rows.forEach((item, index) => {
-                    if(item === objectKey) {
-                        resultArray.push(index)
-                    }
-                })
-            }
-        })
-
-        return resultArray;
-    }
 
     let rowsChecked = checkRowValidator(childProductsList);
 
@@ -153,7 +130,8 @@ const ChildProducts: React.FC = () => {
         Object.keys(child.options).forEach(optionName => {
             childTableValues[`${optionName}-${childIndex}-option`] = child.options[optionName];
         })
-    })
+    });
+    console.log(childTableValues)
 
     return <>
         <div className={s.virtOptionList}>
@@ -226,7 +204,7 @@ const ChildProducts: React.FC = () => {
                 }
             </div>
         </div>
-        <Form onValuesChange={(e)=> {console.log(e)}} form={childForm} initialValues={childTableValues}>
+        <Form form={childForm} initialValues={childTableValues} className={s.childProductForm}>
             <Table pagination={false} columns={childProductsColumn} rowClassName={(record: ChildProductType, index: number)=> {
                 if(rowsChecked.includes(index)) {
                     return `${customFieldsStyle.warningRow} ${s.childTableRow}`;

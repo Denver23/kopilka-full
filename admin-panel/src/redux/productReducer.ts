@@ -6,10 +6,12 @@ import {
     ChildProductType,
     GetActionsTypes,
     productImage,
-    RefineType
+    RefineType, SaveProductType
 } from "../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
+import ChildProducts from "../components/ProductPageComponents/ChildProducts/ChildProducts";
+import {checkRowValidator} from "../utils/productFunc/productFunc";
 
 const TOGGLE_LOADING = 'TOGGLE_LOADING';
 const SET_PRODUCT = 'SET_PRODUCT';
@@ -26,6 +28,8 @@ const ADD_NEW_PR_REFINE = 'ADD_NEW_PR_REFINE';
 const DELETE_VIRT_OPTION = 'DELETE_VIRT_OPTION';
 const EDIT_VIRT_OPTION_NAME = 'EDIT_VIRT_OPTION_NAME';
 const ADD_NEW_VIRT_OPTION = 'ADD_NEW_VIRT_OPTION';
+const CHANGE_CHILD_PRODUCT_OPTION_VALUE = 'CHANGE_CHILD_PRODUCT_OPTION_VALUE';
+const SET_NEW_CHILD_PRODUCTS = 'SET_NEW_CHILD_PRODUCTS';
 function makeCounter() {
     let count = 0;
 
@@ -179,6 +183,21 @@ const productReducer = (state = initialState, action: GetActionsTypes<typeof pro
                 return {...item, options: {...newOptions}}
             })
             return {...state, childProducts: newChildProductsWNewOption};
+        case CHANGE_CHILD_PRODUCT_OPTION_VALUE:
+            let changedOptionValueChildProducts = [...state.childProducts].map((item, index) => {
+                let newChild: any = item;
+                if(index === action.index) {
+                    if(action.option) {
+                        newChild.options[action.position] = action.newValue.toString();
+                    } else {
+                        newChild[action.position as keyof ChildProductType] = action.newValue;
+                    }
+                }
+                return newChild;
+            });
+            return {...state, childProducts: changedOptionValueChildProducts};
+        case SET_NEW_CHILD_PRODUCTS:
+            return {...state, childProducts: [...action.childProducts]};
         default:
             return state;
     }
@@ -199,8 +218,10 @@ export const productReducerActions = {
     addNewPrRefine: (value: string) => ({type: ADD_NEW_PR_REFINE, value} as const),
     deleteVirtOption: (value: string) => ({type: DELETE_VIRT_OPTION, value} as const),
     editVirtOption: (oldValue: string, newValue: string) => ({type: EDIT_VIRT_OPTION_NAME, oldValue, newValue} as const),
-    addVirtOption: (value: string) => ({type: ADD_NEW_VIRT_OPTION, value} as const)
-}
+    addVirtOption: (value: string) => ({type: ADD_NEW_VIRT_OPTION, value} as const),
+    changeChildProductOptionValue: (newValue: string | number, position: string, index: number, option: boolean) => ({type: CHANGE_CHILD_PRODUCT_OPTION_VALUE, newValue, position, index, option} as const),
+    setNewChildProductsForSave: (childProducts: Array<ChildProductType>) => ({type: SET_NEW_CHILD_PRODUCTS, childProducts} as const)
+};
 
 
 type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, GetActionsTypes<typeof productReducerActions>>
@@ -235,7 +256,7 @@ export const loadProduct = (id: string): ThunkType => async (dispatch) => {
     } finally {
         dispatch(productReducerActions.toggleLoading(false));
     }
-}
+};
 
 export const loadCategoryRefines = (category: string): ThunkType => async (dispatch) => {
     try {
@@ -251,6 +272,73 @@ export const loadCategoryRefines = (category: string): ThunkType => async (dispa
         let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
         console.log(`${err.name}: ${message}`);
     }
-}
+};
+
+export const saveProduct = (): ThunkType => async (dispatch, getState) => {
+    dispatch(productReducerActions.toggleLoading(true));
+    try {
+        let productState = getState().productReducer;
+        let childProductsForSave = productState.childProducts.filter(item => {
+            if(item.sku === null || item.sku === '') {
+                return false
+            }
+            return true;
+        });
+
+        dispatch(productReducerActions.setNewChildProductsForSave(childProductsForSave));
+        let childValidator = checkRowValidator(childProductsForSave);
+        let errors: Array<string> = [];
+
+        if(productState.id == null || productState.id == '') {
+            errors.push('ProductId is null');
+        } else if (productState.brand == null || productState.brand == '') {
+            errors.push('Product Brand is null');
+        } else if (productState.category == null || productState.category == '') {
+            errors.push('Product Category is null');
+        } else if (productState.productTitle == null || productState.productTitle == '') {
+            errors.push('Product Title is null');
+        }
+
+        let data: SaveProductType = {
+            id: productState.id !== null ? productState.id : '',
+            brand: productState.brand !== null ? productState.brand : '',
+            category: productState.category !== null ? productState.category : '',
+            productTitle: productState.productTitle !== null ? productState.productTitle : '',
+            childProducts: productState.childProducts,
+            images: productState.images,
+            shortDescription: productState.shortDescription !== null ? productState.shortDescription : 'Standard Short Description',
+            specifications: productState.specifications !== null ? productState.specifications : '',
+            features: productState.features !== null ? productState.features : '',
+            customFields: productState.customFields
+        }
+        /*let response = await productAPI.loadProduct();
+
+        if(!!response.data.errorMessage) {
+            throw new ResponseMessageError(response);
+        }
+
+        dispatch(productReducerActions.setProduct(response.data.product));*/
+    } catch(err) {
+        let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
+        console.log(`${err.name}: ${message}`);
+
+        dispatch(productReducerActions.setProduct({
+            id: null,
+            brand: '',
+            category: '',
+            productTitle: '',
+            childProducts: [],
+            images: [],
+            customFields: [],
+            shortDescription: '',
+            specifications: '',
+            features: '',
+            recommendedProducts: [],
+            productCategoryCustomFields: []
+        }));
+    } finally {
+        dispatch(productReducerActions.toggleLoading(false));
+    }
+};
 
 export default productReducer;
