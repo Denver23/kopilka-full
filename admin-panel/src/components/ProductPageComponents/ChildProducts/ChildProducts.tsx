@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Form, Input, InputNumber, Table, Tag, Tooltip} from "antd";
 import {PlusOutlined} from "@ant-design/icons";
 import {useDispatch, useSelector} from "react-redux";
@@ -73,7 +73,7 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
         let field: {[key: string]: number} = {};
         field[fieldName] = 0;
         props.childForm.setFieldsValue(field);
-    }
+    };
 
     const childProductsColumn: ColumnsType<ChildProductType> = [
         {
@@ -131,6 +131,10 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
             childTableValues[`${optionName}-${childIndex}-option`] = child.options[optionName];
         })
     });
+
+    useEffect(() => {
+        props.childForm.resetFields();
+    }, [childProductsList.length]);
 
     return <>
         <div className={s.virtOptionList}>

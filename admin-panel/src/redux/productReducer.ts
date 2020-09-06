@@ -10,7 +10,6 @@ import {
 } from "../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
-import ChildProducts from "../components/ProductPageComponents/ChildProducts/ChildProducts";
 import {checkRowValidator} from "../utils/productFunc/productFunc";
 
 const TOGGLE_LOADING = 'TOGGLE_LOADING';
@@ -30,6 +29,7 @@ const EDIT_VIRT_OPTION_NAME = 'EDIT_VIRT_OPTION_NAME';
 const ADD_NEW_VIRT_OPTION = 'ADD_NEW_VIRT_OPTION';
 const CHANGE_CHILD_PRODUCT_OPTION_VALUE = 'CHANGE_CHILD_PRODUCT_OPTION_VALUE';
 const SET_NEW_CHILD_PRODUCTS = 'SET_NEW_CHILD_PRODUCTS';
+const SET_NEW_IMAGE_LIST = 'SET_NEW_IMAGE_LIST';
 function makeCounter() {
     let count = 0;
 
@@ -198,6 +198,8 @@ const productReducer = (state = initialState, action: GetActionsTypes<typeof pro
             return {...state, childProducts: changedOptionValueChildProducts};
         case SET_NEW_CHILD_PRODUCTS:
             return {...state, childProducts: [...action.childProducts]};
+        case SET_NEW_IMAGE_LIST:
+            return {...state, images: [...action.imageList]}
         default:
             return state;
     }
@@ -220,7 +222,8 @@ export const productReducerActions = {
     editVirtOption: (oldValue: string, newValue: string) => ({type: EDIT_VIRT_OPTION_NAME, oldValue, newValue} as const),
     addVirtOption: (value: string) => ({type: ADD_NEW_VIRT_OPTION, value} as const),
     changeChildProductOptionValue: (newValue: string | number, position: string, index: number, option: boolean) => ({type: CHANGE_CHILD_PRODUCT_OPTION_VALUE, newValue, position, index, option} as const),
-    setNewChildProductsForSave: (childProducts: Array<ChildProductType>) => ({type: SET_NEW_CHILD_PRODUCTS, childProducts} as const)
+    setNewChildProductsForSave: (childProducts: Array<ChildProductType>) => ({type: SET_NEW_CHILD_PRODUCTS, childProducts} as const),
+    setNewImageList: (imageList: Array<productImage>) => ({type: SET_NEW_IMAGE_LIST, imageList} as const)
 };
 
 
@@ -284,9 +287,25 @@ export const saveProduct = (): ThunkType => async (dispatch, getState) => {
             }
             return true;
         });
-
         dispatch(productReducerActions.setNewChildProductsForSave(childProductsForSave));
         let childValidator = checkRowValidator(childProductsForSave);
+        let emptyOptions = childProductsForSave.filter((item: any) => {
+            let options = item.options;
+            Object.keys(options).forEach(option => {
+                if(item[option] === '') {
+                    return true;
+                }
+                return false
+            })
+        });
+
+        let images = productState.images.filter(image => {
+            if(image.original !== '') {
+                return true;
+            }
+            return false;
+        });
+        dispatch(productReducerActions.setNewImageList(images));
         let errors: Array<string> = [];
 
         if(productState.id == null || productState.id == '') {
@@ -297,6 +316,8 @@ export const saveProduct = (): ThunkType => async (dispatch, getState) => {
             errors.push('Product Category is null');
         } else if (productState.productTitle == null || productState.productTitle == '') {
             errors.push('Product Title is null');
+        } else if (childValidator.length || emptyOptions.length) {
+            errors.push('Some child products has the same options or empty');
         }
 
         let data: SaveProductType = {
@@ -304,9 +325,9 @@ export const saveProduct = (): ThunkType => async (dispatch, getState) => {
             brand: productState.brand !== null ? productState.brand : '',
             category: productState.category !== null ? productState.category : '',
             productTitle: productState.productTitle !== null ? productState.productTitle : '',
-            childProducts: productState.childProducts,
-            images: productState.images,
-            shortDescription: productState.shortDescription !== null ? productState.shortDescription : 'Standard Short Description',
+            childProducts: childProductsForSave,
+            images: images,
+            shortDescription: productState.shortDescription !== null ? productState.shortDescription : '',
             specifications: productState.specifications !== null ? productState.specifications : '',
             features: productState.features !== null ? productState.features : '',
             customFields: productState.customFields

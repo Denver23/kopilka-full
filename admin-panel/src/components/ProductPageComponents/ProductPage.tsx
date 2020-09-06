@@ -21,6 +21,7 @@ const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => 
     const saveProductThunk = (): void => {
         dispatch(saveProduct());
     };
+    const [generalForm] = Form.useForm();
     const [childForm] = Form.useForm();
 
     const productId = useSelector(GetProductId);
@@ -32,13 +33,13 @@ const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => 
         }
     }, [productId]);
 
-    const SaveButton = <Button icon={<SaveOutlined />} type="primary" onClick={async ()=> {await saveProductThunk();childForm.resetFields()}}>Save</Button>
+    const SaveButton = <Button icon={<SaveOutlined />} type="primary" onClick={async ()=> {await saveProductThunk();childForm.resetFields();generalForm.resetFields()}}>Save</Button>
 
     return <>
         {loading ? <Preloader/> : <div className={s.wrapper}>
             <Tabs defaultActiveKey="ProductTab1" type="card" size={"middle"} tabBarExtraContent={SaveButton}>
                 <Tabs.TabPane tab="General Info" key="ProductTab1">
-                    <GeneralInfo/>
+                    <GeneralInfo generalForm={generalForm}/>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Custom Fields" key="ProductTab2">
                     <CustomFields/>

@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {loadCategoryRefines, productReducerActions} from "../../../redux/productReducer";
 import {productImage, productImageTable} from "../../../types/types";
@@ -10,11 +10,12 @@ import {
 } from "../../../redux/selectors/productSelector";
 import {productAPI} from "../../../api/api";
 import {ColumnsType} from "antd/es/table";
-import {AutoComplete, Button, Form, Input, Select, Table} from "antd";
+import {AutoComplete, Button, Form, Input, Table} from "antd";
 import s from "./GeneralInfo.module.scss";
+import ChildProductsStyles from "../ChildProducts/ChildProducts.module.scss"
 import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
 
-const GeneralInfo: React.FC = () => {
+const GeneralInfo: React.FC<{generalForm: any}> = (props) => {
 
     const dispatch = useDispatch();
     const deleteImage = (_id: string): void => {
@@ -28,7 +29,7 @@ const GeneralInfo: React.FC = () => {
     };
     const loadCategoryRefinesThunk = (category: string): void => {
         dispatch(loadCategoryRefines(category));
-    }
+    };
 
 
     const productId = useSelector(GetProductId);
@@ -44,7 +45,6 @@ const GeneralInfo: React.FC = () => {
     let [categories, setCategories] = useState<Array<any>>([]);
     let [tempCategory, changeTempCategory] = useState(category !== null ? category : '');
     let [tempBrand, changeTempBrand] = useState(brand !== null ? brand : '');
-    const [form] = Form.useForm();
 
     const layout = {
         labelCol: {
@@ -79,7 +79,7 @@ const GeneralInfo: React.FC = () => {
             key: 'src',
             width: 500,
             render: (text: string, record: productImageTable, index: number) => {
-                return <Input defaultValue={text} onChange={(e) => {onChangeImageData(e.target.value, record.alt, record)}}/>
+                return <Form.Item name={`src-${index}`} className={ChildProductsStyles.childTableRow} initialValue={text}><Input onChange={(e) => {onChangeImageData(e.target.value, record.alt, record)}}/></Form.Item>
             }
         },
         {
@@ -88,7 +88,7 @@ const GeneralInfo: React.FC = () => {
             key: 'alt',
             width: 300,
             render: (text: string, record: productImageTable, index: number) => {
-                return <Input defaultValue={text} onChange={(e) => {onChangeImageData(record.src, e.target.value, record)}}/>
+                return <Form.Item name={`alt-${index}`} className={ChildProductsStyles.childTableRow} initialValue={text}><Input onChange={(e) => {onChangeImageData(record.src, e.target.value, record)}}/></Form.Item>
             }
         },
         {
@@ -159,7 +159,7 @@ const GeneralInfo: React.FC = () => {
         if(tempCategory !== category && categories.length !== 0 && categoriesForCheck.includes(tempCategory)) {
             loadCategoryRefinesThunk(tempCategory);
         } else {
-            form.setFieldsValue({category})
+            props.generalForm.setFieldsValue({category})
         }
     };
     const onCategorySelect = (value: string) => {
@@ -170,17 +170,21 @@ const GeneralInfo: React.FC = () => {
         if(tempBrand !== brand && brands.length !== 0 && brandsForCheck.includes(tempCategory)) {
             dispatch(productReducerActions.dataChange({brand: tempBrand}));
         } else {
-            form.setFieldsValue({brand})
+            props.generalForm.setFieldsValue({brand})
         }
     };
     const onBrandSelect = (value: string) => {
         dispatch(productReducerActions.dataChange({brand: value}));
     }
 
+    useEffect(() => {
+        props.generalForm.resetFields();
+    }, [images]);
+
 
     return <div>
         <Form
-            form={form}
+            form={props.generalForm}
             {...layout}
             name="basic"
             initialValues={{
