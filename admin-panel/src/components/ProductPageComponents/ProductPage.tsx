@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Button, Tabs} from 'antd';
+import {Button, Form, Tabs} from 'antd';
 import {useDispatch, useSelector} from "react-redux";
 import {GetProductId, GetProductLoading} from "../../redux/selectors/productSelector";
 import {loadProduct, saveProduct} from "../../redux/productReducer";
@@ -20,7 +20,8 @@ const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => 
     };
     const saveProductThunk = (): void => {
         dispatch(saveProduct());
-    }
+    };
+    const [childForm] = Form.useForm();
 
     const productId = useSelector(GetProductId);
     const loading = useSelector(GetProductLoading);
@@ -31,7 +32,7 @@ const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => 
         }
     }, [productId]);
 
-    const SaveButton = <Button icon={<SaveOutlined />} type="primary" onClick={()=>{saveProductThunk()}}>Save</Button>
+    const SaveButton = <Button icon={<SaveOutlined />} type="primary" onClick={async ()=> {await saveProductThunk();childForm.resetFields()}}>Save</Button>
 
     return <>
         {loading ? <Preloader/> : <div className={s.wrapper}>
@@ -43,7 +44,7 @@ const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => 
                     <CustomFields/>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Child Products" key="ProductTab3">
-                    <ChildProducts/>
+                    <ChildProducts childForm={childForm}/>
                 </Tabs.TabPane>
             </Tabs>
             {SaveButton}

@@ -10,7 +10,7 @@ import s from "./ChildProducts.module.scss";
 import customFieldsStyle from "../CustomFields/CustomFields.module.scss"
 import {checkRowValidator} from "../../../utils/productFunc/productFunc";
 
-const ChildProducts: React.FC = () => {
+const ChildProducts: React.FC<{childForm: any}> = (props) => {
 
     const dispatch = useDispatch();
     const deleteVirtOption = (value: string): void => {
@@ -25,7 +25,7 @@ const ChildProducts: React.FC = () => {
     const changeChildProductOptionValue = (newValue: string | number, position: string, index: number, option: boolean): void => {
         dispatch(productReducerActions.changeChildProductOptionValue(newValue, position, index, option))
     }
-    const [childForm] = Form.useForm();
+
 
     const childProductsList = useSelector(GetChildProducts);
 
@@ -72,7 +72,7 @@ const ChildProducts: React.FC = () => {
     const onHandleBlur = (fieldName: string) => {
         let field: {[key: string]: number} = {};
         field[fieldName] = 0;
-        childForm.setFieldsValue(field);
+        props.childForm.setFieldsValue(field);
     }
 
     const childProductsColumn: ColumnsType<ChildProductType> = [
@@ -131,7 +131,6 @@ const ChildProducts: React.FC = () => {
             childTableValues[`${optionName}-${childIndex}-option`] = child.options[optionName];
         })
     });
-    console.log(childTableValues)
 
     return <>
         <div className={s.virtOptionList}>
@@ -204,7 +203,7 @@ const ChildProducts: React.FC = () => {
                 }
             </div>
         </div>
-        <Form form={childForm} initialValues={childTableValues} className={s.childProductForm}>
+        <Form form={props.childForm} initialValues={childTableValues} className={s.childProductForm}>
             <Table pagination={false} columns={childProductsColumn} rowClassName={(record: ChildProductType, index: number)=> {
                 if(rowsChecked.includes(index)) {
                     return `${customFieldsStyle.warningRow} ${s.childTableRow}`;
