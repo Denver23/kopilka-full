@@ -1,13 +1,11 @@
-import {ChildProductType} from "../../types/types";
-
-export const checkRowValidator = (childProductsList: Array<ChildProductType>) => {
+function checkRowValidator (childProductsList) {
 
     let rows = childProductsList.map(item => {
         return Object.keys(item.options).map(elem => { return item.options[elem]}).join('');
     })
 
-    let checkObject: {[key: string]: number} = {};
-    let resultArray: Array<number> = [];
+    let checkObject = {};
+    let resultArray = [];
 
     rows.forEach(item => {
         if(checkObject.hasOwnProperty(item)) {
@@ -29,3 +27,5 @@ export const checkRowValidator = (childProductsList: Array<ChildProductType>) =>
 
     return resultArray;
 };
+
+module.exports.checkRowValidator = checkRowValidator;

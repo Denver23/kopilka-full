@@ -1,4 +1,4 @@
-import React, {FormEvent, useState} from "react";
+import React, {ChangeEvent, FormEvent, useState} from "react";
 import s from './Options.module.scss';
 import {
     Field,
@@ -29,7 +29,7 @@ const Options: React.FC<InjectedFormProps<OptionsValuesType, OptionsOwnPropsType
         let result = activeOptions;
         result.forEach(item => {
             return item.name === option ? item.key = value : ''
-        })
+        });
         return result;
     };
 
@@ -57,21 +57,21 @@ const Options: React.FC<InjectedFormProps<OptionsValuesType, OptionsOwnPropsType
         return +item.price;
     }));
 
-    let changeFormOption = (e: FormEvent<HTMLFormElement>) => {
+    let changeFormOption = (e: ChangeEvent<HTMLInputElement>) => {
         changeOptions(dataOption(e.currentTarget.name, e.currentTarget.value));
         let newProduct = options.find((product: ChildProductType) => {
             return activeOptions.every((option: optionType) => {
                 return option.key === product.options[option.name];
             })
-        })
+        });
         changeProduct(newProduct);
     }
 
-    return <form className={s.optionsForm} onChange={changeFormOption}>
+    return <form className={s.optionsForm}>
         {
             activeOptions.length ?
             activeOptions.map((option) => {
-                return <Field name={option.name} component={Select} currentProduct={currentProduct} activeOptions={activeOptions} parentProducts={options} type={'select'} key={option.name}/>
+                return <Field name={option.name} onChange={(e: ChangeEvent<HTMLInputElement>) => {changeFormOption(e)}} component={Select} currentProduct={currentProduct} activeOptions={activeOptions} parentProducts={options} type={'select'} key={option.name}/>
             }) : ''
         }
         {currentProduct !== undefined ? <ProductStatus currentProduct={currentProduct} /> : <div className={s.productStatus}><span className={s.cost}>${lowPrice} - ${highPrice}</span></div>}

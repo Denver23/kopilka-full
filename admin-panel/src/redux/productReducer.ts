@@ -30,6 +30,7 @@ const ADD_NEW_VIRT_OPTION = 'ADD_NEW_VIRT_OPTION';
 const CHANGE_CHILD_PRODUCT_OPTION_VALUE = 'CHANGE_CHILD_PRODUCT_OPTION_VALUE';
 const SET_NEW_CHILD_PRODUCTS = 'SET_NEW_CHILD_PRODUCTS';
 const SET_NEW_IMAGE_LIST = 'SET_NEW_IMAGE_LIST';
+const SET_NEW_CUSTOM_FIELDS_OBJECT = 'SET_NEW_CUSTOM_FIELDS_OBJECT';
 function makeCounter() {
     let count = 0;
 
@@ -199,7 +200,9 @@ const productReducer = (state = initialState, action: GetActionsTypes<typeof pro
         case SET_NEW_CHILD_PRODUCTS:
             return {...state, childProducts: [...action.childProducts]};
         case SET_NEW_IMAGE_LIST:
-            return {...state, images: [...action.imageList]}
+            return {...state, images: [...action.imageList]};
+        case SET_NEW_CUSTOM_FIELDS_OBJECT:
+            return {...state, ...action.data};
         default:
             return state;
     }
@@ -223,7 +226,8 @@ export const productReducerActions = {
     addVirtOption: (value: string) => ({type: ADD_NEW_VIRT_OPTION, value} as const),
     changeChildProductOptionValue: (newValue: string | number, position: string, index: number, option: boolean) => ({type: CHANGE_CHILD_PRODUCT_OPTION_VALUE, newValue, position, index, option} as const),
     setNewChildProductsForSave: (childProducts: Array<ChildProductType>) => ({type: SET_NEW_CHILD_PRODUCTS, childProducts} as const),
-    setNewImageList: (imageList: Array<productImage>) => ({type: SET_NEW_IMAGE_LIST, imageList} as const)
+    setNewImageList: (imageList: Array<productImage>) => ({type: SET_NEW_IMAGE_LIST, imageList} as const),
+    setNewCustomFieldsObject: (data: {customFields: Array<{[key: string]: Array<string>}>}) => ({type: SET_NEW_CUSTOM_FIELDS_OBJECT, data} as const)
 };
 
 
@@ -305,7 +309,14 @@ export const saveProduct = (): ThunkType => async (dispatch, getState) => {
             }
             return false;
         });
+
         dispatch(productReducerActions.setNewImageList(images));
+
+        const categoryCF = getState().productReducer.productCategoryCustomFields.map(item => {return item.title});
+        let validateCustomFields = productState.customFields.filter(customField => {
+            return categoryCF.includes(Object.keys(customField)[0]);
+        });
+        dispatch(productReducerActions.setNewCustomFieldsObject({customFields: validateCustomFields}))
         let errors: Array<string> = [];
 
         if(productState.id == null || productState.id == '') {
@@ -330,33 +341,18 @@ export const saveProduct = (): ThunkType => async (dispatch, getState) => {
             shortDescription: productState.shortDescription !== null ? productState.shortDescription : '',
             specifications: productState.specifications !== null ? productState.specifications : '',
             features: productState.features !== null ? productState.features : '',
-            customFields: productState.customFields
+            customFields: validateCustomFields
         }
-        /*let response = await productAPI.loadProduct();
+        let response = await productAPI.saveProduct(data);
 
         if(!!response.data.errorMessage) {
             throw new ResponseMessageError(response);
         }
 
-        dispatch(productReducerActions.setProduct(response.data.product));*/
+        dispatch(productReducerActions.setProduct(response.data.product));
     } catch(err) {
         let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
         console.log(`${err.name}: ${message}`);
-
-        dispatch(productReducerActions.setProduct({
-            id: null,
-            brand: '',
-            category: '',
-            productTitle: '',
-            childProducts: [],
-            images: [],
-            customFields: [],
-            shortDescription: '',
-            specifications: '',
-            features: '',
-            recommendedProducts: [],
-            productCategoryCustomFields: []
-        }));
     } finally {
         dispatch(productReducerActions.toggleLoading(false));
     }

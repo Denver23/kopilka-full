@@ -69,10 +69,12 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
         changeChildProductOptionValue(value, position, index, option);
     };
 
-    const onHandleBlur = (fieldName: string) => {
-        let field: {[key: string]: number} = {};
-        field[fieldName] = 0;
-        props.childForm.setFieldsValue(field);
+    const onHandleBlur = (fieldName: string, value: number) => {
+        if(value === 0) {
+            let field: { [key: string]: number } = {};
+            field[fieldName] = 0;
+            props.childForm.setFieldsValue(field);
+        }
     };
 
     const childProductsColumn: ColumnsType<ChildProductType> = [
@@ -93,7 +95,7 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
             render: (keys, record, index) => {
                 return <Form.Item
                     className={s.childTableRow}
-                    name={`price-${index}`}><InputNumber min={0} onBlur={()=>{onHandleBlur(`price-${index}`)}} onChange={(value)=>{onHandleChange(value == null || value == undefined ? 0 : value, 'price', index, false)}} max={999999} maxLength={7}/></Form.Item>
+                    name={`price-${index}`}><InputNumber min={0} onBlur={(e)=>{onHandleBlur(`price-${index}`, +e.currentTarget.value)}} onChange={(value)=>{onHandleChange(value == null || value == undefined ? 0 : value, 'price', index, false)}} max={999999} maxLength={7}/></Form.Item>
             }
         },
         {
@@ -102,7 +104,7 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
             key: 'quantity',
             width: 150,
             render: (keys, record, index) => {
-                return <Form.Item className={s.childTableRow} name={`quantity-${index}`}><InputNumber onBlur={()=>{onHandleBlur(`quantity-${index}`)}} onChange={(value)=>{onHandleChange(value == null || value == undefined ? 0 : value, 'quantity', index, false)}} min={0} max={999999} maxLength={6} /></Form.Item>
+                return <Form.Item className={s.childTableRow} name={`quantity-${index}`}><InputNumber onBlur={(e)=>{onHandleBlur(`quantity-${index}`, +e.currentTarget.value)}} onChange={(value)=>{onHandleChange(value == null || value == undefined ? 0 : value, 'quantity', index, false)}} min={0} max={999999} maxLength={6} /></Form.Item>
             }
         }
     ];
