@@ -19,6 +19,7 @@
   "author": "Denis Dunaievsiy <denver9523@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@types/react-highlight-words": "^0.16.1",
     "bcryptjs": "^2.4.3",
     "config": "^3.3.0",
     "cors": "^2.8.5",
@@ -26,6 +27,7 @@
     "express-validator": "^6.4.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.5",
+    "react-highlight-words": "^0.16.0",
     "uuidv4": "^6.0.7"
   },
   "devDependencies": {

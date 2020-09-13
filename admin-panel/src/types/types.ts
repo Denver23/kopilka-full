@@ -16,6 +16,7 @@ export type SetProductType = {
     brand: string,
     category: string,
     productTitle: string,
+    hidden: boolean,
     childProducts: Array<ChildProductType>,
     images: Array<productImage>,
     customFields: Array<{[key: string]: Array<string>}>,
@@ -27,7 +28,6 @@ export type SetProductType = {
 }
 
 export type ChildProductType = {
-    _id: string,
     sku: string,
     price: number,
     quantity: number,
@@ -70,6 +70,7 @@ export type SaveProductType = {
     brand: string,
     category: string,
     productTitle: string,
+    hidden: boolean,
     childProducts: Array<ChildProductType>,
     images: Array<productImage>,
     customFields: Array<{[key: string]: Array<string>}>,

@@ -15,7 +15,7 @@ const Header: React.FC = () => {
     }
 
     return <div className={s.headerWrapper}>
-        <Link to={'/'} className={s.generalLink}>Kopilka Admin-Panel</Link>
+        <Link to={'/admin/'} className={s.generalLink}>Kopilka Admin-Panel</Link>
         {isAuth ? <button className={s.signOutButton} onClick={e => {if(userId !== null) {signOutThunk(userId)}}}>Sign Out</button> : ''}
     </div>
 }

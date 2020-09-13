@@ -15,6 +15,7 @@ import {Route, withRouter, Switch, RouteComponentProps} from "react-router-dom";
 import ProductPage from "../ProductPageComponents/ProductPage";
 import {GetTheme} from "../../redux/selectors/appSelectors";
 import {appReducerActions} from "../../redux/appReducer";
+import ProductsList from "../ProductsListComponents/ProductsList";
 const { SubMenu } = Menu;
 
 const Main: React.FC<RouteComponentProps> = ({history, ...props}) => {
@@ -39,7 +40,7 @@ const Main: React.FC<RouteComponentProps> = ({history, ...props}) => {
 
     return <div className={s.Main}>
         <div className={s.searchInputLine}>
-            <Input.Search placeholder="Input productID" onSearch={value => {loadProductThunk(value); history.push(`/product/id${value}`)}} maxLength={50} enterButton className={s.searchInput} />
+            <Input.Search placeholder="Input productID" onSearch={value => {loadProductThunk(value); history.push(`/admin/product/id${value}`)}} maxLength={50} enterButton className={s.searchInput} />
             <div><SwitchAnt onChange={switchTheme} /> Change Style</div>
         </div>
 
@@ -51,7 +52,7 @@ const Main: React.FC<RouteComponentProps> = ({history, ...props}) => {
             theme={theme}
         >
             <SubMenu key="sub1" icon={<AppstoreOutlined />} title="Products Control">
-                <Menu.Item key="3"><Link to={'#'}>Products</Link></Menu.Item>
+                <Menu.Item key="3"><Link to={'/admin/products'}>Products</Link></Menu.Item>
                 <Menu.Item key="4">Option 4</Menu.Item>
                 <SubMenu key="sub1-2" title="Submenu">
                     <Menu.Item key="5">Option 5</Menu.Item>
@@ -70,16 +71,14 @@ const Main: React.FC<RouteComponentProps> = ({history, ...props}) => {
             <Menu.Item key="2" icon={<CalendarOutlined />}>
                 Navigation Two
             </Menu.Item>
-            <Menu.Item key="link" icon={<LinkOutlined />}>
-                <a href="https://ant.design" target="_blank" rel="noopener noreferrer">
-                    Ant Design
-                </a>
-            </Menu.Item>
         </Menu>
-        <Switch>
-            <Route exact path='/' component={() => {return <div></div>}}/>
-            <Route exact path='/product/id:id(\w+)' component={ProductPage}/>
-        </Switch>
+        <div className={s.wrapper}>
+            <Switch>
+                <Route exact path='/admin/' component={() => {return <div></div>}}/>
+                <Route exact path='/admin/product/id:id(\w+)' component={ProductPage}/>
+                <Route path={'/admin/products'} component={ProductsList} />
+            </Switch>
+        </div>
     </div>
 }
 

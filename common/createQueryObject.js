@@ -1,5 +1,5 @@
-function createMDBQueryObject(categoriesList, brandsList, customFields) {
-    let queryObject = {};
+function createMDBQueryObject(categoriesList, brandsList, customFields, hidden) {
+    let queryObject = {hidden};
     if(categoriesList.length > 0) {
         queryObject.category = {$in: categoriesList}
     }

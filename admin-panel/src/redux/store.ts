@@ -3,11 +3,13 @@ import thunkMiddleware from 'redux-thunk';
 import appReducer from "./appReducer";
 import authReducer from "./authReducer";
 import productReducer from "./productReducer";
+import productsListReducer from "./productsListReducer";
 
 let rootReducer = combineReducers({
     appReducer,
     authReducer,
-    productReducer
+    productReducer,
+    productsListReducer
 });
 
 type RootReducerType = typeof rootReducer;

@@ -18,6 +18,7 @@ router.get('/id:id',
                     brand: product.brand.name,
                     category: product.category.name,
                     productTitle: product.productTitle,
+                    hidden: product.hidden,
                     childProducts: product.childProducts,
                     images: product.images,
                     customFields: product.customFields,
@@ -57,8 +58,9 @@ router.post('/id:id',
                     return false
                 })
             });
+            const categoryRefines = category.refines.map(refine => refine.title);
             let validateCustomFields = data.customFields.filter(customField => {
-                return category.refines.includes(Object.keys(customField)[0]);
+                return categoryRefines.includes(Object.keys(customField)[0]);
             });
 
             if(brand === null || category === null) {
@@ -80,6 +82,7 @@ router.post('/id:id',
                 brand: brand._id,
                 category: category._id,
                 productTitle: data.productTitle,
+                hidden: data.hidden,
                 childProducts: data.childProducts,
                 images: data.images,
                 shortDescription: data.shortDescription,
@@ -96,6 +99,7 @@ router.post('/id:id',
                         brand: brand.name,
                         category: category.name,
                         productTitle: result.productTitle,
+                        hidden: result.hidden,
                         childProducts: result.childProducts,
                         images: result.images,
                         customFields: result.customFields,

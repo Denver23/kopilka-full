@@ -31,11 +31,14 @@ const CHANGE_CHILD_PRODUCT_OPTION_VALUE = 'CHANGE_CHILD_PRODUCT_OPTION_VALUE';
 const SET_NEW_CHILD_PRODUCTS = 'SET_NEW_CHILD_PRODUCTS';
 const SET_NEW_IMAGE_LIST = 'SET_NEW_IMAGE_LIST';
 const SET_NEW_CUSTOM_FIELDS_OBJECT = 'SET_NEW_CUSTOM_FIELDS_OBJECT';
+const DELETE_CHILD_PRODUCT = 'DELETE_CHILD_PRODUCT';
+const ADD_NEW_CHILD_PRODUCT = 'ADD_NEW_CHILD_PRODUCT';
+const CHANGE_HIDDEN_STATUS = 'CHANGE_HIDDEN_STATUS';
 function makeCounter() {
     let count = 0;
 
     return function() {
-        return count++; // есть доступ к внешней переменной "count"
+        return count++;
     };
 }
 
@@ -47,6 +50,7 @@ let initialState = {
     brand: null as string | null,
     category: null as string | null,
     productTitle: null as string | null,
+    hidden: false as boolean,
     childProducts: [] as Array<ChildProductType>,
     images: [] as Array<productImage>,
     shortDescription: null as string | null,
@@ -55,7 +59,7 @@ let initialState = {
     customFields: [] as Array<{[key: string]: Array<string>}>,
     recommendedProducts: [] as Array<ProductInListType>,
     productCategoryCustomFields: [] as Array<RefineType>
-}
+};
 
 type InitialStateType = typeof initialState;
 
@@ -68,6 +72,7 @@ const productReducer = (state = initialState, action: GetActionsTypes<typeof pro
                 brand: action.data.brand,
                 category: action.data.category,
                 productTitle: action.data.productTitle,
+                hidden: action.data.hidden,
                 childProducts: action.data.childProducts,
                 images: action.data.images,
                 shortDescription: action.data.shortDescription,
@@ -203,6 +208,24 @@ const productReducer = (state = initialState, action: GetActionsTypes<typeof pro
             return {...state, images: [...action.imageList]};
         case SET_NEW_CUSTOM_FIELDS_OBJECT:
             return {...state, ...action.data};
+        case DELETE_CHILD_PRODUCT:
+            let childProductsWOIndexProduct = [...state.childProducts].filter((childProduct, index) => {
+                return index !== action.index;
+            });
+            return {...state, childProducts: childProductsWOIndexProduct};
+        case ADD_NEW_CHILD_PRODUCT:
+            let newChild: ChildProductType = {
+                sku: '',
+                price: 0,
+                quantity: 0,
+                options: {}
+            };
+            Object.keys(state.childProducts[0].options).forEach(option => {newChild.options[option] = ''});
+            let addedChildProducts = [...state.childProducts];
+            addedChildProducts.push(newChild);
+            return {...state, childProducts: addedChildProducts};
+        case CHANGE_HIDDEN_STATUS:
+            return {...state, hidden: action.value};
         default:
             return state;
     }
@@ -227,7 +250,10 @@ export const productReducerActions = {
     changeChildProductOptionValue: (newValue: string | number, position: string, index: number, option: boolean) => ({type: CHANGE_CHILD_PRODUCT_OPTION_VALUE, newValue, position, index, option} as const),
     setNewChildProductsForSave: (childProducts: Array<ChildProductType>) => ({type: SET_NEW_CHILD_PRODUCTS, childProducts} as const),
     setNewImageList: (imageList: Array<productImage>) => ({type: SET_NEW_IMAGE_LIST, imageList} as const),
-    setNewCustomFieldsObject: (data: {customFields: Array<{[key: string]: Array<string>}>}) => ({type: SET_NEW_CUSTOM_FIELDS_OBJECT, data} as const)
+    setNewCustomFieldsObject: (data: {customFields: Array<{[key: string]: Array<string>}>}) => ({type: SET_NEW_CUSTOM_FIELDS_OBJECT, data} as const),
+    deleteChildProduct: (index: number) => ({type: DELETE_CHILD_PRODUCT, index} as const),
+    addNewChildProduct: () => ({type: ADD_NEW_CHILD_PRODUCT} as const),
+    changeHiddenStatus: (value: boolean) => ({type: CHANGE_HIDDEN_STATUS, value} as const)
 };
 
 
@@ -251,6 +277,7 @@ export const loadProduct = (id: string): ThunkType => async (dispatch) => {
             brand: '',
             category: '',
             productTitle: '',
+            hidden: false,
             childProducts: [],
             images: [],
             customFields: [],
@@ -336,6 +363,7 @@ export const saveProduct = (): ThunkType => async (dispatch, getState) => {
             brand: productState.brand !== null ? productState.brand : '',
             category: productState.category !== null ? productState.category : '',
             productTitle: productState.productTitle !== null ? productState.productTitle : '',
+            hidden: productState.hidden,
             childProducts: childProductsForSave,
             images: images,
             shortDescription: productState.shortDescription !== null ? productState.shortDescription : '',

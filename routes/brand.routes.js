@@ -26,7 +26,7 @@ router.get('/:brand',
 
                 let customFields = createCustomFieldsObject(req.query, allRefineParameters)
 
-                let DBquery = createMDBQueryObject([], [brandId], customFields);
+                let DBquery = createMDBQueryObject([], [brandId], customFields, false);
 
                 const products = await Product.find(DBquery, {_id: true, productTitle: true, childProducts: true, images: true}).skip(page * limit).limit(limit);
                 let allProducts = await Product.find(DBquery, {_id: true});
@@ -97,7 +97,7 @@ router.get('/:brand',
                         return item !== refine.title;
                     })
                     let refineCustomFileds = createCustomFieldsObject(req.query, refineParameters);
-                    let refineQuery = createMDBQueryObject([], brandId, refineCustomFileds);
+                    let refineQuery = createMDBQueryObject([], brandId, refineCustomFileds, false);
                     const refinesProducts = await Product.find(refineQuery, {customFields: true, _id: false});
                     let arrayOfValues = refinesProducts.map(productCustomFields => {
                         return productCustomFields.customFields.filter(item => {
@@ -151,39 +151,6 @@ router.get('/:brand',
             console.log(e);
             res.status(500).json({errorMessage: 'Server Error'})
         }
-    })
-
-/*router.get('/',
-    async (req, res) => {
-        try {
-            const brand = new Brand({
-                name: 'Apple',
-                url: 'apple',
-                refines: [{
-                    title: "Available",
-                    type: "radio",
-                    items: ['In Storage', 'In Online-Shop']
-                }, {
-                    title: "Condition",
-                    type: "checkbox",
-                    items: ['New', 'Manufacter Refurbished', 'Seller Refurbished', 'Used', 'For Parts or not Working']
-                }, {
-                    title: "Delivery Options",
-                    type: "radio",
-                    items: ['FREE', '$4.99']
-                }],
-                bestSellers: [],
-                slides: ['https://bitnovosti.com/wp-content/uploads/2019/06/Apple-2-11.jpg']
-            })
-
-            await brand.save()
-
-            res.json(brand);
-
-        } catch (e) {
-            console.log(e);
-            res.status(500).json({message: 'Server Error'})
-        }
-    }) */
+    });
 
 module.exports = router;

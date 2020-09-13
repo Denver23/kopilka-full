@@ -44,7 +44,7 @@ router.get('/:category',
             let allCategoriesWithProducts = await getCategories(categoryId);
 
             //array of result products
-            let DBquery = createMDBQueryObject(allCategoriesWithProducts, brandsIds, customFields);
+            let DBquery = createMDBQueryObject(allCategoriesWithProducts, brandsIds, customFields, false);
 
             let products = await Product.find(DBquery, {
                 _id: 1,
@@ -86,7 +86,7 @@ router.get('/:category',
 
 
             //get unique brands in array products for create brands-refine
-            let queryForRefineBrands = createMDBQueryObject(allCategoriesWithProducts, [], customFields);
+            let queryForRefineBrands = createMDBQueryObject(allCategoriesWithProducts, [], customFields, false);
             let uniqueBrands = await Product.find(queryForRefineBrands).distinct('brand');
 
 
@@ -150,7 +150,7 @@ router.get('/:category',
                     return item !== refine.title;
                 })
                 let refineCustomFileds = createCustomFieldsObject(req.query, refineParameters);
-                let refineQuery = createMDBQueryObject(allCategoriesWithProducts, brandsIds, refineCustomFileds);
+                let refineQuery = createMDBQueryObject(allCategoriesWithProducts, brandsIds, refineCustomFileds, false);
                 const refinesProducts = await Product.find(refineQuery, {customFields: true, _id: false});
                 let arrayOfValues = refinesProducts.map(productCustomFields => {
                     return productCustomFields.customFields.filter(item => {

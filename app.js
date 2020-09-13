@@ -32,10 +32,12 @@ app.use('/admin-api/brands', require('./routes/admin-api/brands.routes'));
 
 app.use('/admin-api/categories', require('./routes/admin-api/categories.routes'));
 
-app.use('/admin/', express.static(path.join(__dirname, 'admin-panel/build/')));
+app.use('/admin-api/productsList', require('./routes/admin-api/productsList'));
+
+app.use('/admin/*', express.static(path.join(__dirname, 'admin-panel/build/')));
 
 app.get('/admin/*', function (req, res) {
-    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+    res.sendFile(path.join(__dirname, 'admin-panel/build', 'index.html'));
 });
 
 app.use(express.static(path.join(__dirname, 'client/build/')));

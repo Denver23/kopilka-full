@@ -22,7 +22,8 @@ const schema = new Schema({
         ],
     shortDescription: {type: String},
     specifications: {type: String},
-    features: {type: String}
+    features: {type: String},
+    hidden: {type: Boolean, required: true}
 })
 
 module.exports = model('Product', schema)

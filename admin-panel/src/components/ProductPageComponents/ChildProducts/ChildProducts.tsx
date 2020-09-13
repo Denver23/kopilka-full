@@ -9,6 +9,8 @@ import {ColumnsType} from "antd/es/table";
 import s from "./ChildProducts.module.scss";
 import customFieldsStyle from "../CustomFields/CustomFields.module.scss"
 import {checkRowValidator} from "../../../utils/productFunc/productFunc";
+import generalInfoStyle from "../GeneralInfo/GeneralInfo.module.scss";
+import {DeleteOutlined} from "@ant-design/icons/lib";
 
 const ChildProducts: React.FC<{childForm: any}> = (props) => {
 
@@ -24,7 +26,13 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
     };
     const changeChildProductOptionValue = (newValue: string | number, position: string, index: number, option: boolean): void => {
         dispatch(productReducerActions.changeChildProductOptionValue(newValue, position, index, option))
-    }
+    };
+    const deleteChildProduct = (index: number) => {
+        dispatch(productReducerActions.deleteChildProduct(index));
+    };
+    const addNewChildProduct = () => {
+        dispatch(productReducerActions.addNewChildProduct());
+    };
 
 
     const childProductsList = useSelector(GetChildProducts);
@@ -84,7 +92,7 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
             key: 'sku',
             width: 200,
             render: (key, record, index) => {
-                return <Form.Item className={s.childTableRow} name={`sku-${index}`}><Input maxLength={100} onChange={(value)=>{onHandleChange(value.target.value.toString(), 'sku', index, false)}} placeholder="Input SKU for Child Product" /></Form.Item>;
+                return <Form.Item className={s.childTableRow} name={`sku-${index}`} initialValue={key}><Input maxLength={100} onChange={(value)=>{onHandleChange(value.target.value.toString(), 'sku', index, false)}} placeholder="Input SKU for Child Product" /></Form.Item>;
             }
         },
         {
@@ -94,6 +102,7 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
             width: 100,
             render: (keys, record, index) => {
                 return <Form.Item
+                    initialValue={keys}
                     className={s.childTableRow}
                     name={`price-${index}`}><InputNumber min={0} onBlur={(e)=>{onHandleBlur(`price-${index}`, +e.currentTarget.value)}} onChange={(value)=>{onHandleChange(value == null || value == undefined ? 0 : value, 'price', index, false)}} max={999999} maxLength={7}/></Form.Item>
             }
@@ -104,7 +113,7 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
             key: 'quantity',
             width: 150,
             render: (keys, record, index) => {
-                return <Form.Item className={s.childTableRow} name={`quantity-${index}`}><InputNumber onBlur={(e)=>{onHandleBlur(`quantity-${index}`, +e.currentTarget.value)}} onChange={(value)=>{onHandleChange(value == null || value == undefined ? 0 : value, 'quantity', index, false)}} min={0} max={999999} maxLength={6} /></Form.Item>
+                return <Form.Item initialValue={keys} className={s.childTableRow} name={`quantity-${index}`}><InputNumber onBlur={(e)=>{onHandleBlur(`quantity-${index}`, +e.currentTarget.value)}} onChange={(value)=>{onHandleChange(value == null || value == undefined ? 0 : value, 'quantity', index, false)}} min={0} max={999999} maxLength={6} /></Form.Item>
             }
         }
     ];
@@ -115,24 +124,24 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
             dataIndex: 'options',
             key: item,
             render: (keys: {[key: string]: string}, record: ChildProductType, index: number) => {
-                return <Form.Item className={s.childTableRow} name={`${item}-${index}-option`}><Input onChange={(value)=>{onHandleChange(value.currentTarget.value.toString(), item, index, true)}} placeholder="Input Child Product Option" /></Form.Item>
+                return <Form.Item initialValue={record.options[item]} className={s.childTableRow} name={`${item}-${index}-option`}><Input onChange={(value)=>{onHandleChange(value.currentTarget.value.toString(), item, index, true)}} placeholder="Input Child Product Option" /></Form.Item>
             }
         }
         childProductsColumn.push(newColumn)
     });
+    childProductsColumn.push({
+        title: 'Action',
+        dataIndex: 'action',
+        key: 'action',
+        width: 50,
+        render: (item, record, index) => {
+            return <button className={generalInfoStyle.deleteImageButton} onClick={() => {
+                deleteChildProduct(index);
+            }}><DeleteOutlined/></button>
+        }
+    });
 
     let rowsChecked = checkRowValidator(childProductsList);
-
-    let childTableValues: {[key: string]: string} = {};
-
-    childProductsList.forEach((child, childIndex) => {
-        childTableValues[`sku-${childIndex}`] = child.sku;
-        childTableValues[`price-${childIndex}`] = `${child.price}`;
-        childTableValues[`quantity-${childIndex}`] = `${child.quantity}`;
-        Object.keys(child.options).forEach(optionName => {
-            childTableValues[`${optionName}-${childIndex}-option`] = child.options[optionName];
-        })
-    });
 
     useEffect(() => {
         props.childForm.resetFields();
@@ -209,7 +218,7 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
                 }
             </div>
         </div>
-        <Form form={props.childForm} initialValues={childTableValues} className={s.childProductForm}>
+        <Form form={props.childForm} className={s.childProductForm}>
             <Table pagination={false} columns={childProductsColumn} rowClassName={(record: ChildProductType, index: number)=> {
                 if(rowsChecked.includes(index)) {
                     return `${customFieldsStyle.warningRow} ${s.childTableRow}`;
@@ -218,7 +227,9 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
                 }
             }} dataSource={childProductsList}
                    footer={() => {
-                       return <Button type="dashed" icon={<PlusOutlined/>}>
+                       return <Button type="dashed" icon={<PlusOutlined/>} onClick={() => {
+                           addNewChildProduct();
+                       }}>
                            Add New Child Product
                        </Button>
                    }}/>
