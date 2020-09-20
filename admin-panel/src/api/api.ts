@@ -1,5 +1,5 @@
 import axios from "axios";
-import {RefineType, SaveProductType, SetProductType} from "../types/types";
+import {ProductListItemType, RefineType, SaveProductType, SetProductType} from "../types/types";
 
 export const baseURL = 'http://localhost:5000/';
 
@@ -118,4 +118,16 @@ export const productAPI = {
     saveProduct(data: SaveProductType) {
         return instance.post<LoadProductResponseType>(`/admin-api/product/id${data.id}`,{data})
     }
+};
+
+type loadProductsListResponseType = {
+    errorMessage?: string,
+    products: Array<ProductListItemType>,
+    totalCount: number
 }
+
+export const productListAPI = {
+    loadProductsList(page: number, productsOnPage: number) {
+       return instance.get<loadProductsListResponseType>(`/admin-api/products-list?page=${page}&productsOnPage=${productsOnPage}`);
+    }
+};

@@ -32,7 +32,7 @@ app.use('/admin-api/brands', require('./routes/admin-api/brands.routes'));
 
 app.use('/admin-api/categories', require('./routes/admin-api/categories.routes'));
 
-app.use('/admin-api/productsList', require('./routes/admin-api/productsList'));
+app.use('/admin-api/products-list', require('./routes/admin-api/productsList.routes'));
 
 app.use('/admin/*', express.static(path.join(__dirname, 'admin-panel/build/')));
 

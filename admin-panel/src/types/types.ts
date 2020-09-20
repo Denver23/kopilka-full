@@ -59,6 +59,19 @@ export type ProductRouteType = {
     id: string
 }
 
+export type ProductsListRouteType = {
+    page: string
+}
+
+export type ProductListItemType = {
+    _id: string,
+    key: string,
+    brand: string,
+    category: string,
+    productTitle: string,
+    hidden: boolean
+}
+
 export type RefineType = {
     items: Array<string>,
     title: string,

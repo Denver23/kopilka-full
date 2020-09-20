@@ -33,9 +33,9 @@ router.get('/:category',
             //create customFieldsObject
             let allRefineParameters = Object.keys(req.query).filter(field => {
                 return field !== 'page' && field !== 'limit' && field !== 'brands'
-            })
+            });
 
-            let customFields = createCustomFieldsObject(req.query, allRefineParameters)
+            let customFields = createCustomFieldsObject(req.query, allRefineParameters);
 
 
             let categoryId = categoryDB._id;

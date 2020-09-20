@@ -1,57 +1,87 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Button, Input, Space, Table} from "antd";
 import s from './ProductsList.module.scss';
 import {SearchOutlined} from "@ant-design/icons/lib";
 import {FilterDropdownProps} from "antd/es/table/interface";
 import Highlighter from 'react-highlight-words';
+import {Link, RouteComponentProps, withRouter} from "react-router-dom";
+import {ProductListItemType, ProductsListRouteType} from "../../types/types";
+import {useDispatch, useSelector} from "react-redux";
+import {getProductsList} from "../../redux/productsListReducer";
+import Preloader from "../common/Preloader/Preloader";
+import {GetProductsList, GetProductsListLoading, GetProductsQuantity} from "../../redux/selectors/productsListSelector";
 
-const ProductsList: React.FC = () => {
+const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (props) => {
 
+    let loading = useSelector(GetProductsListLoading);
+    let productsList = useSelector(GetProductsList);
+    let productsQuantity = useSelector(GetProductsQuantity);
+    const productsOnPage = 5;
+    let page = new URLSearchParams(props.location.search).get("page");
+    let brand = new URLSearchParams(props.location.search).get("brand");
+    let productTitle = new URLSearchParams(props.location.search).get("productTitle");
+    let category = new URLSearchParams(props.location.search).get("category");
+
+    const dispatch = useDispatch();
+    const getProductsListThunk = (page: number, productsOnPage: number) => {
+        dispatch(getProductsList(page, productsOnPage));
+    };
+
+    useEffect(() => {
+        getProductsListThunk(page !== null ? +page : 1, productsOnPage);
+    }, []);
+
+    let [selectedRows, setSelectedRows] = useState<Array<string>>([]);
     let [searchText, setSearchText] = useState('');
     let [searchedColumn, setSearchColumn] = useState('');
     let InputRef = useRef(null);
 
     const getColumnSearchProps = (dataIndex: string) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: FilterDropdownProps) => (
-            <div style={{ padding: 8 }}>
+        filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters}: FilterDropdownProps) => (
+            <div style={{padding: 8}}>
                 <Input
                     ref={InputRef}
                     placeholder={`Search ${dataIndex}`}
                     value={selectedKeys[0]}
                     onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
                     onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{ width: 188, marginBottom: 8, display: 'block' }}
+                    style={{width: 188, marginBottom: 8, display: 'block'}}
                 />
                 <Space>
                     <Button
                         type="primary"
                         onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
+                        icon={<SearchOutlined/>}
                         size="small"
-                        style={{ width: 90 }}
+                        style={{width: 90}}
                     >
                         Search
                     </Button>
-                    <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+                    <Button onClick={() => handleReset(clearFilters)} size="small" style={{width: 90}}>
                         Reset
                     </Button>
                 </Space>
             </div>
         ),
-        filterIcon: (filtered: string) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+        filterIcon: (filtered: string) => <SearchOutlined style={{color: filtered ? '#1890ff' : undefined}}/>,
         onFilter: (value: any, record: any) =>
             record[dataIndex]
                 ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
                 : '',
         onFilterDropdownVisibleChange: (visible: boolean) => {
             if (visible) {
-                setTimeout(() => {let temp: any = InputRef.current;if(temp !== null){temp.select()}}, 100);
+                setTimeout(() => {
+                    let temp: any = InputRef.current;
+                    if (temp !== null) {
+                        temp.select()
+                    }
+                }, 100);
             }
         },
         render: (text: string) =>
             searchedColumn === dataIndex ? (
                 <Highlighter
-                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                    highlightStyle={{backgroundColor: '#ffc069', padding: 0}}
                     searchWords={[searchText]}
                     autoEscape
                     textToHighlight={text ? text.toString() : ''}
@@ -62,28 +92,31 @@ const ProductsList: React.FC = () => {
     });
 
     const handleSearch = (selectedKeys: React.Key[], confirm: () => void, dataIndex: string) => {
-        confirm();
-        setSearchText(selectedKeys[0].toString());
-        setSearchColumn(dataIndex);
+        if(selectedKeys.length > 0) {
+            props.history.push({pathname: '/admin/products', search: `?page=1&${dataIndex}=${selectedKeys[0]}${brand !== null && dataIndex !== 'brand' ? `&brand=${brand}` : ''}${productTitle !== null && dataIndex !== 'productTitle' ? `&productTitle=${productTitle}` : ''}${category !== null && dataIndex !== 'category' ? `&category=${category}` : ''}`});
+            confirm();
+            setSearchText(selectedKeys[0].toString());
+            setSearchColumn(dataIndex);
+        } else {
+            props.history.push({pathname: '/admin/products', search: `?page=1${brand !== null && dataIndex !== 'brand' ? `&brand=${brand}` : ''}${productTitle !== null && dataIndex !== 'productTitle' ? `&productTitle=${productTitle}` : ''}${category !== null && dataIndex !== 'category' ? `&category=${category}` : ''}`});
+            confirm();
+            setSearchText('');
+            setSearchColumn(dataIndex);
+        }
     };
 
     const handleReset = (clearFilters: (() => void) | undefined) => {
-        if(clearFilters !== undefined) {
+        if (clearFilters !== undefined) {
             clearFilters();
         }
         setSearchText('');
     };
 
 
-
     const rowSelection = {
-        onChange: (selectedRowKeys: any, selectedRows: any) => {
-            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-        },
-        getCheckboxProps: (record: any) => ({
-            disabled: record.name === 'Disabled User',
-            name: record.name,
-        }),
+        onChange: (selectedRowKeys: any, tableSelectedRows: any) => {
+            setSelectedRows(selectedRowKeys);
+        }
     };
 
     const columns = [
@@ -95,8 +128,8 @@ const ProductsList: React.FC = () => {
         {
             title: 'Product Title',
             dataIndex: 'productTitle',
-            ...getColumnSearchProps('product title'),
-            render: (text: string) => <a>{text}</a>
+            ...getColumnSearchProps('productTitle'),
+            render: (text: string, record: ProductListItemType, index: number) => <Link to={`/admin/product/id${record._id}`}>{text}</Link>
 
         },
         {
@@ -108,49 +141,32 @@ const ProductsList: React.FC = () => {
             title: 'Hidden',
             dataIndex: 'hidden',
             render: (key: boolean, record: any, index: number) => {
-                return 'Visible'
+                return key === false ? 'Visible' : 'Hidden';
             }
         }
     ];
-    const data = [
-        {
-            key: '1',
-            productTitle: 'John Brown',
-            brand: 32,
-            category: 'New York No. 1 Lake Park',
-        },
-        {
-            key: '2',
-            productTitle: 'Jim Green',
-            brand: 42,
-            category: 'London No. 1 Lake Park',
-        },
-        {
-            key: '3',
-            productTitle: 'Joe Black',
-            brand: 32,
-            category: 'Sidney No. 1 Lake Park',
-        },
-        {
-            key: '4',
-            productTitle: 'Disabled User',
-            brand: 99,
-            category: 'Sidney No. 1 Lake Park',
-        },
-    ];
 
+    const onPageChange = (newPage: number, pageSize: number | undefined) => {
+        let currentPage = page ? +page : 1;
+        if(currentPage !== newPage) {
+            props.history.push({search: `?page=${newPage}${brand !== null ? `&brand=${brand}` : ''}${productTitle !== null ? `&productTitle=${productTitle}` : ''}${category !== null ? `&category=${category}` : ''}`});
+            getProductsListThunk(newPage, productsOnPage);
+        }
+    };
 
-    return <div className={s.wrapper}>
-        Products List
-        <Table
-            rowSelection={{
-                type: 'checkbox',
-                ...rowSelection,
-            }}
-            columns={columns}
-            dataSource={data}
-        />
-    </div>
+    return <>
+        {loading ? <Preloader/> : <div className={s.wrapper}>
+            <Table
+                rowSelection={{
+                    type: 'checkbox',
+                    ...rowSelection
+                }}
+                columns={columns}
+                dataSource={productsList}
+                pagination={{position: ['bottomCenter'], current: page !== null ? +page : 1, defaultPageSize: productsOnPage, hideOnSinglePage: true, total: productsQuantity, onChange: onPageChange}}
+            />
+        </div>}
+    </>
 };
 
-export default ProductsList;
+export default withRouter(ProductsList);

@@ -63,7 +63,7 @@ export const getAuthUserData = (): ThunkType => async (dispatch) => {
         dispatch(authReducersActions.setAuthUserData(null, null, null, false))
     }
 
-}
+};
 
 export const login = (email: string, password: string, rememberMe: boolean): ThunkType => async (dispatch) => {
     dispatch(authReducersActions.toggleIsFetching(true));

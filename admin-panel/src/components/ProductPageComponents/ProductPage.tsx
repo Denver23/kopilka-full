@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {Button, Form, Tabs} from 'antd';
 import {useDispatch, useSelector} from "react-redux";
 import {GetProductId, GetProductLoading} from "../../redux/selectors/productSelector";
-import {loadProduct, saveProduct} from "../../redux/productReducer";
+import {loadProduct, productReducerActions, saveProduct} from "../../redux/productReducer";
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {ProductRouteType} from "../../types/types";
 import Preloader from "../common/Preloader/Preloader";
@@ -28,9 +28,7 @@ const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => 
     const loading = useSelector(GetProductLoading);
 
     useEffect(() => {
-        if (productId == null) {
-            loadProductThunk(props.match.params.id);
-        }
+        loadProductThunk(props.match.params.id);
     }, [productId]);
 
     const SaveButton = <Button icon={<SaveOutlined />} type="primary" onClick={async ()=> {await saveProductThunk();childForm.resetFields();generalForm.resetFields()}}>Save</Button>
