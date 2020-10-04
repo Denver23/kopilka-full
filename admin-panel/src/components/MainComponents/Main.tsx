@@ -77,6 +77,7 @@ const Main: React.FC<RouteComponentProps> = ({history, ...props}) => {
                 <Route exact path='/admin/' component={() => {return <div></div>}}/>
                 <Route exact path='/admin/product/id:id(\w+)' component={ProductPage}/>
                 <Route path={'/admin/products'} component={ProductsList} />
+                <Route exact path='/admin/new-product' component={ProductPage}></Route>
             </Switch>
         </div>
     </div>

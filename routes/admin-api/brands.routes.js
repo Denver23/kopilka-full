@@ -6,7 +6,7 @@ router.get('',
     async (req, res) => {
         try {
             const value = req.query.value ? req.query.value : '';
-            var query = new RegExp('^' + value + '[\s+\w+]?', 'i');
+            var query = new RegExp('^' + value + '[\d+\s+\w+]?', 'i');
             let brands = await Brand.find({name: query},{_id: false, name: true, url: true}).sort({name: 1}).limit(100);
 
             res.json({brands: brands})

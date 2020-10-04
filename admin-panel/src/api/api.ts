@@ -1,5 +1,11 @@
 import axios from "axios";
-import {ProductListItemType, RefineType, SaveProductType, SetProductType} from "../types/types";
+import {
+    categoryRequestObjectType, changeProductsParamsTypes,
+    ProductListItemType,
+    RefineType,
+    SaveProductType,
+    SetProductType
+} from "../types/types";
 
 export const baseURL = 'http://localhost:5000/';
 
@@ -117,6 +123,12 @@ export const productAPI = {
     },
     saveProduct(data: SaveProductType) {
         return instance.post<LoadProductResponseType>(`/admin-api/product/id${data.id}`,{data})
+    },
+    addNewProduct(data: SaveProductType) {
+        return instance.post<{id?: string, errorMessage?: string}>(`/admin-api/product/new-product`,{data})
+    },
+    deleteProduct(id: string) {
+        return instance.post<{id?: string, errorMessage?: string}>(`/admin-api/product/delete-product`,{id})
     }
 };
 
@@ -127,7 +139,11 @@ type loadProductsListResponseType = {
 }
 
 export const productListAPI = {
-    loadProductsList(page: number, productsOnPage: number) {
-       return instance.get<loadProductsListResponseType>(`/admin-api/products-list?page=${page}&productsOnPage=${productsOnPage}`);
+    loadProductsList(page: number, productsOnPage: number, requestObject: categoryRequestObjectType) {
+        let queryString = (Object.keys(requestObject) as Array<keyof categoryRequestObjectType>).reduce(function(result, currentItem){return `&${currentItem}=${requestObject[currentItem]}`}, '');
+        return instance.get<loadProductsListResponseType>(`/admin-api/products-list?page=${page}&productsOnPage=${productsOnPage}${queryString}`);
+    },
+    changeProductsProps(items: Array<string>, params: changeProductsParamsTypes) {
+        return instance.put<{errorMessage?: string}>('/admin-api/products-list', {items, params});
     }
 };

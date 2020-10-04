@@ -1,8 +1,14 @@
 import React, {useEffect} from 'react';
-import {Button, Form, Tabs} from 'antd';
+import {Button, Form, Popconfirm, Tabs} from 'antd';
 import {useDispatch, useSelector} from "react-redux";
 import {GetProductId, GetProductLoading} from "../../redux/selectors/productSelector";
-import {loadProduct, productReducerActions, saveProduct} from "../../redux/productReducer";
+import {
+    addNewProduct,
+    deleteProduct,
+    loadProduct,
+    productReducerActions,
+    saveProduct
+} from "../../redux/productReducer";
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {ProductRouteType} from "../../types/types";
 import Preloader from "../common/Preloader/Preloader";
@@ -21,6 +27,13 @@ const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => 
     const saveProductThunk = (): void => {
         dispatch(saveProduct());
     };
+    const addNewProductThunk = (): void => {
+        dispatch(addNewProduct());
+    };
+    const deleteProductThunk = (): void => {
+        dispatch(deleteProduct());
+    };
+
     const [generalForm] = Form.useForm();
     const [childForm] = Form.useForm();
 
@@ -28,16 +41,56 @@ const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => 
     const loading = useSelector(GetProductLoading);
 
     useEffect(() => {
-        loadProductThunk(props.match.params.id);
-    }, [productId]);
+        if(props.match.path !== '/admin/new-product' && props.match.params.id) {
+            loadProductThunk(props.match.params.id);
+        } else if(props.match.path == '/admin/new-product' && productId !== null) {
+            props.history.push(`/admin/product/id${productId}`);
+        }
+    }, [productId, props.match.params.id]);
 
-    const SaveButton = <Button icon={<SaveOutlined />} type="primary" onClick={async ()=> {await saveProductThunk();childForm.resetFields();generalForm.resetFields()}}>Save</Button>
+    useEffect(() => {
+        return () => {
+            dispatch(productReducerActions.setProduct({
+                id: null,
+                brand: null,
+                category: null,
+                productTitle: null,
+                hidden: false,
+                childProducts: [],
+                images: [],
+                customFields: [],
+                shortDescription: null,
+                specifications: null,
+                features: null,
+                recommendedProducts: [],
+                productCategoryCustomFields: []
+            }))
+        }
+    }, []);
+
+    const saveProductClick = async () => {
+        await saveProductThunk();
+        childForm.resetFields();
+        generalForm.resetFields()
+    };
+    const addNewProductClick = async () => {
+        await addNewProductThunk();
+    };
+
+    const SaveButton = <Button icon={<SaveOutlined />} type="primary" onClick={props.match.path === '/admin/new-product' ? addNewProductClick : saveProductClick}>Save</Button>
+    const DeleteButton = <Popconfirm
+        placement="bottomRight"
+        title={'Are you sure to delete this product?'}
+        onConfirm={() => {deleteProductThunk();props.history.push('/admin/products')}}
+        okText="Yes"
+        cancelText="No"
+    ><Button icon={<SaveOutlined />} type="primary" danger>Delete</Button></Popconfirm>
 
     return <>
         {loading ? <Preloader/> : <div className={s.wrapper}>
-            <Tabs defaultActiveKey="ProductTab1" type="card" size={"middle"} tabBarExtraContent={SaveButton}>
+            <Tabs defaultActiveKey="ProductTab1" type="card" size={"middle"} tabBarExtraContent={<div>{props.match.path !== '/admin/new-product' ? DeleteButton : ''}{SaveButton}</div>}>
                 <Tabs.TabPane tab="General Info" key="ProductTab1">
-                    <GeneralInfo generalForm={generalForm}/>
+                    <GeneralInfo newProduct={props.match.path === '/admin/new-product' ? true : false} generalForm={generalForm}/>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Custom Fields" key="ProductTab2">
                     <CustomFields/>
@@ -47,6 +100,7 @@ const ProductPage: React.FC<RouteComponentProps<ProductRouteType>> = (props) => 
                 </Tabs.TabPane>
             </Tabs>
             {SaveButton}
+            {props.match.path !== '/admin/new-product' ? DeleteButton : ''}
         </div>
         }
 

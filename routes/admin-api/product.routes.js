@@ -71,8 +71,10 @@ router.post('/id:id',
                 return;
             } else if(data.productTitle === undefined || data.productTitle.length === 0) {
                 res.status(406).json({erorMessage: 'Product Title is empty'});
+                return;
             } else if(data.childProducts === undefined || data.childProducts.length < 1) {
                 res.status(406).json({erorMessage: 'Child Products is empty'});
+                return;
             }
 
 
@@ -91,7 +93,7 @@ router.post('/id:id',
                 customFields: validateCustomFields
             };
 
-            await Product.findOneAndUpdate({_id: id}, resultProduct, {new: true}, async (err, result) => {
+            await Product.findOneAndUpdate({_id: id}, resultProduct, {new: true}, (err, result) => {
                 if(!err) {
 
                     let resultProduct = {
@@ -113,6 +115,94 @@ router.post('/id:id',
                     res.json({product: resultProduct});
                 } else {
                     res.status(406).json({erorMessage: 'Product Not Found'});
+                }
+            });
+
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({erorMessage: 'Server Error'})
+        }
+    });
+
+router.post('/new-product',
+    async (req, res) => {
+        try {
+            const {data} = req.body;
+
+            const brand = await Brand.findOne({name: data.brand});
+            const category = await Category.findOne({name: data.category});
+
+
+            let childValidator = checkProductsForSave.checkRowValidator(data.childProducts);
+            let emptyOptions = data.childProducts.filter((item) => {
+                let options = item.options;
+                Object.keys(options).forEach(option => {
+                    if(item[option] === '') {
+                        return true;
+                    }
+                    return false
+                })
+            });
+            const categoryRefines = category.refines.map(refine => refine.title);
+            let validateCustomFields = data.customFields.filter(customField => {
+                return categoryRefines.includes(Object.keys(customField)[0]);
+            });
+
+            if(brand === null || category === null) {
+                res.status(406).json({erorMessage: 'Brand or Category Not Found'});
+                return;
+            } else if (childValidator.length || emptyOptions.length) {
+                res.status(409).json({erorMessage: 'Some child products has the same options or empty'});
+                return;
+            } else if(data.productTitle === undefined || data.productTitle.length === 0) {
+                res.status(406).json({erorMessage: 'Product Title is empty'});
+                return;
+            } else if(data.childProducts === undefined || data.childProducts.length < 1) {
+                res.status(406).json({erorMessage: 'Child Products is empty'});
+                return;
+            }
+
+
+            let resultProduct = {
+                _id: data.id,
+                brand: brand._id,
+                category: category._id,
+                productTitle: data.productTitle,
+                hidden: data.hidden,
+                childProducts: data.childProducts,
+                images: data.images,
+                shortDescription: data.shortDescription,
+                specifications: data.specifications,
+                features: data.features,
+                customFields: validateCustomFields
+            };
+
+            await Product.create(resultProduct, (err, result) => {
+                if(!err) {
+
+                    res.status(201).json({id: result._id});
+                } else {
+                    res.status(418).json({erorMessage: 'Cant create product'});
+                }
+            });
+
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({erorMessage: 'Server Error'})
+        }
+    });
+
+router.post('/delete-product',
+    async (req, res) => {
+        try {
+            const {id} = req.body;
+
+            await Product.findByIdAndDelete(id, (err, result) => {
+                if(!err) {
+
+                    res.status(200).send();
+                } else {
+                    res.status(418).json({erorMessage: 'Cant create product'});
                 }
             });
 

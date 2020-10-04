@@ -36,7 +36,7 @@ router.get('/add-to-cart',
                 sku: sku,
                 price: childProduct.price,
                 productTitle: product.productTitle,
-                thumbnail: product.images[0].thumbnail,
+                thumbnail: product.images[0] ? product.images[0].thumbnail : 'https://comin.co/system/static/media/noimage.08441b70.png',
                 options: childProduct.options
             }
             res.json({product: result})
@@ -101,7 +101,7 @@ router.post('/initialize-cart',
                     sku: product.sku,
                     price: childProduct.price,
                     productTitle: productDB.productTitle,
-                    thumbnail: productDB.images[0].thumbnail,
+                    thumbnail: productDB.images[0] ? productDB.images[0].thumbnail : 'https://comin.co/system/static/media/noimage.08441b70.png',
                     avaibility: childProduct.quantity > 0 ? true : false,
                     options: childProduct.options,
                     quantity: product.quantity

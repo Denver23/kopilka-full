@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {loadCategoryRefines, productReducerActions} from "../../../redux/productReducer";
 import {productImage, productImageTable} from "../../../types/types";
@@ -8,14 +8,83 @@ import {
     GetProductId, GetProductImages,
     GetProductShortDescription, GetProductSpecifications, GetProductTitle
 } from "../../../redux/selectors/productSelector";
-import {productAPI} from "../../../api/api";
 import {ColumnsType} from "antd/es/table";
 import {AutoComplete, Button, Checkbox, Form, Input, Table} from "antd";
 import s from "./GeneralInfo.module.scss";
 import ChildProductsStyles from "../ChildProducts/ChildProducts.module.scss"
 import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
+import {onBrandChange} from "../../../utils/autoCompleteFunc/brands";
+import {onCategoryChange} from "../../../utils/autoCompleteFunc/categories";
+import {FormInstance} from "antd/lib/form";
 
-const GeneralInfo: React.FC<{ generalForm: any }> = (props) => {
+const useSelectProduct = (name: string, initial: string | null = '', onChange: (value: string, setStateFunc: (array: Array<{value: string}>) => void) => void, actionsForm: FormInstance, loadThunk?: (item: string) => void) => {
+
+    let [autocompleteList, setList] = useState<Array<any>>([]);
+    let [tempString, changeTempString] = useState(initial !== null ? initial : '');
+    const dispatch = useDispatch();
+
+    const setDefaultValue = () => {
+        let action: {[key: string]: string} = {};
+        action[name] = initial !== null ? initial : '';
+        actionsForm.setFieldsValue(action)
+    };
+
+    const onBrandBlur = () => {
+        let itemsForCheck = autocompleteList.map(item => {
+            return item.value
+        });
+        if (tempString !== initial && autocompleteList.length !== 0 && itemsForCheck.includes(tempString)) {
+            dispatch(productReducerActions.dataChange({brand: tempString}));
+        } else {
+            setDefaultValue();
+        }
+    };
+
+    const onCategoryBlur = () => {
+        let itemsForCheck = autocompleteList.map(item => {
+            return item.value
+        });
+        if (tempString !== initial && autocompleteList.length !== 0 && itemsForCheck.includes(tempString)) {
+            if(loadThunk !== undefined) {
+                loadThunk(tempString);
+            }
+        } else {
+            setDefaultValue();
+        }
+    };
+
+    const onBrandSelect = (value: string) => {
+        let action: {[key: string]: string} = {};
+        action[name] = value;
+        dispatch(productReducerActions.dataChange(action));
+    };
+
+    const onCategorySelect = (value: string) => {
+        if(loadThunk !== undefined) {
+            loadThunk(value);
+        }
+    };
+
+    return {
+        inputData: {
+            options: autocompleteList,
+            onSearch: (value: string) => {
+                onChange(value, setList)
+            },
+            onBlur: name === 'brand' ? onBrandBlur : name === 'category' ? onCategoryBlur : undefined,
+            onSelect: (value: string) => {
+                if(name === 'brand') {
+                    onBrandSelect(value)
+                } else if(name === 'category') {
+                    onCategorySelect(value)
+                }
+            }
+        },
+        changeTempString
+    }
+};
+
+const GeneralInfo: React.FC<{ generalForm: any, newProduct: boolean }> = (props) => {
 
     const dispatch = useDispatch();
     const deleteImage = (_id: string): void => {
@@ -34,7 +103,6 @@ const GeneralInfo: React.FC<{ generalForm: any }> = (props) => {
         dispatch(productReducerActions.changeHiddenStatus(value));
     };
 
-
     const productId = useSelector(GetProductId);
     const brand = useSelector(GetProductBrand);
     const category = useSelector(GetProductCategory);
@@ -44,11 +112,10 @@ const GeneralInfo: React.FC<{ generalForm: any }> = (props) => {
     const specifications = useSelector(GetProductSpecifications);
     const features = useSelector(GetProductFeatures);
     const hidden = useSelector(GetProductHidden);
+    let imageAltInputIndex = useRef<number>(-1);
 
-    let [brands, setBrands] = useState<Array<any>>([]);
-    let [categories, setCategories] = useState<Array<any>>([]);
-    let [tempCategory, changeTempCategory] = useState(category !== null ? category : '');
-    let [tempBrand, changeTempBrand] = useState(brand !== null ? brand : '');
+    let brandSelector = useSelectProduct('brand', brand, onBrandChange, props.generalForm);
+    let categorySelector = useSelectProduct('category', category, onCategoryChange, props.generalForm, loadCategoryRefinesThunk);
 
     const layout = {
         labelCol: {
@@ -73,7 +140,7 @@ const GeneralInfo: React.FC<{ generalForm: any }> = (props) => {
             original: src,
             thumbnail: record.thumbnail,
             alt: alt
-        }
+        };
         changeImage(newImageObject);
     };
     const imagesColumns: ColumnsType<productImageTable> = [
@@ -96,8 +163,8 @@ const GeneralInfo: React.FC<{ generalForm: any }> = (props) => {
             width: 300,
             render: (text: string, record: productImageTable, index: number) => {
                 return <Form.Item name={`alt-${index}`} className={ChildProductsStyles.childTableRow}
-                                  initialValue={text}><Input onChange={(e) => {
-                    onChangeImageData(record.src, e.target.value, record)
+                                  initialValue={text}><Input onBlur={() => {imageAltInputIndex.current = -1}} onFocus={() => {imageAltInputIndex.current = index}} autoFocus={imageAltInputIndex.current === index} onChange={(e) => {
+                    onChangeImageData(record.src, e.target.value, record);
                 }}/></Form.Item>
             }
         },
@@ -136,62 +203,12 @@ const GeneralInfo: React.FC<{ generalForm: any }> = (props) => {
         } else if (newData.shortDescription !== undefined) {
             dispatch(productReducerActions.dataChange(newData));
         } else if (newData.category !== undefined) {
-            changeTempCategory(newData.category);
+            categorySelector.changeTempString(newData.category);
         } else if (newData.brand !== undefined) {
-            changeTempBrand(newData.brand);
+            brandSelector.changeTempString(newData.brand);
         }
     };
 
-    const onBrandChange = async (value: string) => {
-        if (value !== '') {
-            const result = await productAPI.getBrandsList(value);
-
-            const brands = result.data.brands.map(brand => {
-                return {value: brand.name};
-            });
-            setBrands(brands);
-        } else {
-            setBrands([]);
-        }
-    };
-    const onCategoryChange = async (value: string) => {
-        if (value !== '') {
-            const result = await productAPI.getCategoriesList(value);
-
-            const categories = result.data.categories.map(category => {
-                return {value: category.name};
-            });
-            setCategories(categories);
-        } else {
-            setCategories([]);
-        }
-    };
-    const onCategoryBlur = () => {
-        let categoriesForCheck = categories.map(item => {
-            return item.value
-        });
-        if (tempCategory !== category && categories.length !== 0 && categoriesForCheck.includes(tempCategory)) {
-            loadCategoryRefinesThunk(tempCategory);
-        } else {
-            props.generalForm.setFieldsValue({category})
-        }
-    };
-    const onCategorySelect = (value: string) => {
-        loadCategoryRefinesThunk(value);
-    };
-    const onBrandBlur = () => {
-        let brandsForCheck = brands.map(item => {
-            return item.value
-        });
-        if (tempBrand !== brand && brands.length !== 0 && brandsForCheck.includes(tempCategory)) {
-            dispatch(productReducerActions.dataChange({brand: tempBrand}));
-        } else {
-            props.generalForm.setFieldsValue({brand})
-        }
-    };
-    const onBrandSelect = (value: string) => {
-        dispatch(productReducerActions.dataChange({brand: value}));
-    };
     const onHiddenChange = (value: boolean) => {
         changeHiddenStatus(value);
     };
@@ -208,7 +225,7 @@ const GeneralInfo: React.FC<{ generalForm: any }> = (props) => {
             name="basic"
             initialValues={{
                 remember: true,
-                productId: productId !== null ? productId : undefined,
+                productId: props.newProduct === false && productId !== null ? productId : props.newProduct === true ? 'NonID Product' : undefined,
                 brand: brand !== null ? brand : undefined,
                 productTitle: productTitle !== null ? productTitle : undefined,
                 category: category !== null ? category : undefined,
@@ -242,12 +259,7 @@ const GeneralInfo: React.FC<{ generalForm: any }> = (props) => {
                         ]}
                     >
                         <AutoComplete
-                            options={brands}
-                            onSearch={onBrandChange}
-                            onBlur={onBrandBlur}
-                            onSelect={(value) => {
-                                onBrandSelect(value)
-                            }}
+                            {...brandSelector.inputData}
                             placeholder="Input Brand Name"
                             defaultActiveFirstOption={true}
                         />
@@ -275,20 +287,15 @@ const GeneralInfo: React.FC<{ generalForm: any }> = (props) => {
                         ]}
                     >
                         <AutoComplete
-                            options={categories}
-                            onSearch={onCategoryChange}
+                            {...categorySelector.inputData}
                             placeholder="Input Category Name"
                             defaultActiveFirstOption={true}
-                            onBlur={onCategoryBlur}
-                            onSelect={(value) => {
-                                onCategorySelect(value)
-                            }}
                         />
                     </Form.Item>
                 </div>
                 <div className={s.hiddenCheckbox}>
                     <Form.Item name="hidden" valuePropName="checked">
-                        <Checkbox onChange={e=>onHiddenChange(e.target.checked)}>Hidden</Checkbox>
+                        <Checkbox onChange={e => onHiddenChange(e.target.checked)}>Hidden</Checkbox>
                     </Form.Item>
                 </div>
             </div>

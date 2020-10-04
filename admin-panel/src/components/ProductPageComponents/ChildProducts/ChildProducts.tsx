@@ -41,7 +41,7 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
     const [editInputValue, changeEditInputValue] = useState<string>('');
     const [newTagInputVisible, changeInputVisible] = useState<boolean>(false);
 
-    let virtOptionsList = Object.keys(childProductsList[0].options);
+    let virtOptionsList = Object.keys(childProductsList[0] !== undefined ? childProductsList[0].options : {});
 
     const handleEditInputChange = (e: any) => {
         changeEditInputValue(e.target.value);
@@ -118,7 +118,7 @@ const ChildProducts: React.FC<{childForm: any}> = (props) => {
         }
     ];
 
-    Object.keys(childProductsList[0].options).forEach(item => {
+    virtOptionsList.forEach(item => {
         let newColumn = {
             title: item,
             dataIndex: 'options',

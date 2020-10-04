@@ -135,7 +135,7 @@ router.get('/:category',
                     productTitle: prod.productTitle,
                     price: lowPrice === highPrice ? highPrice : `${lowPrice} - ${highPrice}`,
                     additional: additional,
-                    imageUrl: prod.images[0].thumbnail
+                    imageUrl: prod.images[0] ? prod.images[0].thumbnail : 'https://comin.co/system/static/media/noimage.08441b70.png'
                 }
             })
 
