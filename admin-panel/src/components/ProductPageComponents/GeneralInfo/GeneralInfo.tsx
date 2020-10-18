@@ -84,6 +84,18 @@ const useSelectProduct = (name: string, initial: string | null = '', onChange: (
     }
 };
 
+const useTempInputState = () => {
+    const [tempString, changeTempString] = useState<string>('');
+
+    const onChange = (value: string) => {
+        changeTempString(value);
+    };
+    return {
+        tempString,
+        onChange
+    }
+};
+
 const GeneralInfo: React.FC<{ generalForm: any, newProduct: boolean }> = (props) => {
 
     const dispatch = useDispatch();
@@ -112,10 +124,11 @@ const GeneralInfo: React.FC<{ generalForm: any, newProduct: boolean }> = (props)
     const specifications = useSelector(GetProductSpecifications);
     const features = useSelector(GetProductFeatures);
     const hidden = useSelector(GetProductHidden);
-    let imageAltInputIndex = useRef<number>(-1);
 
     let brandSelector = useSelectProduct('brand', brand, onBrandChange, props.generalForm);
     let categorySelector = useSelectProduct('category', category, onCategoryChange, props.generalForm, loadCategoryRefinesThunk);
+    let imageAltInput = useTempInputState();
+    let imageSrcInput = useTempInputState();
 
     const layout = {
         labelCol: {
@@ -151,9 +164,9 @@ const GeneralInfo: React.FC<{ generalForm: any, newProduct: boolean }> = (props)
             width: 500,
             render: (text: string, record: productImageTable, index: number) => {
                 return <Form.Item name={`src-${index}`} className={ChildProductsStyles.childTableRow}
-                                  initialValue={text}><Input onChange={(e) => {
-                    onChangeImageData(e.target.value, record.alt, record)
-                }}/></Form.Item>
+                                  initialValue={text}><Input onBlur={(e) => {onChangeImageData(imageSrcInput.tempString, record.alt, record)}} onChange={(e) => {
+                    imageSrcInput.onChange(e.target.value);
+                }} onFocus={() => {imageSrcInput.onChange(text)}}/></Form.Item>
             }
         },
         {
@@ -163,9 +176,9 @@ const GeneralInfo: React.FC<{ generalForm: any, newProduct: boolean }> = (props)
             width: 300,
             render: (text: string, record: productImageTable, index: number) => {
                 return <Form.Item name={`alt-${index}`} className={ChildProductsStyles.childTableRow}
-                                  initialValue={text}><Input onBlur={() => {imageAltInputIndex.current = -1}} onFocus={() => {imageAltInputIndex.current = index}} autoFocus={imageAltInputIndex.current === index} onChange={(e) => {
-                    onChangeImageData(record.src, e.target.value, record);
-                }}/></Form.Item>
+                                  initialValue={text}><Input onBlur={(e) => {onChangeImageData(record.src, imageAltInput.tempString, record)}} onChange={(e) => {
+                    imageAltInput.onChange(e.target.value);
+                }} onFocus={() => {imageAltInput.onChange(text)}}/></Form.Item>
             }
         },
         {
@@ -224,7 +237,6 @@ const GeneralInfo: React.FC<{ generalForm: any, newProduct: boolean }> = (props)
             {...layout}
             name="basic"
             initialValues={{
-                remember: true,
                 productId: props.newProduct === false && productId !== null ? productId : props.newProduct === true ? 'NonID Product' : undefined,
                 brand: brand !== null ? brand : undefined,
                 productTitle: productTitle !== null ? productTitle : undefined,

@@ -27,6 +27,17 @@ export type SetProductType = {
     productCategoryCustomFields: Array<RefineType>
 }
 
+export type SetCategoryType = {
+    id: string | null,
+    categoryName: string | null,
+    url: string | null,
+    hidden: boolean,
+    childCategories: Array<string>,
+    slides: Array<string>,
+    refines: Array<CategoryRefineType>,
+    bestSellers: Array<ProductInListType>
+}
+
 export type ChildProductType = {
     sku: string,
     price: number,
@@ -47,6 +58,11 @@ export type productImageTable = {
     alt: string,
     showImage: string,
     thumbnail: string
+}
+
+export type categorySlideTable = {
+    src: string,
+    showImage: string,
 }
 
 export type productCustomField = {
@@ -72,6 +88,15 @@ export type ProductListItemType = {
     hidden: boolean
 }
 
+export type CategoriesListItemType = {
+    _id: string,
+    key: string,
+    name: string,
+    url: string,
+    childsQuantity: number,
+    hidden: boolean
+}
+
 export type RefineType = {
     items: Array<string>,
     title: string,
@@ -92,10 +117,26 @@ export type SaveProductType = {
     features: string
 }
 
+export type SaveCategoryType = {
+    id: string,
+    categoryName: string,
+    url: string,
+    hidden: boolean,
+    childCategories: Array<string>,
+    slides: Array<string>,
+    refines: Array<CategoryRefineType>,
+    bestSellers: Array<ProductInListType>
+}
+
 export type categoryRequestObjectType = {
     brand?: string,
     productTitle?: string,
     category?: string
+}
+
+export type categoriesListRequestObjectType = {
+    name?: string,
+    url?: string
 }
 
 export type changeProductsParamsTypes = {
@@ -103,3 +144,10 @@ export type changeProductsParamsTypes = {
 }
 
 export type ProductPropsTypes = 'brand'|'category'|'hidden' | 'delete';
+
+export type CategoryRefineType = {
+    items: Array<string>,
+    _id: string,
+    title: string,
+    type: string
+}

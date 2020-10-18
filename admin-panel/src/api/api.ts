@@ -1,9 +1,11 @@
 import axios from "axios";
 import {
-    categoryRequestObjectType, changeProductsParamsTypes,
+    CategoriesListItemType,
+    categoriesListRequestObjectType, CategoryRefineType,
+    categoryRequestObjectType, changeProductsParamsTypes, ProductInListType,
     ProductListItemType,
-    RefineType,
-    SaveProductType,
+    RefineType, SaveCategoryType,
+    SaveProductType, SetCategoryType,
     SetProductType
 } from "../types/types";
 
@@ -146,4 +148,31 @@ export const productListAPI = {
     changeProductsProps(items: Array<string>, params: changeProductsParamsTypes) {
         return instance.put<{errorMessage?: string}>('/admin-api/products-list', {items, params});
     }
+};
+
+type loadCategoriesListResponseType = {
+    errorMessage?: string,
+    categories: Array<CategoriesListItemType>,
+    totalCount: number
+}
+
+export const categoriesListAPI = {
+    loadCategoriesList(page: number, categoriesOnPage: number, requestObject: categoriesListRequestObjectType) {
+        let queryString = (Object.keys(requestObject) as Array<keyof categoriesListRequestObjectType>).reduce(function(result, currentItem){return `&${currentItem}=${requestObject[currentItem]}`}, '');
+        return instance.get<loadCategoriesListResponseType>(`/admin-api/categories-list?page=${page}&productsOnPage=${categoriesOnPage}${queryString}`);
+    }
+};
+
+type LoadCategoryResponseType = {
+    errorMessage?: string,
+    category: SetCategoryType
+}
+
+export const categoryAPI = {
+    loadCategory(id: string) {
+        return instance.get<LoadCategoryResponseType>(`/admin-api/category/id${id}`);
+    },
+    saveCategory(data: SaveCategoryType) {
+        return instance.post<LoadCategoryResponseType>(`/admin-api/category/id${data.id}`,{data})
+    },
 };

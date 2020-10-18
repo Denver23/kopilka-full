@@ -16,6 +16,8 @@ import ProductPage from "../ProductPageComponents/ProductPage";
 import {GetTheme} from "../../redux/selectors/appSelectors";
 import {appReducerActions} from "../../redux/appReducer";
 import ProductsList from "../ProductsListComponents/ProductsList";
+import CategoriesList from "../CategoriesListComponents/CategoriesList";
+import CategoryPageComponent from "../CategoryPageComponents/CategoryPageComponent";
 const { SubMenu } = Menu;
 
 const Main: React.FC<RouteComponentProps> = ({history, ...props}) => {
@@ -53,7 +55,7 @@ const Main: React.FC<RouteComponentProps> = ({history, ...props}) => {
         >
             <SubMenu key="sub1" icon={<AppstoreOutlined />} title="Products Control">
                 <Menu.Item key="3"><Link to={'/admin/products'}>Products</Link></Menu.Item>
-                <Menu.Item key="4">Option 4</Menu.Item>
+                <Menu.Item key="4"><Link to={'/admin/categories'}>Categories</Link></Menu.Item>
                 <SubMenu key="sub1-2" title="Submenu">
                     <Menu.Item key="5">Option 5</Menu.Item>
                     <Menu.Item key="6">Option 6</Menu.Item>
@@ -76,8 +78,10 @@ const Main: React.FC<RouteComponentProps> = ({history, ...props}) => {
             <Switch>
                 <Route exact path='/admin/' component={() => {return <div></div>}}/>
                 <Route exact path='/admin/product/id:id(\w+)' component={ProductPage}/>
-                <Route path={'/admin/products'} component={ProductsList} />
-                <Route exact path='/admin/new-product' component={ProductPage}></Route>
+                <Route path='/admin/products' component={ProductsList} />
+                <Route exact path='/admin/new-product' component={ProductPage}/>
+                <Route exact path='/admin/categories' component={CategoriesList}/>
+                <Route exact path='/admin/category/id:id(\w+)' component={CategoryPageComponent}/>
             </Switch>
         </div>
     </div>

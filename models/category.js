@@ -12,7 +12,8 @@ const schema = new Schema({
     ],
     childCategories: [{type: Schema.Types.ObjectId, ref: 'Category'}],
     bestSellers: [{type: Schema.Types.ObjectId, ref: 'Product'}],
-    slides: [{type: String, required: true}]
+    slides: [{type: String, required: true}],
+    hidden: {type: Boolean, required: true, default: false}
 })
 
 module.exports = model('Category', schema)

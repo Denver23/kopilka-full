@@ -1,23 +1,27 @@
 import React, {useEffect, useRef, useState} from "react";
-import {AutoComplete, Button, Col, Form, Input, Row, Select, Space, Table} from "antd";
-import s from './ProductsList.module.scss';
-import {FileAddOutlined, SearchOutlined} from "@ant-design/icons/lib";
-import {FilterDropdownProps} from "antd/es/table/interface";
-import Highlighter from 'react-highlight-words';
 import {Link, RouteComponentProps, withRouter} from "react-router-dom";
+import {FormInstance} from "antd/lib/form";
 import {
-    categoryRequestObjectType,
+    categoriesListRequestObjectType,
     changeProductsParamsTypes,
     ProductListItemType,
     ProductsListRouteType
 } from "../../types/types";
 import {useDispatch, useSelector} from "react-redux";
-import {changeProductsProps, getProductsList} from "../../redux/productsListReducer";
-import {GetProductsList, GetProductsListLoading, GetProductsQuantity} from "../../redux/selectors/productsListSelector";
+import {AutoComplete, Button, Col, Form, Input, Row, Select, Space, Table} from "antd";
 import {onBrandChange} from "../../utils/autoCompleteFunc/brands";
-import {productReducerActions} from "../../redux/productReducer";
 import {onCategoryChange} from "../../utils/autoCompleteFunc/categories";
-import {FormInstance} from "antd/lib/form";
+import {FileAddOutlined, SearchOutlined} from "@ant-design/icons/lib";
+import {FilterDropdownProps} from "antd/es/table/interface";
+import Highlighter from "react-highlight-words";
+import {productReducerActions} from "../../redux/productReducer";
+import s from "../ProductsListComponents/ProductsList.module.scss";
+import {
+    GetCategoriesList,
+    GetCategoriesListLoading,
+    GetCategoriesQuantity
+} from "../../redux/selectors/categoriesListSelector";
+import {changeCategoriesProps, getCategoriesList} from "../../redux/categoriesListReducer";
 
 const useSelect = (name: string, onChange: (value: string, setStateFunc: (array: Array<{ value: string }>) => void) => void, actionsForm: FormInstance) => {
 
@@ -58,59 +62,54 @@ const useSelect = (name: string, onChange: (value: string, setStateFunc: (array:
     };
 };
 
-const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (props) => {
+const CategoriesList: React.FC<RouteComponentProps<ProductsListRouteType>> = (props) => {
 
-    let loading = useSelector(GetProductsListLoading);
-    let productsList = useSelector(GetProductsList);
-    let productsQuantity = useSelector(GetProductsQuantity);
-    const productsOnPage = 20;
+    let loading = useSelector(GetCategoriesListLoading);
+    let categoriesList = useSelector(GetCategoriesList);
+    let categoriesQuantity = useSelector(GetCategoriesQuantity);
+    const categoriesOnPage = 20;
     let page = new URLSearchParams(props.location.search).get("page");
-    let brand = useRef(new URLSearchParams(props.location.search).get("brand"));
-    let productTitle = useRef(new URLSearchParams(props.location.search).get("productTitle"));
-    let category = useRef(new URLSearchParams(props.location.search).get("category"));
+    let name = useRef(new URLSearchParams(props.location.search).get("category"));
+    let url = useRef(new URLSearchParams(props.location.search).get("url"));
 
     const dispatch = useDispatch();
-    const getProductsListThunk = (page: number, productsOnPage: number, requestObject: categoryRequestObjectType): void => {
-        dispatch(getProductsList(page, productsOnPage, requestObject));
+    const getCategoriesListThunk = (page: number, productsOnPage: number, requestObject: categoriesListRequestObjectType): void => {
+        dispatch(getCategoriesList(page, productsOnPage, requestObject));
     };
-    const changeProductsPropsThunk = (items: Array<string>, params: changeProductsParamsTypes): void => {
-        dispatch(changeProductsProps(items, params));
+    const changeCategoriesPropsThunk = (items: Array<string>, params: changeProductsParamsTypes): void => {
+        dispatch(changeCategoriesProps(items, params));
     };
 
-    const loadProductsFunc = () => {
-        let requestObject: categoryRequestObjectType = {};
-        let brandRequets = new URLSearchParams(props.location.search).get("brand");
-        let productTitleRequest = new URLSearchParams(props.location.search).get("productTitle");
-        let categoryRequest = new URLSearchParams(props.location.search).get("category");
-        if (brandRequets !== null) {
-            requestObject.brand = brandRequets;
-        }
-        if (productTitleRequest !== null) {
-            requestObject.productTitle = productTitleRequest;
-        }
-        if (categoryRequest !== null) {
-            requestObject.category = categoryRequest;
-        }
+    const loadCategoriesFunc = () => {
+        let requestObject: categoriesListRequestObjectType = {};
+        let nameRequest = new URLSearchParams(props.location.search).get("name");
+        let urlRequest = new URLSearchParams(props.location.search).get("url");
+
+        if (nameRequest !== null) {
+            requestObject.name = nameRequest;
+        };
+        if (urlRequest !== null) {
+            requestObject.url = urlRequest;
+        };
         setSelectedRows([]);
-        getProductsListThunk(page !== null ? +page : 1, productsOnPage, requestObject);
+        getCategoriesListThunk(page !== null ? +page : 1, categoriesOnPage, requestObject);
     };
 
     useEffect(() => {
-        let requestObject: categoryRequestObjectType = {};
-        let brandRequest = new URLSearchParams(props.location.search).get("brand");
-        let productTitleRequest = new URLSearchParams(props.location.search).get("productTitle");
-        let categoryRequest = new URLSearchParams(props.location.search).get("category");
-        if (brandRequest !== null) {
-            requestObject.brand = brandRequest;
-        }
-        if (productTitleRequest !== null) {
-            requestObject.productTitle = productTitleRequest;
-        }
-        if (categoryRequest !== null) {
-            requestObject.category = categoryRequest;
-        }
+        let requestObject: categoriesListRequestObjectType = {};
+        let nameRequest = new URLSearchParams(props.location.search).get("name");
+        let urlRequest = new URLSearchParams(props.location.search).get("url");
+        console.log(urlRequest);
+
+        if (nameRequest !== null) {
+            requestObject.name = nameRequest;
+        };
+        if (urlRequest !== null) {
+            requestObject.url = urlRequest;
+        };
+        console.log(requestObject);
         setSelectedRows([]);
-        getProductsListThunk(page !== null ? +page : 1, productsOnPage, requestObject);
+        getCategoriesListThunk(page !== null ? +page : 1, categoriesOnPage, requestObject);
     }, [props.location.search]);
 
     const [actionsForm] = Form.useForm();
@@ -123,7 +122,7 @@ const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (prop
     let brandSelect = useSelect('brand', onBrandChange, actionsForm);
     let categorySelect = useSelect('category', onCategoryChange, actionsForm);
     let [hidden, setHidden] = useState<boolean>(false);
-    const newProductButton = <Link to={'/admin/new-product'}><Button type="primary" icon={<FileAddOutlined />}>New Product</Button></Link>;
+    const newCategoryButton = <Link to={'/admin/new-category'}><Button type="primary" icon={<FileAddOutlined />}>New Category</Button></Link>;
 
     const getColumnSearchProps = (dataIndex: string) => ({
         filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters}: FilterDropdownProps) => (
@@ -183,27 +182,24 @@ const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (prop
     const handleSearch = (selectedKeys: React.Key[], confirm: () => void, dataIndex: string) => {
         if (selectedKeys.length > 0) {
             switch (dataIndex) {
-                case 'brand':
-                    brand.current = `${selectedKeys[0]}`;
+                case 'name':
+                    name.current = `${selectedKeys[0]}`;
                     break;
-                case 'productTitle':
-                    productTitle.current = `${selectedKeys[0]}`;
-                    break;
-                case 'category':
-                    category.current = `${selectedKeys[0]}`;
+                case 'url':
+                    url.current = `${selectedKeys[0]}`;
                     break;
             }
             props.history.push({
-                pathname: '/admin/products',
-                search: `?page=1&${dataIndex}=${selectedKeys[0]}${brand.current !== null && dataIndex !== 'brand' ? `&brand=${brand.current}` : ''}${productTitle.current !== null && dataIndex !== 'productTitle' ? `&productTitle=${productTitle.current}` : ''}${category.current !== null && dataIndex !== 'category' ? `&category=${category.current}` : ''}`
+                pathname: '/admin/categories',
+                search: `?page=1&${dataIndex}=${selectedKeys[0]}${url.current !== null && dataIndex !== 'url' ? `&url=${url.current}` : ''}${name.current !== null && dataIndex !== 'name' ? `&name=${name.current}` : ''}`
             });
             confirm();
             setSearchText(selectedKeys[0].toString());
             setSearchColumn(dataIndex);
         } else {
             props.history.push({
-                pathname: '/admin/products',
-                search: `?page=1${brand.current !== null && dataIndex !== 'brand' ? `&brand=${brand.current}` : ''}${productTitle.current !== null && dataIndex !== 'productTitle' ? `&productTitle=${productTitle.current}` : ''}${category.current !== null && dataIndex !== 'category' ? `&category=${category.current}` : ''}`
+                pathname: '/admin/categories',
+                search: `?page=1${name.current !== null && dataIndex !== 'name' ? `&name=${name.current}` : ''}${url.current !== null && dataIndex !== 'url' ? `&url=${url.current}` : ''}`
             });
             confirm();
             setSearchText('');
@@ -213,21 +209,18 @@ const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (prop
 
     const handleReset = (clearFilters: (() => void) | undefined, dataIndex: string) => {
         switch (dataIndex) {
-            case 'brand':
-                brand.current = null;
+            case 'name':
+                name.current = null;
                 break;
-            case 'productTitle':
-                productTitle.current = null;
-                break;
-            case 'category':
-                category.current = null;
+            case 'url':
+                url.current = null;
                 break;
         }
         if (clearFilters !== undefined) {
             clearFilters();
         }
         setSearchText('');
-        props.history.push({search: `?page=1${brand.current !== null ? `&brand=${brand.current}` : ''}${productTitle.current !== null ? `&productTitle=${productTitle.current}` : ''}${category.current !== null ? `&category=${category.current}` : ''}`});
+        props.history.push({search: `?page=1${name.current !== null ? `&name=${name.current}` : ''}${url.current !== null ? `&url=${url.current}` : ''}`});
     };
 
 
@@ -239,22 +232,23 @@ const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (prop
 
     const columns = [
         {
-            title: 'Brand',
-            dataIndex: 'brand',
-            ...getColumnSearchProps('brand')
+            title: 'Name',
+            dataIndex: 'name',
+            ...getColumnSearchProps('name'),
+            render: (text: string, record: ProductListItemType, index: number) => <Link
+                to={`/admin/category/id${record._id}`}>{text}</Link>
         },
         {
-            title: 'Product Title',
-            dataIndex: 'productTitle',
-            ...getColumnSearchProps('productTitle'),
+            title: 'URL',
+            dataIndex: 'url',
+            ...getColumnSearchProps('url'),
             render: (text: string, record: ProductListItemType, index: number) => <Link
                 to={`/admin/product/id${record._id}`}>{text}</Link>
 
         },
         {
-            title: 'Category',
-            dataIndex: 'category',
-            ...getColumnSearchProps('category')
+            title: 'Childs Quantity',
+            dataIndex: 'childsQuantity'
         },
         {
             title: 'Hidden Status',
@@ -268,7 +262,7 @@ const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (prop
     const onPageChange = (newPage: number, pageSize: number | undefined) => {
         let currentPage = page !== null ? +page : 1;
         if (currentPage !== newPage) {
-            props.history.push({search: `?page=${newPage}${brand.current !== null ? `&brand=${brand.current}` : ''}${productTitle.current !== null ? `&productTitle=${productTitle.current}` : ''}${category.current !== null ? `&category=${category.current}` : ''}`});
+            props.history.push({search: `?page=${newPage}${name.current !== null ? `&name=${name.current}` : ''}`});
         }
     };
 
@@ -289,14 +283,14 @@ const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (prop
 
     const onFinish = async () => {
         if (action === 'changeBrand' && brandSelect.actionName !== '') {
-            changeProductsPropsThunk(selectedRows, {brand: brandSelect.actionName})
+            changeCategoriesPropsThunk(selectedRows, {brand: brandSelect.actionName})
         } else if (action === 'changeCategory' && categorySelect.actionName !== '') {
-            changeProductsPropsThunk(selectedRows, {category: categorySelect.actionName})
+            changeCategoriesPropsThunk(selectedRows, {category: categorySelect.actionName})
         } else if(action === 'changeVisibility') {
-            changeProductsPropsThunk(selectedRows, {hidden: hidden})
+            changeCategoriesPropsThunk(selectedRows, {hidden: hidden})
         } else if(action === 'deleteProducts') {
-            await changeProductsPropsThunk(selectedRows, {delete: true});
-            loadProductsFunc();
+            await changeCategoriesPropsThunk(selectedRows, {delete: true});
+            loadCategoriesFunc();
         }
     };
 
@@ -390,7 +384,7 @@ const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (prop
                                         <Select defaultValue={'visible'} style={{height: '32px'}}
                                                 placeholder={'Hidden Status'}
                                                 onSelect={onChangeVisibility}
-                                                >
+                                        >
                                             <Select.Option value="visible">Visible</Select.Option>
                                             <Select.Option value="hidden">Hidden</Select.Option>
                                         </Select>
@@ -404,9 +398,9 @@ const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (prop
                             }
                         </Row>
                     </Form>
-                    <span className={s.selectedRowsSpan}>Selected Products: {selectedRows.length}</span>
-                    {newProductButton}
-                </div> : <div className={s.actionList}>{newProductButton}</div>
+                    <span className={s.selectedRowsSpan}>Selected Categories: {selectedRows.length}</span>
+                    {newCategoryButton}
+                </div> : <div className={s.actionList}>{newCategoryButton}</div>
             }
             <Table
                 loading={loading}
@@ -415,13 +409,13 @@ const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (prop
                     ...rowSelection
                 }}
                 columns={columns}
-                dataSource={productsList}
+                dataSource={categoriesList}
                 pagination={{
                     position: ['bottomCenter'],
                     current: page !== null ? +page : 1,
-                    defaultPageSize: productsOnPage,
+                    defaultPageSize: categoriesOnPage,
                     hideOnSinglePage: true,
-                    total: productsQuantity,
+                    total: categoriesQuantity,
                     onChange: onPageChange
                 }}
                 style={{marginTop: selectedRows.length > 0 ? 10 : 18}}
@@ -430,4 +424,4 @@ const ProductsList: React.FC<RouteComponentProps<ProductsListRouteType>> = (prop
     </>
 };
 
-export default withRouter(ProductsList);
+export default withRouter(CategoriesList);

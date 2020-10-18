@@ -88,7 +88,7 @@ const productReducer = (state = initialState, action: GetActionsTypes<typeof pro
         case DELETE_IMAGE:
             let newImagesList = state.images.filter(image => {
                 return image._id !== action._id;
-            })
+            });
             return {...state, images: newImagesList};
         case CHANGE_IMAGE:
             let newImagesData = state.images.map(image => {

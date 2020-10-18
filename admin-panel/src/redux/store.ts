@@ -4,12 +4,16 @@ import appReducer from "./appReducer";
 import authReducer from "./authReducer";
 import productReducer from "./productReducer";
 import productsListReducer from "./productsListReducer";
+import categoriesListReducer from "./categoriesListReducer";
+import categoryReducer from "./categoryReducer";
 
 let rootReducer = combineReducers({
     appReducer,
     authReducer,
     productReducer,
-    productsListReducer
+    productsListReducer,
+    categoriesListReducer,
+    categoryReducer
 });
 
 type RootReducerType = typeof rootReducer;
