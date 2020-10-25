@@ -72,7 +72,7 @@ const CustomFields: React.FC = () => {
         changeCustomFieldTag(oldTag, newTag, customFieldName);
         changeInputIndex({row: -1, item: -1});
     };
-    const hangleSelectBlur = () => {
+    const handleSelectBlur = () => {
         changeInputIndex({row: -1, item: -1});
     };
 
@@ -80,7 +80,7 @@ const CustomFields: React.FC = () => {
         let result = true;
         customFields.forEach(refine => {
             if(Object.keys(refine)[0] === value) result = false
-        })
+        });
         if(newPrRefine !== '' && result) addNewPrRefine(value);
     };
 
@@ -102,7 +102,7 @@ const CustomFields: React.FC = () => {
                             <Select size={"small"} defaultValue={item} style={{width: 120}}
                                     autoFocus={true}
                                     onBlur={() => {
-                                        hangleSelectBlur()
+                                        handleSelectBlur()
                                     }}
                                     onChange={(value) => {
                                         handleEditInputConfirm(item, value, record.customFieldName)
@@ -192,7 +192,7 @@ const CustomFields: React.FC = () => {
                 }}><DeleteOutlined/></button>
             }
         }
-    ]
+    ];
 
     return <div>
         <Table className={s.customFieldTable} pagination={false} columns={customFieldsColumns} dataSource={customFieldsTableData}

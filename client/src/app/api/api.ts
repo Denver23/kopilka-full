@@ -26,7 +26,7 @@ instance.interceptors.request.use(request => {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
 
-    if (accessToken !== 'undefined' && refreshToken !== 'undefined') {
+    if (accessToken !== undefined && refreshToken !== undefined) {
         let exp = Number(localStorage.getItem('exp'));
 
         if (isAccessTokenExpired(exp) && refreshToken) {

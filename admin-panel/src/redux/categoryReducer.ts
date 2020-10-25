@@ -1,16 +1,12 @@
-import {categoryAPI, productAPI} from "../api/api";
+import {categoryAPI} from "../api/api";
 import ResponseMessageError from "../utils/errors/responseErrors";
 import {
     ProductInListType,
-    SetProductType,
-    ChildProductType,
     GetActionsTypes,
-    productImage,
-    RefineType, SaveProductType, CategoryRefineType, SetCategoryType, SaveCategoryType
+    CategoryRefineType, SetCategoryType, SaveCategoryType, ChildCategoryType
 } from "../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
-import {checkRowValidator} from "../utils/productFunc/productFunc";
 
 const TOGGLE_LOADING = 'TOGGLE_LOADING';
 const SET_CATEGORY = 'SET_CATEGORY';
@@ -18,22 +14,13 @@ const DELETE_IMAGE = 'DELETE_IMAGE';
 const CHANGE_IMAGE = 'CHANGE_IMAGE';
 const ADD_IMAGE = 'ADD_IMAGE';
 const DATA_CHANGE = 'DATA_CHANGE';
-const DELETE_CUSTOMFIELD_TAG = 'DELETE_CUSTOMFIELD_TAG';
-const CHANGE_CUSTOMFIELD_TAG = 'CHANGE_CUSTOMFIELD_TAG';
-const ADD_NEW_CUSTOMFIELD_TAG = 'ADD_NEW_CUSTOMFIELD_TAG';
-const SET_PR_REFINES = 'SET_PR_REFINES';
-const DELETE_PR_REFINE = 'DELETE_PR_REFINE';
-const ADD_NEW_PR_REFINE = 'ADD_NEW_PR_REFINE';
-const DELETE_VIRT_OPTION = 'DELETE_VIRT_OPTION';
-const EDIT_VIRT_OPTION_NAME = 'EDIT_VIRT_OPTION_NAME';
-const ADD_NEW_VIRT_OPTION = 'ADD_NEW_VIRT_OPTION';
-const CHANGE_CHILD_PRODUCT_OPTION_VALUE = 'CHANGE_CHILD_PRODUCT_OPTION_VALUE';
-const SET_NEW_CHILD_PRODUCTS = 'SET_NEW_CHILD_PRODUCTS';
-const SET_NEW_IMAGE_LIST = 'SET_NEW_IMAGE_LIST';
-const SET_NEW_CUSTOM_FIELDS_OBJECT = 'SET_NEW_CUSTOM_FIELDS_OBJECT';
-const DELETE_CHILD_PRODUCT = 'DELETE_CHILD_PRODUCT';
-const ADD_NEW_CHILD_PRODUCT = 'ADD_NEW_CHILD_PRODUCT';
 const CHANGE_HIDDEN_STATUS = 'CHANGE_HIDDEN_STATUS';
+const DELETE_CT_REFINE = 'DELETE_CT_REFINE';
+const DELETE_REFINE_TAG = 'DELETE_REFINE_TAG';
+const CHANGE_REFINE_TAG = 'CHANGE_REFINE_TAG';
+const ADD_NEW_REFINE_TAG = 'ADD_NEW_REFINE_TAG';
+const ADD_NEW_REFINE = 'ADD_NEW_REFINE';
+const DELETE_CHILD_CATEGORY = 'DELETE_CHILD_CATEGORY';
 
 function makeCounter() {
     let count = 0;
@@ -51,10 +38,11 @@ let initialState = {
     categoryName: null as string | null,
     url: null as string | null,
     hidden: false as boolean,
-    childCategories: [] as Array<string>,
+    childCategories: [] as Array<ChildCategoryType>,
     slides: [] as Array<string>,
     refines: [] as Array<CategoryRefineType>,
-    bestSellers: [] as Array<ProductInListType>
+    bestSellers: [] as Array<ProductInListType>,
+    productsQuantity: 0 as number
 };
 
 type InitialStateType = typeof initialState;
@@ -71,7 +59,8 @@ const categoryReducer = (state = initialState, action: GetActionsTypes<typeof ca
                 childCategories: action.data.childCategories,
                 slides: action.data.slides,
                 refines: action.data.refines,
-                bestSellers: action.data.bestSellers
+                bestSellers: action.data.bestSellers,
+                productsQuantity: action.data.productsQuantity
             };
         case TOGGLE_LOADING:
             return {...state, 'loading': action.loading};
@@ -97,6 +86,57 @@ const categoryReducer = (state = initialState, action: GetActionsTypes<typeof ca
             return {...state, ...action.data};
         case CHANGE_HIDDEN_STATUS:
             return {...state, hidden: action.value};
+        case DELETE_CT_REFINE:
+            let newRefineList = [...state.refines].filter(item => {
+                return item.title !== action.title;
+            });
+            return {...state, refines: newRefineList};
+        case DELETE_REFINE_TAG:
+            let newTagsList = [...state.refines].map(refine => {
+                if (refine.title === action.refineName) {
+                    let newRefine = refine;
+                    newRefine.items = newRefine.items.filter(item => item !== action.tag);
+                    return newRefine;
+                }
+                return refine;
+            });
+            return {...state, refines: newTagsList};
+        case CHANGE_REFINE_TAG:
+            let changedTagsList = [...state.refines].map(refine => {
+                if (refine.title === action.refineName) {
+                    let newRefine = refine;
+                    newRefine.items = newRefine.items.map(item => {
+                        if (item === action.oldTag) {
+                            return action.newTag
+                        }
+                        return item;
+                    });
+                    return newRefine;
+                }
+                return refine;
+            });
+            return {...state, refines: changedTagsList};
+        case ADD_NEW_REFINE_TAG:
+            let newItemTagsList = [...state.refines].map(refine => {
+                if (refine.title === action.refineName) {
+                    let newRefine = refine;
+                    newRefine.items.push(action.newTag);
+                    return newRefine;
+                }
+                return refine;
+            });
+            return {...state, refines: newItemTagsList};
+        case ADD_NEW_REFINE:
+            let newAddedRefineList = [...state.refines];
+            newAddedRefineList.push({
+                items: [],
+                title: action.value,
+                type: 'checkbox'
+            });
+            return {...state, refines: newAddedRefineList};
+        case DELETE_CHILD_CATEGORY:
+            let deletedChildCategoriesList = [...state.childCategories].filter(category => category._id !== action.id);
+            return {...state, childCategories: deletedChildCategoriesList};
         default:
             return state;
     }
@@ -109,50 +149,25 @@ export const categoryReducerActions = {
     changeImage: (oldSrc: string, src: string) => ({type: CHANGE_IMAGE, oldSrc, src} as const),
     addImage: () => ({type: ADD_IMAGE} as const),
     dataChange: (data: { [key: string]: string }) => ({type: DATA_CHANGE, data} as const),
-    deleteCustomFieldTag: (tag: string, customFieldName: string) => ({
-        type: DELETE_CUSTOMFIELD_TAG,
+    deleteRefineTag: (tag: string, refineName: string) => ({
+        type: DELETE_REFINE_TAG,
         tag,
-        customFieldName
+        refineName
     } as const),
-    changeCustomFieldTag: (oldTag: string, newTag: string, customFieldName: string) => ({
-        type: CHANGE_CUSTOMFIELD_TAG,
+    changeRefineTag: (oldTag: string, newTag: string, refineName: string) => ({
+        type: CHANGE_REFINE_TAG,
         oldTag,
         newTag,
-        customFieldName
+        refineName
     } as const),
-    addNewCustomFieldTag: (newTag: string, customFieldName: string) => ({
-        type: ADD_NEW_CUSTOMFIELD_TAG,
+    addNewRefineTag: (newTag: string, refineName: string) => ({
+        type: ADD_NEW_REFINE_TAG,
         newTag,
-        customFieldName
+        refineName
     } as const),
-    setNewProductRefines: (data: Array<RefineType>) => ({type: SET_PR_REFINES, data} as const),
-    deleteProductRefine: (name: string) => ({type: DELETE_PR_REFINE, name} as const),
-    addNewPrRefine: (value: string) => ({type: ADD_NEW_PR_REFINE, value} as const),
-    deleteVirtOption: (value: string) => ({type: DELETE_VIRT_OPTION, value} as const),
-    editVirtOption: (oldValue: string, newValue: string) => ({
-        type: EDIT_VIRT_OPTION_NAME,
-        oldValue,
-        newValue
-    } as const),
-    addVirtOption: (value: string) => ({type: ADD_NEW_VIRT_OPTION, value} as const),
-    changeChildProductOptionValue: (newValue: string | number, position: string, index: number, option: boolean) => ({
-        type: CHANGE_CHILD_PRODUCT_OPTION_VALUE,
-        newValue,
-        position,
-        index,
-        option
-    } as const),
-    setNewChildProductsForSave: (childProducts: Array<ChildProductType>) => ({
-        type: SET_NEW_CHILD_PRODUCTS,
-        childProducts
-    } as const),
-    setNewImageList: (imageList: Array<productImage>) => ({type: SET_NEW_IMAGE_LIST, imageList} as const),
-    setNewCustomFieldsObject: (data: { customFields: Array<{ [key: string]: Array<string> }> }) => ({
-        type: SET_NEW_CUSTOM_FIELDS_OBJECT,
-        data
-    } as const),
-    deleteChildProduct: (index: number) => ({type: DELETE_CHILD_PRODUCT, index} as const),
-    addNewChildProduct: () => ({type: ADD_NEW_CHILD_PRODUCT} as const),
+    deleteCategoryRefine: (title: string) => ({type: DELETE_CT_REFINE, title} as const),
+    addNewRefine: (value: string) => ({type: ADD_NEW_REFINE, value} as const),
+    deleteChildCategory: (id: string) => ({type: DELETE_CHILD_CATEGORY, id} as const),
     changeHiddenStatus: (value: boolean) => ({type: CHANGE_HIDDEN_STATUS, value} as const)
 };
 
@@ -180,7 +195,8 @@ export const loadCategory = (id: string): ThunkType => async (dispatch) => {
             childCategories: [],
             slides: [],
             refines: [],
-            bestSellers: []
+            bestSellers: [],
+            productsQuantity: 0
         }));
 
     } finally {
@@ -200,7 +216,7 @@ export const saveCategory = (): ThunkType => async (dispatch, getState) => {
             categoryName: categoryState.categoryName !== null ? categoryState.categoryName : '',
             url: categoryState.url !== null ? categoryState.url : '',
             hidden: categoryState.hidden,
-            childCategories: categoryState.childCategories,
+            childCategories: categoryState.childCategories.map(category => category._id),
             slides: categoryState.slides,
             refines: categoryState.refines,
             bestSellers: categoryState.bestSellers

@@ -1,5 +1,6 @@
 const {Router} = require('express');
 const Category = require('../../models/Category');
+const Product = require('../../models/Product');
 const router = Router();
 
 router.get('/id:id',
@@ -7,18 +8,28 @@ router.get('/id:id',
         try {
             const {id} = req.params;
 
-            const category = await Category.findById(id);
+            const category = await Category.findById(id).populate('childCategories');
 
             if(category) {
+                let productsQuantity = {};
+                productsQuantity[id] = await Product.find({category: id}, {_id: true});
+                for(let i = 0; i < category.childCategories.length; i++) {
+                    let childCategoryId = category.childCategories[i]._id;
+                    productsQuantity[childCategoryId] = await Product.find({category: childCategoryId}, {_id: true});
+                }
+                let childCategories = category.childCategories.map(category => {
+                    return {productsQuantity: productsQuantity[category._id].length,...category._doc}
+                });
                 let result = {
                     id: category._id,
                     categoryName: category.name,
                     url: category.url,
                     hidden: category.hidden,
-                    childCategories: category.childCategories,
+                    childCategories,
                     slides: category.slides,
                     bestSellers: category.bestSellers,
-                    refines: category.refines
+                    refines: category.refines,
+                    productsQuantity: productsQuantity[id].length
                 };
 
                 res.json({category: result})
@@ -27,6 +38,7 @@ router.get('/id:id',
             }
 
         } catch (e) {
+            console.log(e);
             res.status(500).json({erorMessage: 'Server Error'})
         }
     });

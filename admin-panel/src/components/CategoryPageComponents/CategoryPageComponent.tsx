@@ -9,6 +9,8 @@ import s from "../ProductPageComponents/ProductPage.module.scss";
 import {categoryReducerActions, loadCategory, saveCategory} from "../../redux/categoryReducer";
 import {GetCategoryId, GetCategoryLoading} from "../../redux/selectors/categorySelector";
 import GeneralCategoryInfo from "./GeneralCategoryInfo/GeneralCategoryInfo";
+import CategoreRefines from "./CategoryRefines/CategoryRefines";
+import ChildCategories from "./ChildCategories/ChildCategories";
 
 const CategoryPageComponent: React.FC<RouteComponentProps<ProductRouteType>> = (props) => {
     const dispatch = useDispatch();
@@ -53,11 +55,11 @@ const CategoryPageComponent: React.FC<RouteComponentProps<ProductRouteType>> = (
         childForm.resetFields();
         generalForm.resetFields()
     };
-    const addNewProductClick = async () => {
+    const addNewCategoryClick = async () => {
         //await addNewProductThunk();
     };
 
-    const SaveButton = <Button icon={<SaveOutlined />} type="primary" onClick={props.match.path === '/admin/new-product' ? addNewProductClick : saveCategoryClick}>Save</Button>
+    const SaveButton = <Button icon={<SaveOutlined />} type="primary" onClick={props.match.path === '/admin/new-product' ? addNewCategoryClick : saveCategoryClick}>Save</Button>
     const DeleteButton = <Popconfirm
         placement="bottomRight"
         title={'Are you sure to delete this product?'}
@@ -73,10 +75,10 @@ const CategoryPageComponent: React.FC<RouteComponentProps<ProductRouteType>> = (
                     <GeneralCategoryInfo newCategory={props.match.path === '/admin/new-product' ? true : false} generalForm={generalForm}/>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Refines" key="CategoryTab2">
-
+                    <CategoreRefines/>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Child Categories" key="CategoryTab3">
-
+                    <ChildCategories/>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Best Sellers" key="CategoryTab4">
 

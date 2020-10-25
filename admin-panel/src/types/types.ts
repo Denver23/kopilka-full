@@ -32,10 +32,23 @@ export type SetCategoryType = {
     categoryName: string | null,
     url: string | null,
     hidden: boolean,
+    childCategories: Array<ChildCategoryType>,
+    slides: Array<string>,
+    refines: Array<CategoryRefineType>,
+    bestSellers: Array<ProductInListType>,
+    productsQuantity: number
+}
+
+export type ChildCategoryType = {
+    _id: string,
+    name: string | null,
+    url: string | null,
+    hidden: boolean,
     childCategories: Array<string>,
     slides: Array<string>,
     refines: Array<CategoryRefineType>,
-    bestSellers: Array<ProductInListType>
+    bestSellers: Array<ProductInListType>,
+    productsQuantity?: number
 }
 
 export type ChildProductType = {
@@ -147,7 +160,7 @@ export type ProductPropsTypes = 'brand'|'category'|'hidden' | 'delete';
 
 export type CategoryRefineType = {
     items: Array<string>,
-    _id: string,
+    _id?: string,
     title: string,
     type: string
 }

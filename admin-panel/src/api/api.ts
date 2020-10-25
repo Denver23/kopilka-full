@@ -20,13 +20,13 @@ const isAccessTokenExpired = (exp: number): boolean => {
     const nowTime = Math.floor(new Date().getTime() / 1000)
 
     return accessTokenExpDate <= nowTime
-}
+};
 
 instance.interceptors.request.use(request => {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
 
-    if (accessToken !== 'undefined' && refreshToken !== 'undefined') {
+    if (accessToken !== undefined && refreshToken !== undefined) {
         let exp = Number(localStorage.getItem('exp'));
 
         if (isAccessTokenExpired(exp) && refreshToken) {

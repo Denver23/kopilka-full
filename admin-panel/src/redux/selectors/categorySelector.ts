@@ -1,8 +1,16 @@
 import {AppStateType} from "../store";
-import {CategoryRefineType} from "../../types/types";
+import {CategoryRefineType, ChildCategoryType, ProductInListType} from "../../types/types";
 
 export const GetCategoryId = (state: AppStateType): string | null => {
     return state.categoryReducer.id;
+};
+
+export const GetCategoryBestSellers = (state: AppStateType): Array<ProductInListType> => {
+    return state.categoryReducer.bestSellers;
+};
+
+export const GetCategoryProductsQuantity = (state: AppStateType): number => {
+    return state.categoryReducer.productsQuantity;
 };
 
 export const GetCategoryUrl = (state: AppStateType): string | null => {
@@ -25,7 +33,7 @@ export const GetCategoryRefines = (state: AppStateType): Array<CategoryRefineTyp
     return state.categoryReducer.refines;
 };
 
-export const GetChildCategories = (state: AppStateType): Array<string> => {
+export const GetChildCategories = (state: AppStateType): Array<ChildCategoryType> => {
     return state.categoryReducer.childCategories;
 };
 
