@@ -390,6 +390,8 @@ export const saveProduct = (): ThunkType => async (dispatch, getState) => {
             errors.push('Product Title is null');
         } else if (childValidator.length || emptyOptions.length) {
             errors.push('Some child products has the same options or empty');
+        } else if (productState.childProducts.length < 1) {
+            errors.push('Min count of Child Products have been 1');
         }
 
         let data: SaveProductType = {
