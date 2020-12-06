@@ -50,6 +50,7 @@ const useSelectProduct = (name: string, initial: string | null = '', onChange: (
             }
         } else {
             setDefaultValue();
+            setList([]);
         }
     };
 
@@ -69,7 +70,7 @@ const useSelectProduct = (name: string, initial: string | null = '', onChange: (
         inputData: {
             options: autocompleteList,
             onSearch: (value: string) => {
-                onChange(value, setList)
+                onChange(value, setList);
             },
             onBlur: name === 'brand' ? onBrandBlur : name === 'category' ? onCategoryBlur : undefined,
             onSelect: (value: string) => {

@@ -38,14 +38,15 @@ const CategoryPageComponent: React.FC<RouteComponentProps<ProductRouteType>> = (
     useEffect(() => {
         return () => {
             dispatch(categoryReducerActions.setCategory({
-                id: null,
-                categoryName: null,
+                _id: null,
+                name: null,
                 url: null,
                 hidden: false,
                 childCategories: [],
                 slides: [],
                 refines: [],
-                bestSellers: []
+                bestSellers: [],
+                productsQuantity: 0
             }))
         }
     }, []);

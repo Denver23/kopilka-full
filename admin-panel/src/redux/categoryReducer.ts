@@ -3,7 +3,7 @@ import ResponseMessageError from "../utils/errors/responseErrors";
 import {
     ProductInListType,
     GetActionsTypes,
-    CategoryRefineType, SetCategoryType, SaveCategoryType, ChildCategoryType
+    CategoryRefineType, SaveCategoryType, CategoryType
 } from "../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./store";
@@ -21,6 +21,8 @@ const CHANGE_REFINE_TAG = 'CHANGE_REFINE_TAG';
 const ADD_NEW_REFINE_TAG = 'ADD_NEW_REFINE_TAG';
 const ADD_NEW_REFINE = 'ADD_NEW_REFINE';
 const DELETE_CHILD_CATEGORY = 'DELETE_CHILD_CATEGORY';
+const CHANGE_CHILD_CATEGORIES_LOADING = 'CHANGE_CHILD_CATEGORIES_LOADING';
+const SET_NEW_CHILD_CATEGORY = 'SET_NEW_CHILD_CATEGORY';
 
 function makeCounter() {
     let count = 0;
@@ -38,11 +40,12 @@ let initialState = {
     categoryName: null as string | null,
     url: null as string | null,
     hidden: false as boolean,
-    childCategories: [] as Array<ChildCategoryType>,
+    childCategories: [] as Array<CategoryType>,
     slides: [] as Array<string>,
     refines: [] as Array<CategoryRefineType>,
     bestSellers: [] as Array<ProductInListType>,
-    productsQuantity: 0 as number
+    productsQuantity: 0 as number,
+    childCategoriesLoadingStatus: false as boolean
 };
 
 type InitialStateType = typeof initialState;
@@ -52,15 +55,15 @@ const categoryReducer = (state = initialState, action: GetActionsTypes<typeof ca
         case SET_CATEGORY:
             return {
                 ...state,
-                id: action.data.id,
+                id: action.data._id,
                 hidden: action.data.hidden,
-                categoryName: action.data.categoryName,
+                categoryName: action.data.name,
                 url: action.data.url,
-                childCategories: action.data.childCategories,
+                childCategories: action.data.childCategories as Array<CategoryType>,
                 slides: action.data.slides,
                 refines: action.data.refines,
                 bestSellers: action.data.bestSellers,
-                productsQuantity: action.data.productsQuantity
+                productsQuantity: action.data.productsQuantity ? action.data.productsQuantity : 0
             };
         case TOGGLE_LOADING:
             return {...state, 'loading': action.loading};
@@ -137,6 +140,10 @@ const categoryReducer = (state = initialState, action: GetActionsTypes<typeof ca
         case DELETE_CHILD_CATEGORY:
             let deletedChildCategoriesList = [...state.childCategories].filter(category => category._id !== action.id);
             return {...state, childCategories: deletedChildCategoriesList};
+        case CHANGE_CHILD_CATEGORIES_LOADING:
+            return {...state, childCategoriesLoadingStatus: action.value};
+        case SET_NEW_CHILD_CATEGORY:
+            return {...state, childCategories: [...state.childCategories, action.data]};
         default:
             return state;
     }
@@ -144,7 +151,7 @@ const categoryReducer = (state = initialState, action: GetActionsTypes<typeof ca
 
 export const categoryReducerActions = {
     toggleLoading: (loading: boolean) => ({type: TOGGLE_LOADING, loading} as const),
-    setCategory: (data: SetCategoryType) => ({type: SET_CATEGORY, data} as const),
+    setCategory: (data: CategoryType) => ({type: SET_CATEGORY, data} as const),
     deleteImage: (index: number) => ({type: DELETE_IMAGE, index} as const),
     changeImage: (oldSrc: string, src: string) => ({type: CHANGE_IMAGE, oldSrc, src} as const),
     addImage: () => ({type: ADD_IMAGE} as const),
@@ -168,7 +175,9 @@ export const categoryReducerActions = {
     deleteCategoryRefine: (title: string) => ({type: DELETE_CT_REFINE, title} as const),
     addNewRefine: (value: string) => ({type: ADD_NEW_REFINE, value} as const),
     deleteChildCategory: (id: string) => ({type: DELETE_CHILD_CATEGORY, id} as const),
-    changeHiddenStatus: (value: boolean) => ({type: CHANGE_HIDDEN_STATUS, value} as const)
+    changeHiddenStatus: (value: boolean) => ({type: CHANGE_HIDDEN_STATUS, value} as const),
+    changeChildCategoriesLoading: (value: boolean) => ({type: CHANGE_CHILD_CATEGORIES_LOADING, value} as const),
+    setNewChildCategory: (data: CategoryType) => ({type: SET_NEW_CHILD_CATEGORY, data} as const)
 };
 
 
@@ -176,7 +185,7 @@ type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, GetActionsTyp
 export const loadCategory = (id: string): ThunkType => async (dispatch) => {
     dispatch(categoryReducerActions.toggleLoading(true));
     try {
-        let response = await categoryAPI.loadCategory(id);
+        let response = await categoryAPI.loadCategory(id, 'id');
 
         if (!!response.data.errorMessage) {
             throw new ResponseMessageError(response);
@@ -188,8 +197,8 @@ export const loadCategory = (id: string): ThunkType => async (dispatch) => {
         console.log(`${err.name}: ${message}`);
 
         dispatch(categoryReducerActions.setCategory({
-            id: null,
-            categoryName: null,
+            _id: null,
+            name: null,
             url: null,
             hidden: false,
             childCategories: [],
@@ -216,7 +225,7 @@ export const saveCategory = (): ThunkType => async (dispatch, getState) => {
             categoryName: categoryState.categoryName !== null ? categoryState.categoryName : '',
             url: categoryState.url !== null ? categoryState.url : '',
             hidden: categoryState.hidden,
-            childCategories: categoryState.childCategories.map(category => category._id),
+            childCategories: categoryState.childCategories.map((category: CategoryType) => category._id) as Array<string>,
             slides: categoryState.slides,
             refines: categoryState.refines,
             bestSellers: categoryState.bestSellers
@@ -236,6 +245,25 @@ export const saveCategory = (): ThunkType => async (dispatch, getState) => {
         console.log(`${err.name}: ${message}`);
     } finally {
         dispatch(categoryReducerActions.toggleLoading(false));
+    }
+};
+
+export const addNewChildCategory = (name: string): ThunkType => async (dispatch, getState) => {
+    dispatch(categoryReducerActions.changeChildCategoriesLoading(true));
+    try {
+        let response = await categoryAPI.loadCategory(name, 'name');
+
+        if (!!response.data.errorMessage) {
+            throw new ResponseMessageError(response);
+        }
+
+        dispatch(categoryReducerActions.setNewChildCategory(response.data.category));
+
+    } catch (err) {
+        let message = err.response && err.response.data.errorMessage ? err.response.data.errorMessage : err.message;
+        console.log(`${err.name}: ${message}`);
+    } finally {
+        dispatch(categoryReducerActions.changeChildCategoriesLoading(false));
     }
 };
 

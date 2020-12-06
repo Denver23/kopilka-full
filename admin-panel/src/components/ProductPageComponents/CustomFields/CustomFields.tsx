@@ -210,7 +210,7 @@ const CustomFields: React.FC = () => {
                                    if(Object.keys(oldFilter)[0] === categoryRefine.title) {
                                        result = false;
                                    }
-                               })
+                               });
                                return result;
                            }).map(categoryRefine => {
                                return <Select.Option value={categoryRefine.title}>{categoryRefine.title}</Select.Option>

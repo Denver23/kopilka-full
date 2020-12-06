@@ -32,19 +32,19 @@ export type SetCategoryType = {
     categoryName: string | null,
     url: string | null,
     hidden: boolean,
-    childCategories: Array<ChildCategoryType>,
+    childCategories: Array<CategoryType>,
     slides: Array<string>,
     refines: Array<CategoryRefineType>,
     bestSellers: Array<ProductInListType>,
     productsQuantity: number
 }
 
-export type ChildCategoryType = {
-    _id: string,
+export type CategoryType = {
+    _id: string | null,
     name: string | null,
     url: string | null,
     hidden: boolean,
-    childCategories: Array<string>,
+    childCategories: Array<string> | Array<CategoryType>,
     slides: Array<string>,
     refines: Array<CategoryRefineType>,
     bestSellers: Array<ProductInListType>,

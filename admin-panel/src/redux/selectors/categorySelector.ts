@@ -41,3 +41,7 @@ export const GetCategoryHidden = (state: AppStateType): boolean => {
     return state.categoryReducer.hidden;
 };
 
+export const GetChildCategoriesLoadingStatus = (state: AppStateType): boolean => {
+    return state.categoryReducer.childCategoriesLoadingStatus;
+};
+

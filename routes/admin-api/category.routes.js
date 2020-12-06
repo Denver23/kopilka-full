@@ -21,8 +21,8 @@ router.get('/id:id',
                     return {productsQuantity: productsQuantity[category._id].length,...category._doc}
                 });
                 let result = {
-                    id: category._id,
-                    categoryName: category.name,
+                    _id: category._id,
+                    name: category.name,
                     url: category.url,
                     hidden: category.hidden,
                     childCategories,
@@ -30,6 +30,40 @@ router.get('/id:id',
                     bestSellers: category.bestSellers,
                     refines: category.refines,
                     productsQuantity: productsQuantity[id].length
+                };
+
+                res.json({category: result})
+            } else {
+                res.status(406).json({erorMessage: 'Category Not Found!'})
+            }
+
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({erorMessage: 'Server Error'})
+        }
+    });
+
+router.get('/name-:name',
+    async (req, res) => {
+        try {
+            const {name} = req.params;
+
+            const category = await Category.findOne({name});
+
+            if(category) {
+                let productsQuantity = {};
+                productsQuantity[category._id] = await Product.find({category: category._id}, {_id: true});
+
+                let result = {
+                    _id: category._id,
+                    name: category.name,
+                    url: category.url,
+                    hidden: category.hidden,
+                    childCategories: category.childCategories,
+                    slides: category.slides,
+                    bestSellers: category.bestSellers,
+                    refines: category.refines,
+                    productsQuantity: productsQuantity[category._id].length
                 };
 
                 res.json({category: result})

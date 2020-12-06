@@ -1,11 +1,11 @@
 import axios from "axios";
 import {
     CategoriesListItemType,
-    categoriesListRequestObjectType, CategoryRefineType,
-    categoryRequestObjectType, changeProductsParamsTypes, ProductInListType,
+    categoriesListRequestObjectType,
+    categoryRequestObjectType, CategoryType, changeProductsParamsTypes,
     ProductListItemType,
     RefineType, SaveCategoryType,
-    SaveProductType, SetCategoryType,
+    SaveProductType,
     SetProductType
 } from "../types/types";
 
@@ -16,8 +16,8 @@ const instance = axios.create({
 });
 
 const isAccessTokenExpired = (exp: number): boolean => {
-    const accessTokenExpDate = exp - 10
-    const nowTime = Math.floor(new Date().getTime() / 1000)
+    const accessTokenExpDate = exp - 10;
+    const nowTime = Math.floor(new Date().getTime() / 1000);
 
     return accessTokenExpDate <= nowTime
 };
@@ -165,12 +165,18 @@ export const categoriesListAPI = {
 
 type LoadCategoryResponseType = {
     errorMessage?: string,
-    category: SetCategoryType
+    category: CategoryType
 }
 
 export const categoryAPI = {
-    loadCategory(id: string) {
-        return instance.get<LoadCategoryResponseType>(`/admin-api/category/id${id}`);
+    loadCategory(value: string, type: 'name' | 'id') {
+        switch(type) {
+            case 'name':
+                return instance.get<LoadCategoryResponseType>(`/admin-api/category/name-${value}`);
+                break;
+            case 'id':
+                return instance.get<LoadCategoryResponseType>(`/admin-api/category/id${value}`);
+        }
     },
     saveCategory(data: SaveCategoryType) {
         return instance.post<LoadCategoryResponseType>(`/admin-api/category/id${data.id}`,{data})

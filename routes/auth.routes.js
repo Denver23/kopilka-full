@@ -176,14 +176,14 @@ router.post('/refresh-tokens',
             let session = await Session.findOne({user: userId, tokens: {$elemMatch: {refreshToken}}});
 
             if (!session) {
-                return res.json({resultCode: 1, message: 'Session not found'})
+                return res.json({resultCode: 1, errorMessage: 'Session not found'})
             }
 
             const accessToken = jwt.sign(
                 {userId: session.user},
                 config.get('jwtSecret'),
                 {expiresIn: config.get('accessTokenExpiresIn')}
-            )
+            );
 
             const newRefreshToken = uuid();
 
